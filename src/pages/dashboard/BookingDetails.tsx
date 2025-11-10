@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import * as MT from "@material-tailwind/react";
-import { ArrowLeftIcon, PlusIcon, PencilIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import bookingPaymentsData from "@/data/booking-payments-data.js";
 // @ts-expect-error: JS module has no types
@@ -10,6 +10,8 @@ import guestTourData from "@/data/guest-tour-data.js";
 import bookingsListData from "@/data/bookings-list-data.js";
 import AddServiceModal from "@/components/AddServiceModal";
 import AddGuestModal from "@/components/AddGuestModal";
+import PaymentModal from "@/components/PaymentModal";
+import HistoryPopover from "@/components/HistoryPopover";
 
 interface Booking {
   id: number;
@@ -61,6 +63,13 @@ export default function BookingDetails() {
   const [guests, setGuests] = useState(guestTourData);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
+
+  // Payment functionality state
+  const [guestPaymentHistory, setGuestPaymentHistory] = useState<{[key: number]: Array<{amount: number; method: 'cash' | 'online'; date: string; timestamp: string}>}>({});
+  const [isGuestPaymentModalOpen, setIsGuestPaymentModalOpen] = useState(false);
+  const [isHistoryPopoverOpen, setIsHistoryPopoverOpen] = useState(false);
+  const [currentGuestPayment, setCurrentGuestPayment] = useState<{index: number; maxAmount: number; currentCollected: number} | null>(null);
+  const [currentHistoryGuest, setCurrentHistoryGuest] = useState<number | null>(null);
 
   // Editing states
   const [editingService, setEditingService] = useState<{ index: number; field: string } | null>(null);
@@ -228,6 +237,48 @@ export default function BookingDetails() {
     if (e.key === 'e' || e.key === 'E' || e.key === '-' || e.key === '+') {
       e.preventDefault();
     }
+  };
+
+  // Payment functionality functions
+  const openGuestPaymentModal = (index: number) => {
+    const guest = guests[index];
+    const maxAmount = guest.toBeCollected;
+    const currentCollected = guest.collectedTillDate;
+    
+    setCurrentGuestPayment({ index, maxAmount, currentCollected });
+    setIsGuestPaymentModalOpen(true);
+  };
+
+  const handleGuestPaymentAdd = (payment: { amount: number; method: 'cash' | 'online'; date: string; timestamp: string }) => {
+    if (!currentGuestPayment) return;
+
+    const { index } = currentGuestPayment;
+    const guestId = index; // Using index as guest ID for simplicity
+
+    // Update payment history
+    setGuestPaymentHistory(prev => ({
+      ...prev,
+      [guestId]: [...(prev[guestId] || []), payment]
+    }));
+
+    // Update guest collected amount and balance collection
+    setGuests((prev: GuestTour[]) => {
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        collectedTillDate: updated[index].collectedTillDate + payment.amount,
+        balanceCollection: updated[index].toBeCollected - (updated[index].collectedTillDate + payment.amount)
+      };
+      return updated;
+    });
+
+    setIsGuestPaymentModalOpen(false);
+    setCurrentGuestPayment(null);
+  };
+
+  const openHistoryPopover = (guestIndex: number) => {
+    setCurrentHistoryGuest(guestIndex);
+    setIsHistoryPopoverOpen(true);
   };
 
   // Service editing functions
@@ -1312,31 +1363,34 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuest?.index === index && editingGuest?.field === 'collectedTillDate' ? (
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="number"
-                                value={editValues.collectedTillDate !== undefined ? editValues.collectedTillDate : item.collectedTillDate}
-                                onChange={(e) => setEditValues({ ...editValues, collectedTillDate: e.target.value })}
-                                onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                              />
-                              <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={saveGuestEdit} />
-                              <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" onClick={cancelGuestEdit} />
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                                ₹{item.collectedTillDate.toLocaleString()}
-                              </MT.Typography>
-                              <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingGuest(index, 'collectedTillDate', item.collectedTillDate)} />
-                            </div>
-                          )}
+                          <div className="flex items-center justify-between">
+                            <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              ₹{item.collectedTillDate.toLocaleString()}
+                            </MT.Typography>
+                            <PlusIcon 
+                              className="h-4 w-4 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                openGuestPaymentModal(index); 
+                              }} 
+                              title="Add Payment"
+                            />
+                          </div>
                         </td>
                         <td className={`py-3 px-3 ${rowClass}`}>
-                          <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                            ₹{item.balanceCollection.toLocaleString()}
-                          </MT.Typography>
+                          <div className="flex items-center justify-between">
+                            <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              ₹{item.balanceCollection.toLocaleString()}
+                            </MT.Typography>
+                            <ClockIcon 
+                              className="h-4 w-4 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                openHistoryPopover(index); 
+                              }} 
+                              title="View Payment History"
+                            />
+                          </div>
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
                           {editingGuest?.index === index && editingGuest?.field === 'profit' ? (
@@ -1637,6 +1691,20 @@ export default function BookingDetails() {
           isOpen={isGuestModalOpen}
           onClose={() => setIsGuestModalOpen(false)}
           onAdd={(guest) => setGuests([...guests, guest])}
+        />
+
+        <PaymentModal
+          isOpen={isGuestPaymentModalOpen}
+          onClose={() => setIsGuestPaymentModalOpen(false)}
+          onAdd={handleGuestPaymentAdd}
+          maxAmount={currentGuestPayment?.maxAmount || 0}
+          currentCollected={currentGuestPayment?.currentCollected || 0}
+        />
+
+        <HistoryPopover
+          isOpen={isHistoryPopoverOpen}
+          onClose={() => setIsHistoryPopoverOpen(false)}
+          history={currentHistoryGuest !== null ? (guestPaymentHistory[currentHistoryGuest] || []) : []}
         />
       </div>
     </div>

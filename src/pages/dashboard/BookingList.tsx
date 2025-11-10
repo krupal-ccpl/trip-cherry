@@ -1,16 +1,27 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import * as MT from "@material-tailwind/react";
-import { PlusIcon, PencilIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import bookingsListData from "@/data/bookings-list-data.js";
 import AddBookingModal from "@/components/AddBookingModal";
+import PaymentModal from "@/components/PaymentModal";
+import HistoryPopover from "@/components/HistoryPopover";
 
 export default function BookingList() {
   const navigate = useNavigate();
 
   const [bookings, setBookings] = useState(bookingsListData);
   const [isFormOpen, setIsFormOpen] = useState(false);
+
+  // Payment functionality state
+  const [paymentHistory, setPaymentHistory] = useState<{[key: number]: Array<{amount: number; method: 'cash' | 'online'; date: string; timestamp: string}>}>({});
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [currentPaymentBooking, setCurrentPaymentBooking] = useState<{index: number; maxAmount: number; currentCollected: number} | null>(null);
+
+  // History functionality state
+  const [isHistoryPopoverOpen, setIsHistoryPopoverOpen] = useState(false);
+  const [currentHistoryBooking, setCurrentHistoryBooking] = useState<number | null>(null);
 
   // Inline editing state
   const [editingBooking, setEditingBooking] = useState<{ index: number; field: string } | null>(null);
@@ -101,6 +112,46 @@ export default function BookingList() {
 
   const handleRowClick = (bookingId: number) => {
     navigate(`/dashboard/bookings/${bookingId}`);
+  };
+
+  // Payment functionality functions
+  const openPaymentModal = (index: number) => {
+    const booking = bookings[index];
+    const maxAmount = booking.toBeCollectedTCS + booking.toBeCollectedGST;
+    const currentCollected = booking.collectedTillDate;
+    
+    setCurrentPaymentBooking({ index, maxAmount, currentCollected });
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentAdd = (payment: { amount: number; method: 'cash' | 'online'; date: string; timestamp: string }) => {
+    if (!currentPaymentBooking) return;
+
+    const { index } = currentPaymentBooking;
+    const bookingId = bookings[index].id;
+
+    // Update payment history
+    setPaymentHistory(prev => ({
+      ...prev,
+      [bookingId]: [...(prev[bookingId] || []), payment]
+    }));
+
+    // Update booking collected amount
+    const updatedBookings = [...bookings];
+    updatedBookings[index] = {
+      ...updatedBookings[index],
+      collectedTillDate: updatedBookings[index].collectedTillDate + payment.amount,
+      collectionRemaining: updatedBookings[index].toBeCollectedTCS + updatedBookings[index].toBeCollectedGST - (updatedBookings[index].collectedTillDate + payment.amount)
+    };
+
+    setBookings(updatedBookings);
+    setIsPaymentModalOpen(false);
+    setCurrentPaymentBooking(null);
+  };
+
+  const openHistoryPopover = (bookingIndex: number) => {
+    setCurrentHistoryBooking(bookingIndex);
+    setIsHistoryPopoverOpen(true);
   };
 
   // Inline editing functions
@@ -675,38 +726,39 @@ export default function BookingList() {
                         )}
                       </td>
                       <td className={`py-3 px-3 ${rowClass} relative group`}>
-                        {editingBooking?.index === index && editingBooking?.field === 'collectedTillDate' ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={editValues.collectedTillDate !== undefined ? editValues.collectedTillDate : booking.collectedTillDate}
-                              onChange={(e) => setEditValues({ ...editValues, collectedTillDate: e.target.value })}
-                              onKeyDown={handleNumberInput}
-                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                              min="0"
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                            <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveBookingEdit(); }} />
-                            <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); cancelBookingEdit(); }} />
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                              ₹{booking.collectedTillDate.toLocaleString()}
-                            </MT.Typography>
-                            <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'collectedTillDate', booking.collectedTillDate); }} />
-                          </div>
-                        )}
+                        <div className="flex items-center justify-between">
+                          <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            ₹{booking.collectedTillDate.toLocaleString()}
+                          </MT.Typography>
+                          <PlusIcon 
+                            className="h-4 w-4 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              openPaymentModal(index); 
+                            }} 
+                            title="Add Payment"
+                          />
+                        </div>
                       </td>
                       <td className={`py-3 px-3 ${rowClass}`}>
-                        <MT.Typography 
-                          className={`text-sm font-medium ${booking.collectionRemaining < 0 ? 'text-green-600' : booking.collectionRemaining > 0 ? 'text-orange-600' : 'text-gray-900'}`}
-                          placeholder={undefined} 
-                          onPointerEnterCapture={undefined} 
-                          onPointerLeaveCapture={undefined}
-                        >
-                          ₹{booking.collectionRemaining.toLocaleString()}
-                        </MT.Typography>
+                        <div className="flex items-center justify-between">
+                          <MT.Typography 
+                            className={`text-sm font-medium ${booking.collectionRemaining < 0 ? 'text-green-600' : booking.collectionRemaining > 0 ? 'text-orange-600' : 'text-gray-900'}`}
+                            placeholder={undefined} 
+                            onPointerEnterCapture={undefined} 
+                            onPointerLeaveCapture={undefined}
+                          >
+                            ₹{booking.collectionRemaining.toLocaleString()}
+                          </MT.Typography>
+                          <ClockIcon 
+                            className="h-4 w-4 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              openHistoryPopover(index); 
+                            }} 
+                            title="View Payment History"
+                          />
+                        </div>
                       </td>
                       <td className={`py-3 px-3 ${rowClass} relative group`}>
                         {editingBooking?.index === index && editingBooking?.field === 'profit' ? (
@@ -1018,6 +1070,20 @@ export default function BookingList() {
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         onAdd={(booking) => setBookings([...bookings, booking])}
+      />
+
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onAdd={handlePaymentAdd}
+        maxAmount={currentPaymentBooking?.maxAmount || 0}
+        currentCollected={currentPaymentBooking?.currentCollected || 0}
+      />
+
+      <HistoryPopover
+        isOpen={isHistoryPopoverOpen}
+        onClose={() => setIsHistoryPopoverOpen(false)}
+        history={currentHistoryBooking !== null ? (paymentHistory[bookings[currentHistoryBooking]?.id] || []) : []}
       />
 
     </div>
