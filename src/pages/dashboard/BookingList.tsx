@@ -37,6 +37,7 @@ export default function BookingList() {
     id: -1,
     bookingDate: new Date().toISOString().split('T')[0],
     customerName: '',
+    phone: '',
     type: 'Domestic',
     destination: '',
     arrivalDate: '',
@@ -53,26 +54,26 @@ export default function BookingList() {
 
   // Sample customer names for autocomplete with avatars
   const customerNames = [
-    { name: "Rajesh Kumar", avatar: "https://i.pravatar.cc/150?img=12" },
-    { name: "Priya Sharma", avatar: "https://i.pravatar.cc/150?img=5" },
-    { name: "Amit Patel", avatar: "https://i.pravatar.cc/150?img=13" },
-    { name: "Neha Gupta", avatar: "https://i.pravatar.cc/150?img=9" },
-    { name: "Rahul Singh", avatar: "https://i.pravatar.cc/150?img=14" },
-    { name: "Anjali Desai", avatar: "https://i.pravatar.cc/150?img=10" },
-    { name: "Vikram Reddy", avatar: "https://i.pravatar.cc/150?img=15" },
-    { name: "Sneha Iyer", avatar: "https://i.pravatar.cc/150?img=16" },
-    { name: "Karan Malhotra", avatar: "https://i.pravatar.cc/150?img=17" },
-    { name: "Pooja Nair", avatar: "https://i.pravatar.cc/150?img=20" },
-    { name: "Sanjay Mehta", avatar: "https://i.pravatar.cc/150?img=33" },
-    { name: "Divya Krishnan", avatar: "https://i.pravatar.cc/150?img=23" },
-    { name: "Arjun Rao", avatar: "https://i.pravatar.cc/150?img=60" },
-    { name: "Kavita Joshi", avatar: "https://i.pravatar.cc/150?img=26" },
-    { name: "Rohan Verma", avatar: "https://i.pravatar.cc/150?img=51" },
-    { name: "Meera Kapoor", avatar: "https://i.pravatar.cc/150?img=29" },
-    { name: "Aditya Chatterjee", avatar: "https://i.pravatar.cc/150?img=68" },
-    { name: "Riya Bose", avatar: "https://i.pravatar.cc/150?img=32" },
-    { name: "Manish Agarwal", avatar: "https://i.pravatar.cc/150?img=56" },
-    { name: "Swati Pandey", avatar: "https://i.pravatar.cc/150?img=36" }
+    { name: "Rajesh Kumar", avatar: "https://i.pravatar.cc/150?img=12", phone: "9876543210" },
+    { name: "Priya Sharma", avatar: "https://i.pravatar.cc/150?img=5", phone: "8765432109" },
+    { name: "Amit Patel", avatar: "https://i.pravatar.cc/150?img=13", phone: "7654321098" },
+    { name: "Neha Gupta", avatar: "https://i.pravatar.cc/150?img=9", phone: "6543210987" },
+    { name: "Rahul Singh", avatar: "https://i.pravatar.cc/150?img=14", phone: "5432109876" },
+    { name: "Anjali Desai", avatar: "https://i.pravatar.cc/150?img=10", phone: "4321098765" },
+    { name: "Vikram Reddy", avatar: "https://i.pravatar.cc/150?img=15", phone: "3210987654" },
+    { name: "Sneha Iyer", avatar: "https://i.pravatar.cc/150?img=16", phone: "2109876543" },
+    { name: "Karan Malhotra", avatar: "https://i.pravatar.cc/150?img=17", phone: "1098765432" },
+    { name: "Pooja Nair", avatar: "https://i.pravatar.cc/150?img=20", phone: "9988776655" },
+    { name: "Sanjay Mehta", avatar: "https://i.pravatar.cc/150?img=33", phone: "8877665544" },
+    { name: "Divya Krishnan", avatar: "https://i.pravatar.cc/150?img=23", phone: "7766554433" },
+    { name: "Arjun Rao", avatar: "https://i.pravatar.cc/150?img=60", phone: "6655443322" },
+    { name: "Kavita Joshi", avatar: "https://i.pravatar.cc/150?img=26", phone: "5544332211" },
+    { name: "Rohan Verma", avatar: "https://i.pravatar.cc/150?img=51", phone: "4433221100" },
+    { name: "Meera Kapoor", avatar: "https://i.pravatar.cc/150?img=29", phone: "3322110099" },
+    { name: "Aditya Chatterjee", avatar: "https://i.pravatar.cc/150?img=68", phone: "2211009988" },
+    { name: "Riya Bose", avatar: "https://i.pravatar.cc/150?img=32", phone: "1100998877" },
+    { name: "Manish Agarwal", avatar: "https://i.pravatar.cc/150?img=56", phone: "9998887766" },
+    { name: "Swati Pandey", avatar: "https://i.pravatar.cc/150?img=36", phone: "8887776655" }
   ];
 
   const domesticDestinations = [
@@ -199,6 +200,14 @@ export default function BookingList() {
     if (field === 'profitBookedTillDate') {
       updatedBookings[index].profitBookedTillDate = parseFloat(newValue) || 0;
     }
+    if (field === 'phone') {
+      // Validate phone number
+      if (newValue && (newValue.length !== 10 || !/^\d{10}$/.test(newValue))) {
+        alert('Phone number must be exactly 10 digits');
+        return;
+      }
+      updatedBookings[index].phone = newValue;
+    }
 
     // Recalculate derived fields
     if (field === 'toBeCollectedTCS' || field === 'toBeCollectedGST' || field === 'collectedTillDate') {
@@ -305,6 +314,19 @@ export default function BookingList() {
     }
   };
 
+  const handlePhoneInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Allow only digits 0-9, backspace, delete, tab, escape, enter, and arrow keys
+    if (!/[0-9]/.test(e.key) && 
+        e.key !== 'Backspace' && 
+        e.key !== 'Delete' && 
+        e.key !== 'Tab' && 
+        e.key !== 'Escape' && 
+        e.key !== 'Enter' && 
+        !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
   // New row management functions
   const startEditingNewRow = () => {
     setIsEditingNewRow(true);
@@ -312,6 +334,7 @@ export default function BookingList() {
       id: -1,
       bookingDate: new Date().toISOString().split('T')[0],
       customerName: '',
+      phone: '',
       type: 'Domestic',
       destination: '',
       arrivalDate: '',
@@ -375,6 +398,12 @@ export default function BookingList() {
       return;
     }
     
+    // Validate phone number
+    if (newRowData.phone && (newRowData.phone.length !== 10 || !/^\d{10}$/.test(newRowData.phone))) {
+      alert('Phone number must be exactly 10 digits');
+      return;
+    }
+    
     const newBooking = {
       ...newRowData,
       id: Date.now(),
@@ -393,6 +422,7 @@ export default function BookingList() {
       id: -1,
       bookingDate: new Date().toISOString().split('T')[0],
       customerName: '',
+      phone: '',
       type: 'Domestic',
       destination: '',
       arrivalDate: '',
@@ -416,6 +446,7 @@ export default function BookingList() {
       id: -1,
       bookingDate: new Date().toISOString().split('T')[0],
       customerName: '',
+      phone: '',
       type: 'Domestic',
       destination: '',
       arrivalDate: '',
@@ -487,6 +518,7 @@ export default function BookingList() {
                 {[
                   "BOOKING DATE",
                   "CUSTOMER NAME",
+                  "PHONE",
                   "DOMESTIC / INTERNATIONAL",
                   "DESTINATION",
                   "ARRIVAL DATE",
@@ -582,7 +614,10 @@ export default function BookingList() {
                                     }`}
                                   >
                                     <img src={customer.avatar} alt={customer.name} className="w-6 h-6 rounded-full" />
-                                    <span className="text-sm">{customer.name}</span>
+                                    <div className="flex flex-col">
+                                      <span className="text-sm font-medium">{customer.name}</span>
+                                      <span className="text-xs text-gray-500">{customer.phone}</span>
+                                    </div>
                                   </div>
                                 ))}
                               </div>
@@ -596,6 +631,31 @@ export default function BookingList() {
                               {booking.customerName}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'customerName', booking.customerName); }} />
+                          </div>
+                        )}
+                      </td>
+                      <td className={`py-3 px-3 ${rowClass} relative group`}>
+                        {editingBooking?.index === index && editingBooking?.field === 'phone' ? (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={editValues.phone !== undefined ? editValues.phone : booking.phone}
+                              onChange={(e) => setEditValues({ ...editValues, phone: e.target.value })}
+                              onKeyDown={handlePhoneInput}
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              placeholder="10-digit phone number"
+                              maxLength={10}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveBookingEdit(); }} />
+                            <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); cancelBookingEdit(); }} />
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              {booking.phone}
+                            </MT.Typography>
+                            <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'phone', booking.phone); }} />
                           </div>
                         )}
                       </td>
@@ -875,11 +935,25 @@ export default function BookingList() {
                                 className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100"
                               >
                                 <img src={customer.avatar} alt={customer.name} className="w-6 h-6 rounded-full" />
-                                <span className="text-sm">{customer.name}</span>
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-medium">{customer.name}</span>
+                                  <span className="text-xs text-gray-500">{customer.phone}</span>
+                                </div>
                               </div>
                             ))}
                           </div>
                         )}
+                      </td>
+                      <td className="py-3 px-3">
+                        <input
+                          type="text"
+                          value={newRowData.phone}
+                          onChange={(e) => handleNewRowChange('phone', e.target.value)}
+                          onKeyDown={handlePhoneInput}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          placeholder="10-digit phone number"
+                          maxLength={10}
+                        />
                       </td>
                       <td className="py-3 px-3">
                         <select
@@ -1015,6 +1089,11 @@ export default function BookingList() {
                       <td className="py-3 px-3">
                         <MT.Typography className="text-sm text-gray-400 italic" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                           Click to add new booking
+                        </MT.Typography>
+                      </td>
+                      <td className="py-3 px-3">
+                        <MT.Typography className="text-sm text-gray-400 italic" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                          Phone
                         </MT.Typography>
                       </td>
                       <td className="py-3 px-3">

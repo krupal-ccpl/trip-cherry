@@ -28,26 +28,26 @@ interface AddBookingModalProps {
 export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingModalProps) {
   // Sample customer names for autocomplete with avatars
   const customerNames = [
-    { name: "Rajesh Kumar", avatar: "https://i.pravatar.cc/150?img=12" },
-    { name: "Priya Sharma", avatar: "https://i.pravatar.cc/150?img=5" },
-    { name: "Amit Patel", avatar: "https://i.pravatar.cc/150?img=13" },
-    { name: "Neha Gupta", avatar: "https://i.pravatar.cc/150?img=9" },
-    { name: "Rahul Singh", avatar: "https://i.pravatar.cc/150?img=14" },
-    { name: "Anjali Desai", avatar: "https://i.pravatar.cc/150?img=10" },
-    { name: "Vikram Reddy", avatar: "https://i.pravatar.cc/150?img=15" },
-    { name: "Sneha Iyer", avatar: "https://i.pravatar.cc/150?img=16" },
-    { name: "Karan Malhotra", avatar: "https://i.pravatar.cc/150?img=17" },
-    { name: "Pooja Nair", avatar: "https://i.pravatar.cc/150?img=20" },
-    { name: "Sanjay Mehta", avatar: "https://i.pravatar.cc/150?img=33" },
-    { name: "Divya Krishnan", avatar: "https://i.pravatar.cc/150?img=23" },
-    { name: "Arjun Rao", avatar: "https://i.pravatar.cc/150?img=60" },
-    { name: "Kavita Joshi", avatar: "https://i.pravatar.cc/150?img=26" },
-    { name: "Rohan Verma", avatar: "https://i.pravatar.cc/150?img=51" },
-    { name: "Meera Kapoor", avatar: "https://i.pravatar.cc/150?img=29" },
-    { name: "Aditya Chatterjee", avatar: "https://i.pravatar.cc/150?img=68" },
-    { name: "Riya Bose", avatar: "https://i.pravatar.cc/150?img=32" },
-    { name: "Manish Agarwal", avatar: "https://i.pravatar.cc/150?img=56" },
-    { name: "Swati Pandey", avatar: "https://i.pravatar.cc/150?img=36" }
+    { name: "Rajesh Kumar", avatar: "https://i.pravatar.cc/150?img=12", phone: "9876543210" },
+    { name: "Priya Sharma", avatar: "https://i.pravatar.cc/150?img=5", phone: "8765432109" },
+    { name: "Amit Patel", avatar: "https://i.pravatar.cc/150?img=13", phone: "7654321098" },
+    { name: "Neha Gupta", avatar: "https://i.pravatar.cc/150?img=9", phone: "6543210987" },
+    { name: "Rahul Singh", avatar: "https://i.pravatar.cc/150?img=14", phone: "5432109876" },
+    { name: "Anjali Desai", avatar: "https://i.pravatar.cc/150?img=10", phone: "4321098765" },
+    { name: "Vikram Reddy", avatar: "https://i.pravatar.cc/150?img=15", phone: "3210987654" },
+    { name: "Sneha Iyer", avatar: "https://i.pravatar.cc/150?img=16", phone: "2109876543" },
+    { name: "Karan Malhotra", avatar: "https://i.pravatar.cc/150?img=17", phone: "1098765432" },
+    { name: "Pooja Nair", avatar: "https://i.pravatar.cc/150?img=20", phone: "9988776655" },
+    { name: "Sanjay Mehta", avatar: "https://i.pravatar.cc/150?img=33", phone: "8877665544" },
+    { name: "Divya Krishnan", avatar: "https://i.pravatar.cc/150?img=23", phone: "7766554433" },
+    { name: "Arjun Rao", avatar: "https://i.pravatar.cc/150?img=60", phone: "6655443322" },
+    { name: "Kavita Joshi", avatar: "https://i.pravatar.cc/150?img=26", phone: "5544332211" },
+    { name: "Rohan Verma", avatar: "https://i.pravatar.cc/150?img=51", phone: "4433221100" },
+    { name: "Meera Kapoor", avatar: "https://i.pravatar.cc/150?img=29", phone: "3322110099" },
+    { name: "Aditya Chatterjee", avatar: "https://i.pravatar.cc/150?img=68", phone: "2211009988" },
+    { name: "Riya Bose", avatar: "https://i.pravatar.cc/150?img=32", phone: "1100998877" },
+    { name: "Manish Agarwal", avatar: "https://i.pravatar.cc/150?img=56", phone: "9998887766" },
+    { name: "Swati Pandey", avatar: "https://i.pravatar.cc/150?img=36", phone: "8887776655" }
   ];
 
   const domesticDestinations = [
@@ -89,6 +89,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
   const [newBooking, setNewBooking] = useState({
     bookingDate: new Date().toISOString().split('T')[0],
     customerName: '',
+    phone: '',
     type: 'Domestic',
     destination: '',
     arrivalDate: '',
@@ -203,6 +204,9 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     if (newBooking.customerName && newBooking.customerName.trim() === '') {
       newErrors.customerName = 'Customer name cannot be empty if entered';
     }
+    if (newBooking.phone && (newBooking.phone.length !== 10 || !/^\d{10}$/.test(newBooking.phone))) {
+      newErrors.phone = 'Phone number must be exactly 10 digits';
+    }
     if (newBooking.destination && newBooking.destination.trim() === '') {
       newErrors.destination = 'Destination cannot be empty if entered';
     }
@@ -247,6 +251,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
       id: Date.now(),
       bookingDate: formatDateToDisplay(newBooking.bookingDate),
       customerName: newBooking.customerName.trim(),
+      phone: newBooking.phone,
       destination: newBooking.destination.trim(),
       arrivalDate: formatDateToDisplay(newBooking.arrivalDate),
       departureDate: formatDateToDisplay(newBooking.departureDate),
@@ -264,6 +269,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     setNewBooking({
       bookingDate: new Date().toISOString().split('T')[0],
       customerName: '',
+      phone: '',
       type: 'Domestic',
       destination: '',
       arrivalDate: '',
@@ -317,13 +323,39 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                           alt={customer.name}
                           className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
                         />
-                        <span className="font-medium">{customer.name}</span>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{customer.name}</span>
+                          <span className="text-sm text-gray-500">{customer.phone}</span>
+                        </div>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
               {errors.customerName && <p className="text-red-500 text-sm">{errors.customerName}</p>}
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <input
+                type="text"
+                value={newBooking.phone}
+                onChange={(e) => setNewBooking({ ...newBooking, phone: e.target.value })}
+                onKeyDown={(e) => {
+                  if (!/[0-9]/.test(e.key) && 
+                      e.key !== 'Backspace' && 
+                      e.key !== 'Delete' && 
+                      e.key !== 'Tab' && 
+                      e.key !== 'Escape' && 
+                      e.key !== 'Enter' && 
+                      !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                placeholder="10-digit phone number"
+                maxLength={10}
+                className="w-full px-3 py-2 border border-blue-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
