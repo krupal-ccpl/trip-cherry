@@ -71,6 +71,13 @@ export default function BookingDetails() {
   const [currentGuestPayment, setCurrentGuestPayment] = useState<{index: number; maxAmount: number; currentCollected: number} | null>(null);
   const [currentHistoryGuest, setCurrentHistoryGuest] = useState<number | null>(null);
 
+  // Service payment functionality state
+  const [servicePaymentHistory, setServicePaymentHistory] = useState<{[key: number]: Array<{amount: number; method: 'cash' | 'online'; date: string; timestamp: string}>}>({});
+  const [isServicePaymentModalOpen, setIsServicePaymentModalOpen] = useState(false);
+  const [isServiceHistoryPopoverOpen, setIsServiceHistoryPopoverOpen] = useState(false);
+  const [currentServicePayment, setCurrentServicePayment] = useState<{index: number; maxAmount: number; currentCollected: number} | null>(null);
+  const [currentHistoryService, setCurrentHistoryService] = useState<number | null>(null);
+
   // Editing states
   const [editingService, setEditingService] = useState<{ index: number; field: string } | null>(null);
   const [editingGuest, setEditingGuest] = useState<{ index: number; field: string } | null>(null);
@@ -279,6 +286,48 @@ export default function BookingDetails() {
   const openHistoryPopover = (guestIndex: number) => {
     setCurrentHistoryGuest(guestIndex);
     setIsHistoryPopoverOpen(true);
+  };
+
+  // Service payment functionality functions
+  const openServicePaymentModal = (index: number) => {
+    const service = services[index];
+    const maxAmount = service.toBePaid;
+    const currentCollected = service.paidTillDate;
+    
+    setCurrentServicePayment({ index, maxAmount, currentCollected });
+    setIsServicePaymentModalOpen(true);
+  };
+
+  const handleServicePaymentAdd = (payment: { amount: number; method: 'cash' | 'online'; date: string; timestamp: string }) => {
+    if (!currentServicePayment) return;
+
+    const { index } = currentServicePayment;
+    const serviceId = index; // Using index as service ID for simplicity
+
+    // Update payment history
+    setServicePaymentHistory(prev => ({
+      ...prev,
+      [serviceId]: [...(prev[serviceId] || []), payment]
+    }));
+
+    // Update service paid amount and payment remaining
+    setServices((prev: BookingPayment[]) => {
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        paidTillDate: updated[index].paidTillDate + payment.amount,
+        paymentRemaining: updated[index].toBePaid - (updated[index].paidTillDate + payment.amount)
+      };
+      return updated;
+    });
+
+    setIsServicePaymentModalOpen(false);
+    setCurrentServicePayment(null);
+  };
+
+  const openServiceHistoryPopover = (serviceIndex: number) => {
+    setCurrentHistoryService(serviceIndex);
+    setIsServiceHistoryPopoverOpen(true);
   };
 
   // Service editing functions
@@ -959,14 +1008,31 @@ export default function BookingDetails() {
                               <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.paidTillDate.toLocaleString()}
                               </MT.Typography>
-                              <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingService(index, 'paidTillDate', item.paidTillDate)} />
+                              <PlusIcon 
+                                className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  openServicePaymentModal(index); 
+                                }} 
+                                title="Add Payment"
+                              />
                             </div>
                           )}
                         </td>
                         <td className={`py-3 px-4 ${rowClass}`}>
-                          <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                            ₹{item.paymentRemaining.toLocaleString()}
-                          </MT.Typography>
+                          <div className="flex items-center justify-between">
+                            <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              ₹{item.paymentRemaining.toLocaleString()}
+                            </MT.Typography>
+                            <ClockIcon 
+                              className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                openServiceHistoryPopover(index); 
+                              }} 
+                              title="View Payment History"
+                            />
+                          </div>
                         </td>
                       </tr>
                     );
@@ -1368,7 +1434,7 @@ export default function BookingDetails() {
                               ₹{item.collectedTillDate.toLocaleString()}
                             </MT.Typography>
                             <PlusIcon 
-                              className="h-4 w-4 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
+                              className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
                               onClick={(e) => { 
                                 e.stopPropagation(); 
                                 openGuestPaymentModal(index); 
@@ -1383,7 +1449,7 @@ export default function BookingDetails() {
                               ₹{item.balanceCollection.toLocaleString()}
                             </MT.Typography>
                             <ClockIcon 
-                              className="h-4 w-4 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
+                              className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
                               onClick={(e) => { 
                                 e.stopPropagation(); 
                                 openHistoryPopover(index); 
@@ -1705,6 +1771,20 @@ export default function BookingDetails() {
           isOpen={isHistoryPopoverOpen}
           onClose={() => setIsHistoryPopoverOpen(false)}
           history={currentHistoryGuest !== null ? (guestPaymentHistory[currentHistoryGuest] || []) : []}
+        />
+
+        <PaymentModal
+          isOpen={isServicePaymentModalOpen}
+          onClose={() => setIsServicePaymentModalOpen(false)}
+          onAdd={handleServicePaymentAdd}
+          maxAmount={currentServicePayment?.maxAmount || 0}
+          currentCollected={currentServicePayment?.currentCollected || 0}
+        />
+
+        <HistoryPopover
+          isOpen={isServiceHistoryPopoverOpen}
+          onClose={() => setIsServiceHistoryPopoverOpen(false)}
+          history={currentHistoryService !== null ? (servicePaymentHistory[currentHistoryService] || []) : []}
         />
       </div>
     </div>

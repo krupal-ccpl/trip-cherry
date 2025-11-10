@@ -12,7 +12,7 @@ export const bookingsListData = [
     toBeCollectedTCS: 0,
     toBeCollectedGST: 46000,
     collectedTillDate: 22000,
-    collectionRemaining: -22000,
+    collectionRemaining: 22000,
     profit: 3157,
     profitBookedTillDate: 1957,
   },

@@ -731,7 +731,7 @@ export default function BookingList() {
                             ₹{booking.collectedTillDate.toLocaleString()}
                           </MT.Typography>
                           <PlusIcon 
-                            className="h-4 w-4 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
+                            className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
                             onClick={(e) => { 
                               e.stopPropagation(); 
                               openPaymentModal(index); 
@@ -751,7 +751,7 @@ export default function BookingList() {
                             ₹{booking.collectionRemaining.toLocaleString()}
                           </MT.Typography>
                           <ClockIcon 
-                            className="h-4 w-4 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
+                            className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
                             onClick={(e) => { 
                               e.stopPropagation(); 
                               openHistoryPopover(index); 
