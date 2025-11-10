@@ -24,8 +24,8 @@ interface Flight {
   grossFare: number;
   grossProfit: number;
   gpat: number;
-  nettFare: number;
-  nettProfit: number;
+  netFare: number;
+  netProfit: number;
   npat: number;
   cumuProfit: number;
 }
@@ -62,8 +62,8 @@ export default function Flights() {
     grossFare: 0,
     grossProfit: 0,
     gpat: 0,
-    nettFare: 0,
-    nettProfit: 0,
+    netFare: 0,
+    netProfit: 0,
     npat: 0,
     cumuProfit: 0,
   });
@@ -133,7 +133,7 @@ export default function Flights() {
   const totalCollected = flights.reduce((sum: number, item: Flight) => sum + item.collectedTillDate, 0);
   const totalGrossFare = flights.reduce((sum: number, item: Flight) => sum + item.grossFare, 0);
   const totalGrossProfit = flights.reduce((sum: number, item: Flight) => sum + item.grossProfit, 0);
-  const totalNettProfit = flights.reduce((sum: number, item: Flight) => sum + item.nettProfit, 0);
+  const totalNettProfit = flights.reduce((sum: number, item: Flight) => sum + item.netProfit, 0);
 
   // Inline editing functions
   const startEditingFlight = (index: number, field: string, currentValue: any) => {
@@ -163,7 +163,7 @@ export default function Flights() {
 
     // Ensure numeric fields are properly converted
     const numericFields = ['collectedTillDate', 'quotedFareInclSeatAncillary', 'quotedFareExclSeatAncillary', 
-                          'seat', 'ancillary', 'grossFare', 'grossProfit', 'gpat', 'nettFare', 'nettProfit', 'npat', 'cumuProfit'];
+                          'seat', 'ancillary', 'grossFare', 'grossProfit', 'gpat', 'netFare', 'netProfit', 'npat', 'cumuProfit'];
     
     if (numericFields.includes(field)) {
       updatedFlights[index][field as keyof Flight] = parseFloat(newValue) || 0;
@@ -267,8 +267,8 @@ export default function Flights() {
       grossFare: 0,
       grossProfit: 0,
       gpat: 0,
-      nettFare: 0,
-      nettProfit: 0,
+      netFare: 0,
+      netProfit: 0,
       npat: 0,
       cumuProfit: 0,
     });
@@ -279,7 +279,7 @@ export default function Flights() {
     
     // Store numeric fields as numbers, not strings
     const numericFields = ['collectedTillDate', 'quotedFareInclSeatAncillary', 'quotedFareExclSeatAncillary', 
-                          'seat', 'ancillary', 'grossFare', 'grossProfit', 'gpat', 'nettFare', 'nettProfit', 'npat', 'cumuProfit'];
+                          'seat', 'ancillary', 'grossFare', 'grossProfit', 'gpat', 'netFare', 'netProfit', 'npat', 'cumuProfit'];
     
     if (numericFields.includes(field)) {
       (updatedData as any)[field] = parseFloat(value) || 0;
@@ -345,8 +345,8 @@ export default function Flights() {
       grossFare: 0,
       grossProfit: 0,
       gpat: 0,
-      nettFare: 0,
-      nettProfit: 0,
+      netFare: 0,
+      netProfit: 0,
       npat: 0,
       cumuProfit: 0,
     });
@@ -375,8 +375,8 @@ export default function Flights() {
       grossFare: 0,
       grossProfit: 0,
       gpat: 0,
-      nettFare: 0,
-      nettProfit: 0,
+      netFare: 0,
+      netProfit: 0,
       npat: 0,
       cumuProfit: 0,
     });
@@ -455,8 +455,8 @@ export default function Flights() {
                     "Gross Fare",
                     "Gross Profit",
                     "GPAT",
-                    "Nett Fare",
-                    "Nett Profit",
+                    "Net Fare",
+                    "Net Profit",
                     "NPAT",
                     "Cumu Profit",
                     "Actions",
@@ -904,12 +904,12 @@ export default function Flights() {
                           )}
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingFlight?.index === index && editingFlight?.field === 'nettFare' ? (
+                          {editingFlight?.index === index && editingFlight?.field === 'netFare' ? (
                             <div className="flex items-center gap-2">
                               <input
                                 type="number"
-                                value={editValues.nettFare !== undefined ? editValues.nettFare : item.nettFare}
-                                onChange={(e) => setEditValues({ ...editValues, nettFare: parseFloat(e.target.value) || 0 })}
+                                value={editValues.netFare !== undefined ? editValues.netFare : item.netFare}
+                                onChange={(e) => setEditValues({ ...editValues, netFare: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
                                 className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
@@ -920,19 +920,19 @@ export default function Flights() {
                           ) : (
                             <div className="flex items-center justify-between">
                               <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                                ₹{item.nettFare.toLocaleString()}
+                                ₹{item.netFare.toLocaleString()}
                               </MT.Typography>
-                              <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'nettFare', item.nettFare); }} />
+                              <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'netFare', item.netFare); }} />
                             </div>
                           )}
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingFlight?.index === index && editingFlight?.field === 'nettProfit' ? (
+                          {editingFlight?.index === index && editingFlight?.field === 'netProfit' ? (
                             <div className="flex items-center gap-2">
                               <input
                                 type="number"
-                                value={editValues.nettProfit !== undefined ? editValues.nettProfit : item.nettProfit}
-                                onChange={(e) => setEditValues({ ...editValues, nettProfit: parseFloat(e.target.value) || 0 })}
+                                value={editValues.netProfit !== undefined ? editValues.netProfit : item.netProfit}
+                                onChange={(e) => setEditValues({ ...editValues, netProfit: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
                                 className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
@@ -943,9 +943,9 @@ export default function Flights() {
                           ) : (
                             <div className="flex items-center justify-between">
                               <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                                ₹{item.nettProfit.toLocaleString()}
+                                ₹{item.netProfit.toLocaleString()}
                               </MT.Typography>
-                              <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'nettProfit', item.nettProfit); }} />
+                              <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'netProfit', item.netProfit); }} />
                             </div>
                           )}
                         </td>
@@ -1195,21 +1195,21 @@ export default function Flights() {
                         <td className="py-3 px-3">
                           <input
                             type="number"
-                            value={newRowData.nettFare}
-                            onChange={(e) => handleNewRowChange('nettFare', parseFloat(e.target.value) || 0)}
+                            value={newRowData.netFare}
+                            onChange={(e) => handleNewRowChange('netFare', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
                             className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="Nett Fare"
+                            placeholder="Net Fare"
                           />
                         </td>
                         <td className="py-3 px-3">
                           <input
                             type="number"
-                            value={newRowData.nettProfit}
-                            onChange={(e) => handleNewRowChange('nettProfit', parseFloat(e.target.value) || 0)}
+                            value={newRowData.netProfit}
+                            onChange={(e) => handleNewRowChange('netProfit', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
                             className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="Nett Profit"
+                            placeholder="Net Profit"
                           />
                         </td>
                         <td className="py-3 px-3">
@@ -1342,12 +1342,12 @@ export default function Flights() {
                         </td>
                         <td className="py-3 px-3 text-center">
                           <MT.Typography className="text-sm text-gray-400 italic" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                            Nett Fare
+                            Net Fare
                           </MT.Typography>
                         </td>
                         <td className="py-3 px-3 text-center">
                           <MT.Typography className="text-sm text-gray-400 italic" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                            Nett Profit
+                            Net Profit
                           </MT.Typography>
                         </td>
                         <td className="py-3 px-3 text-center">

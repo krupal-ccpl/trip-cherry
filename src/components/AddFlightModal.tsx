@@ -20,8 +20,8 @@ interface Flight {
   grossFare: number;
   grossProfit: number;
   gpat: number;
-  nettFare: number;
-  nettProfit: number;
+  netFare: number;
+  netProfit: number;
   npat: number;
   cumuProfit: number;
 }
@@ -112,8 +112,8 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
     grossFare: '0',
     grossProfit: '0',
     gpat: '0',
-    nettFare: '0',
-    nettProfit: '0',
+    netFare: '0',
+    netProfit: '0',
     npat: '0',
     cumuProfit: '0',
   });
@@ -246,7 +246,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
     // Validate numbers
     const numericFields = [
       'collectedTillDate', 'quotedFareInclSeatAncillary', 'quotedFareExclSeatAncillary', 
-      'seat', 'ancillary', 'grossFare', 'grossProfit', 'gpat', 'nettFare', 'nettProfit', 'npat', 'cumuProfit'
+      'seat', 'ancillary', 'grossFare', 'grossProfit', 'gpat', 'netFare', 'netProfit', 'npat', 'cumuProfit'
     ];
     
     numericFields.forEach(field => {
@@ -282,8 +282,8 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
       grossFare: parseFloat(newFlight.grossFare) || 0,
       grossProfit: parseFloat(newFlight.grossProfit) || 0,
       gpat: parseFloat(newFlight.gpat) || 0,
-      nettFare: parseFloat(newFlight.nettFare) || 0,
-      nettProfit: parseFloat(newFlight.nettProfit) || 0,
+      netFare: parseFloat(newFlight.netFare) || 0,
+      netProfit: parseFloat(newFlight.netProfit) || 0,
       npat: parseFloat(newFlight.npat) || 0,
       cumuProfit: parseFloat(newFlight.cumuProfit) || 0,
     };
@@ -308,8 +308,8 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
       grossFare: '0',
       grossProfit: '0',
       gpat: '0',
-      nettFare: '0',
-      nettProfit: '0',
+      netFare: '0',
+      netProfit: '0',
       npat: '0',
       cumuProfit: '0',
     });
@@ -601,32 +601,32 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
           {/* Financial Details - Row 3 */}
           <div className="grid grid-cols-4 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nett Fare</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Net Fare</label>
               <MT.Input
                 type="number"
-                value={newFlight.nettFare}
-                onChange={(e) => setNewFlight({ ...newFlight, nettFare: e.target.value })}
+                value={newFlight.netFare}
+                onChange={(e) => setNewFlight({ ...newFlight, netFare: e.target.value })}
                 onKeyDown={handleNumberInput}
                 min="0"
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
               />
-              {errors.nettFare && <p className="text-red-500 text-sm">{errors.nettFare}</p>}
+              {errors.netFare && <p className="text-red-500 text-sm">{errors.netFare}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nett Profit</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Net Profit</label>
               <MT.Input
                 type="number"
-                value={newFlight.nettProfit}
-                onChange={(e) => setNewFlight({ ...newFlight, nettProfit: e.target.value })}
+                value={newFlight.netProfit}
+                onChange={(e) => setNewFlight({ ...newFlight, netProfit: e.target.value })}
                 onKeyDown={handleNumberInput}
                 min="0"
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
               />
-              {errors.nettProfit && <p className="text-red-500 text-sm">{errors.nettProfit}</p>}
+              {errors.netProfit && <p className="text-red-500 text-sm">{errors.netProfit}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">NPAT</label>

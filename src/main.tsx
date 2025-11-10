@@ -7,7 +7,7 @@ import { ThemeProvider } from "@material-tailwind/react";
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/trip-cherry">
       <ThemeProvider>
         <App />
       </ThemeProvider>
