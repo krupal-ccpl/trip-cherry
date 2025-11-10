@@ -1,12 +1,31 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import * as MT from "@material-tailwind/react";
-import { PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon, MagnifyingGlassIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import bookingsListData from "@/data/bookings-list-data.js";
 import AddBookingModal from "@/components/AddBookingModal";
 import PaymentModal from "@/components/PaymentModal";
 import HistoryPopover from "@/components/HistoryPopover";
+
+interface Booking {
+  id: number;
+  bookingDate: string;
+  customerName: string;
+  phone: string;
+  type: string;
+  destination: string;
+  arrivalDate: string;
+  departureDate: string;
+  tourStartMonth: string;
+  tourEndMonth: string;
+  toBeCollectedTCS: number;
+  toBeCollectedGST: number;
+  collectedTillDate: number;
+  collectionRemaining: number;
+  profit: number;
+  profitBookedTillDate: number;
+}
 
 export default function BookingList() {
   const navigate = useNavigate();
@@ -22,6 +41,15 @@ export default function BookingList() {
   // History functionality state
   const [isHistoryPopoverOpen, setIsHistoryPopoverOpen] = useState(false);
   const [currentHistoryBooking, setCurrentHistoryBooking] = useState<number | null>(null);
+
+  // Search, Sort, Filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState<{key: string; direction: 'asc' | 'desc'} | null>(null);
+  const [filters, setFilters] = useState({
+    type: '',
+    destination: '',
+    collectionStatus: '' // 'pending', 'partial', 'completed'
+  });
 
   // Inline editing state
   const [editingBooking, setEditingBooking] = useState<{ index: number; field: string } | null>(null);
@@ -485,6 +513,93 @@ export default function BookingList() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Search, Sort, Filter functions
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+  };
+
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const handleFilter = (filterType: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const getFilteredAndSortedBookings = () => {
+    let filtered = bookings.filter((booking: Booking) => {
+      // Search filter
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch = !searchTerm || 
+        booking.customerName.toLowerCase().includes(searchLower) ||
+        booking.destination.toLowerCase().includes(searchLower) ||
+        booking.phone.includes(searchTerm) ||
+        booking.bookingDate.includes(searchTerm) ||
+        booking.type.toLowerCase().includes(searchLower);
+
+      // Type filter
+      const matchesType = !filters.type || booking.type === filters.type;
+
+      // Destination filter
+      const matchesDestination = !filters.destination || booking.destination === filters.destination;
+
+      // Collection status filter
+      let matchesCollectionStatus = true;
+      if (filters.collectionStatus) {
+        const totalToCollect = booking.toBeCollectedTCS + booking.toBeCollectedGST;
+        const collected = booking.collectedTillDate;
+        if (filters.collectionStatus === 'pending') {
+          matchesCollectionStatus = collected === 0;
+        } else if (filters.collectionStatus === 'partial') {
+          matchesCollectionStatus = collected > 0 && collected < totalToCollect;
+        } else if (filters.collectionStatus === 'completed') {
+          matchesCollectionStatus = collected >= totalToCollect;
+        }
+      }
+
+      return matchesSearch && matchesType && matchesDestination && matchesCollectionStatus;
+    });
+
+    // Sort
+    if (sortConfig) {
+      filtered.sort((a: Booking, b: Booking) => {
+        let aValue: any = a[sortConfig.key as keyof typeof a];
+        let bValue: any = b[sortConfig.key as keyof typeof b];
+
+        // Handle numeric fields
+        if (['toBeCollectedTCS', 'toBeCollectedGST', 'collectedTillDate', 'profit', 'profitBookedTillDate', 'collectionRemaining'].includes(sortConfig.key)) {
+          aValue = parseFloat(aValue) || 0;
+          bValue = parseFloat(bValue) || 0;
+        }
+
+        // Handle date fields
+        if (['bookingDate', 'arrivalDate', 'departureDate'].includes(sortConfig.key)) {
+          aValue = new Date(aValue).getTime();
+          bValue = new Date(bValue).getTime();
+        }
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return filtered;
+  };
+
+  const filteredAndSortedBookings = getFilteredAndSortedBookings();
+
   return (
     <div className="mt-8">
       {/* Header with Add Button */}
@@ -504,6 +619,63 @@ export default function BookingList() {
         </MT.Button>
       </div>
 
+      {/* Search, Sort, Filter Controls */}
+      <div className="mb-6 flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+        {/* Search */}
+        <div className="relative flex-1 max-w-md">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search bookings..."
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap gap-3">
+          <div className="relative">
+            <FunnelIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <select
+              value={filters.type}
+              onChange={(e) => handleFilter('type', e.target.value)}
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+            >
+              <option value="">All Types</option>
+              <option value="Domestic">Domestic</option>
+              <option value="International">International</option>
+            </select>
+          </div>
+
+          <div className="relative">
+            <select
+              value={filters.destination}
+              onChange={(e) => handleFilter('destination', e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+            >
+              <option value="">All Destinations</option>
+              {[...domesticDestinations, ...internationalDestinations].map((dest) => (
+                <option key={dest} value={dest}>{dest}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="relative">
+            <select
+              value={filters.collectionStatus}
+              onChange={(e) => handleFilter('collectionStatus', e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+            >
+              <option value="">All Collection Status</option>
+              <option value="pending">Pending</option>
+              <option value="partial">Partial</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {/* Bookings List Table */}
       <MT.Card className="shadow-lg border border-gray-100" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl">
@@ -516,41 +688,48 @@ export default function BookingList() {
             <thead>
               <tr className="bg-blue-50">
                 {[
-                  "BOOKING DATE",
-                  "CUSTOMER NAME",
-                  "PHONE",
-                  "DOMESTIC / INTERNATIONAL",
-                  "DESTINATION",
-                  "ARRIVAL DATE",
-                  "DEPARTURE DATE",
-                  "TOUR START MONTH",
-                  "TOUR END MONTH",
-                  "TO BE COLLECTED (TCS)",
-                  "TO BE COLLECTED (GST)",
-                  "COLLECTED TILL DATE",
-                  "COLLECTION REMAINING",
-                  "PROFIT",
-                  "PROFIT BOOKED TILL DATE"
+                  { key: "bookingDate", label: "BOOKING DATE" },
+                  { key: "customerName", label: "CUSTOMER NAME" },
+                  { key: "phone", label: "PHONE" },
+                  { key: "type", label: "DOMESTIC / INTERNATIONAL" },
+                  { key: "destination", label: "DESTINATION" },
+                  { key: "arrivalDate", label: "ARRIVAL DATE" },
+                  { key: "departureDate", label: "DEPARTURE DATE" },
+                  { key: "tourStartMonth", label: "TOUR START MONTH" },
+                  { key: "tourEndMonth", label: "TOUR END MONTH" },
+                  { key: "toBeCollectedTCS", label: "TO BE COLLECTED (TCS)" },
+                  { key: "toBeCollectedGST", label: "TO BE COLLECTED (GST)" },
+                  { key: "collectedTillDate", label: "COLLECTED TILL DATE" },
+                  { key: "collectionRemaining", label: "COLLECTION REMAINING" },
+                  { key: "profit", label: "PROFIT" },
+                  { key: "profitBookedTillDate", label: "PROFIT BOOKED TILL DATE" }
                 ].map((header) => (
                   <th
-                    key={header}
-                    className="border-b-2 border-blue-200 py-3 px-3 text-left"
+                    key={header.key}
+                    className="border-b-2 border-blue-200 py-3 px-3 text-left cursor-pointer hover:bg-blue-100 transition-colors"
+                    onClick={() => handleSort(header.key)}
                   >
-                    <MT.Typography
-                      variant="small"
-                      className="text-xs font-bold text-blue-gray-700 uppercase"
-                      placeholder={undefined}
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                    >
-                      {header}
-                    </MT.Typography>
+                    <div className="flex items-center justify-between">
+                      <MT.Typography
+                        variant="small"
+                        className="text-xs font-bold text-blue-gray-700 uppercase"
+                        placeholder={undefined}
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                      >
+                        {header.label}
+                      </MT.Typography>
+                      <div className="flex flex-col ml-1">
+                        <ArrowUpIcon className={`h-3 w-3 ${sortConfig?.key === header.key && sortConfig.direction === 'asc' ? 'text-blue-600' : 'text-gray-300'}`} />
+                        <ArrowDownIcon className={`h-3 w-3 -mt-1 ${sortConfig?.key === header.key && sortConfig.direction === 'desc' ? 'text-blue-600' : 'text-gray-300'}`} />
+                      </div>
+                    </div>
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {bookings.map(
+              {filteredAndSortedBookings.map(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (booking: any, index: number) => {
                   const isLastRow = index === bookings.length - 1;
@@ -823,7 +1002,8 @@ export default function BookingList() {
                             className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
                             onClick={(e) => { 
                               e.stopPropagation(); 
-                              openPaymentModal(index); 
+                              const originalIndex = bookings.findIndex((b: Booking) => b.id === booking.id);
+                              openPaymentModal(originalIndex); 
                             }} 
                             title="Add Payment"
                           />
@@ -843,7 +1023,8 @@ export default function BookingList() {
                             className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
                             onClick={(e) => { 
                               e.stopPropagation(); 
-                              openHistoryPopover(index); 
+                              const originalIndex = bookings.findIndex((b: Booking) => b.id === booking.id);
+                              openHistoryPopover(originalIndex); 
                             }} 
                             title="View Payment History"
                           />

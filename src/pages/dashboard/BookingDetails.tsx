@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import * as MT from "@material-tailwind/react";
-import { ArrowLeftIcon, PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, MagnifyingGlassIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import bookingPaymentsData from "@/data/booking-payments-data.js";
 // @ts-expect-error: JS module has no types
@@ -124,6 +124,25 @@ export default function BookingDetails() {
   // Expand/collapse state for booking details
   const [isBookingDetailsExpanded, setIsBookingDetailsExpanded] = useState(false);
   const [isEditBookingModalOpen, setIsEditBookingModalOpen] = useState(false);
+
+  // Search, Sort, Filter state for Services table
+  const [servicesSearchTerm, setServicesSearchTerm] = useState('');
+  const [servicesSortConfig, setServicesSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [servicesFilters, setServicesFilters] = useState({
+    productType: '',
+    invRequired: ''
+  });
+
+  // Search, Sort, Filter state for Guests table
+  const [guestsSearchTerm, setGuestsSearchTerm] = useState('');
+  const [guestsSortConfig, setGuestsSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [guestsFilters, setGuestsFilters] = useState({
+    destination: '',
+    tourStartMonth: '',
+    tourEndMonth: '',
+    paymentStatus: '', // 'pending', 'partial', 'completed'
+    profitStatus: '' // 'booked', 'pending', 'completed'
+  });
 
   // Sample data for autocomplete and selects
   const supplierNames = [
@@ -251,6 +270,174 @@ export default function BookingDetails() {
       e.preventDefault();
     }
   };
+
+  // Search, Sort, Filter handlers for Services table
+  const handleServicesSearch = (term: string) => {
+    setServicesSearchTerm(term);
+  };
+
+  const handleServicesSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (servicesSortConfig && servicesSortConfig.key === key && servicesSortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setServicesSortConfig({ key, direction });
+  };
+
+  const handleServicesFilter = (filterType: string, value: string) => {
+    setServicesFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  // Search, Sort, Filter handlers for Guests table
+  const handleGuestsSearch = (term: string) => {
+    setGuestsSearchTerm(term);
+  };
+
+  const handleGuestsSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (guestsSortConfig && guestsSortConfig.key === key && guestsSortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setGuestsSortConfig({ key, direction });
+  };
+
+  const handleGuestsFilter = (filterType: string, value: string) => {
+    setGuestsFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  // Filtered and sorted data functions
+  const getFilteredAndSortedServices = () => {
+    let filtered = services.filter((service: BookingPayment) => {
+      // Search filter
+      const searchLower = servicesSearchTerm.toLowerCase();
+      const matchesSearch = !servicesSearchTerm || 
+        service.productType.toLowerCase().includes(searchLower) ||
+        service.bookedProduct.toLowerCase().includes(searchLower) ||
+        service.supplierReference.toLowerCase().includes(searchLower);
+
+      // Product type filter
+      const matchesProductType = !servicesFilters.productType || service.productType === servicesFilters.productType;
+
+      // Invoice required filter
+      const matchesInvRequired = !servicesFilters.invRequired || service.invRequired === servicesFilters.invRequired;
+
+      return matchesSearch && matchesProductType && matchesInvRequired;
+    });
+
+    // Sort
+    if (servicesSortConfig) {
+      filtered.sort((a: BookingPayment, b: BookingPayment) => {
+        let aValue: any = a[servicesSortConfig.key as keyof typeof a];
+        let bValue: any = b[servicesSortConfig.key as keyof typeof b];
+
+        // Handle numeric fields
+        if (['toBePaid', 'paidTillDate', 'paymentRemaining'].includes(servicesSortConfig.key)) {
+          aValue = parseFloat(aValue) || 0;
+          bValue = parseFloat(bValue) || 0;
+        }
+
+        if (aValue < bValue) {
+          return servicesSortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return servicesSortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return filtered;
+  };
+
+  const getFilteredAndSortedGuests = () => {
+    let filtered = guests.filter((guest: GuestTour) => {
+      // Search filter
+      const searchLower = guestsSearchTerm.toLowerCase();
+      const matchesSearch = !guestsSearchTerm || 
+        guest.guestName.toLowerCase().includes(searchLower) ||
+        guest.destination.toLowerCase().includes(searchLower) ||
+        guest.tourStartMonth.toLowerCase().includes(searchLower) ||
+        guest.tourEndMonth.toLowerCase().includes(searchLower);
+
+      // Destination filter
+      const matchesDestination = !guestsFilters.destination || guest.destination === guestsFilters.destination;
+
+      // Tour start month filter
+      const matchesTourStartMonth = !guestsFilters.tourStartMonth || guest.tourStartMonth === guestsFilters.tourStartMonth;
+
+      // Tour end month filter
+      const matchesTourEndMonth = !guestsFilters.tourEndMonth || guest.tourEndMonth === guestsFilters.tourEndMonth;
+
+      // Payment status filter
+      let matchesPaymentStatus = true;
+      if (guestsFilters.paymentStatus) {
+        const totalToCollect = guest.toBeCollected;
+        const collected = guest.collectedTillDate;
+        if (guestsFilters.paymentStatus === 'pending') {
+          matchesPaymentStatus = collected === 0;
+        } else if (guestsFilters.paymentStatus === 'partial') {
+          matchesPaymentStatus = collected > 0 && collected < totalToCollect;
+        } else if (guestsFilters.paymentStatus === 'completed') {
+          matchesPaymentStatus = collected >= totalToCollect;
+        }
+      }
+
+      // Profit status filter
+      let matchesProfitStatus = true;
+      if (guestsFilters.profitStatus) {
+        const totalProfit = guest.profit;
+        const bookedProfit = guest.profitBookedTillDate;
+        if (guestsFilters.profitStatus === 'pending') {
+          matchesProfitStatus = bookedProfit === 0;
+        } else if (guestsFilters.profitStatus === 'partial') {
+          matchesProfitStatus = bookedProfit > 0 && bookedProfit < totalProfit;
+        } else if (guestsFilters.profitStatus === 'completed') {
+          matchesProfitStatus = bookedProfit >= totalProfit;
+        }
+      }
+
+      return matchesSearch && matchesDestination && matchesTourStartMonth && matchesTourEndMonth && matchesPaymentStatus && matchesProfitStatus;
+    });
+
+    // Sort
+    if (guestsSortConfig) {
+      filtered.sort((a: GuestTour, b: GuestTour) => {
+        let aValue: any = a[guestsSortConfig.key as keyof typeof a];
+        let bValue: any = b[guestsSortConfig.key as keyof typeof b];
+
+        // Handle numeric fields
+        if (['toBeCollected', 'collectedTillDate', 'balanceCollection', 'profit', 'profitBookedTillDate'].includes(guestsSortConfig.key)) {
+          aValue = parseFloat(aValue) || 0;
+          bValue = parseFloat(bValue) || 0;
+        }
+
+        // Handle date fields
+        if (['arrivalDate', 'departureDate'].includes(guestsSortConfig.key)) {
+          aValue = new Date(aValue).getTime();
+          bValue = new Date(bValue).getTime();
+        }
+
+        if (aValue < bValue) {
+          return guestsSortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return guestsSortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return filtered;
+  };
+
+  const filteredAndSortedServices = getFilteredAndSortedServices();
+  const filteredAndSortedGuests = getFilteredAndSortedGuests();
 
   // Payment functionality functions
   const openGuestPaymentModal = (index: number) => {
@@ -761,17 +948,17 @@ export default function BookingDetails() {
     setIsEditBookingModalOpen(false);
   };
 
-  // Calculate totals for payment table - ensure all values are treated as numbers
-  const totalToBePaid = services.reduce((sum: number, item: BookingPayment) => sum + (parseFloat(item.toBePaid as any) || 0), 0);
-  const totalPaidTillDate = services.reduce((sum: number, item: BookingPayment) => sum + (parseFloat(item.paidTillDate as any) || 0), 0);
-  const totalPaymentRemaining = services.reduce((sum: number, item: BookingPayment) => sum + (parseFloat(item.paymentRemaining as any) || 0), 0);
+  // Calculate totals for payment table from filtered data
+  const totalToBePaid = filteredAndSortedServices.reduce((sum: number, item: BookingPayment) => sum + (parseFloat(item.toBePaid as any) || 0), 0);
+  const totalPaidTillDate = filteredAndSortedServices.reduce((sum: number, item: BookingPayment) => sum + (parseFloat(item.paidTillDate as any) || 0), 0);
+  const totalPaymentRemaining = filteredAndSortedServices.reduce((sum: number, item: BookingPayment) => sum + (parseFloat(item.paymentRemaining as any) || 0), 0);
 
-  // Calculate totals for guest tour table - ensure all values are treated as numbers
-  const totalToBeCollected = guests.reduce((sum: number, item: GuestTour) => sum + (parseFloat(item.toBeCollected as any) || 0), 0);
-  const totalCollectedTillDate = guests.reduce((sum: number, item: GuestTour) => sum + (parseFloat(item.collectedTillDate as any) || 0), 0);
-  const totalBalanceCollection = guests.reduce((sum: number, item: GuestTour) => sum + (parseFloat(item.balanceCollection as any) || 0), 0);
-  const totalProfit = guests.reduce((sum: number, item: GuestTour) => sum + (parseFloat(item.profit as any) || 0), 0);
-  const totalProfitBookedTillDate = guests.reduce((sum: number, item: GuestTour) => sum + (parseFloat(item.profitBookedTillDate as any) || 0), 0);
+  // Calculate totals for guest tour table from filtered data
+  const totalToBeCollected = filteredAndSortedGuests.reduce((sum: number, item: GuestTour) => sum + (parseFloat(item.toBeCollected as any) || 0), 0);
+  const totalCollectedTillDate = filteredAndSortedGuests.reduce((sum: number, item: GuestTour) => sum + (parseFloat(item.collectedTillDate as any) || 0), 0);
+  const totalBalanceCollection = filteredAndSortedGuests.reduce((sum: number, item: GuestTour) => sum + (parseFloat(item.balanceCollection as any) || 0), 0);
+  const totalProfit = filteredAndSortedGuests.reduce((sum: number, item: GuestTour) => sum + (parseFloat(item.profit as any) || 0), 0);
+  const totalProfitBookedTillDate = filteredAndSortedGuests.reduce((sum: number, item: GuestTour) => sum + (parseFloat(item.profitBookedTillDate as any) || 0), 0);
 
   if (!booking) {
     return (
@@ -1041,38 +1228,92 @@ export default function BookingDetails() {
               Add Service
             </MT.Button>
           </div>
+
+          {/* Search, Sort, Filter Controls for Services */}
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+              {/* Search */}
+              <div className="relative flex-1 max-w-md">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search services..."
+                  value={servicesSearchTerm}
+                  onChange={(e) => handleServicesSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Filters */}
+              <div className="flex flex-wrap gap-3">
+                <div className="relative">
+                  <FunnelIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <select
+                    value={servicesFilters.productType}
+                    onChange={(e) => handleServicesFilter('productType', e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                  >
+                    <option value="">All Product Types</option>
+                    {productTypes.map((type) => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={servicesFilters.invRequired}
+                    onChange={(e) => handleServicesFilter('invRequired', e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                  >
+                    <option value="">All Invoice Status</option>
+                    <option value="Yes">Invoice Required</option>
+                    <option value="No">No Invoice</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <MT.CardBody className="overflow-x-auto px-0 pt-0 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             <table className="w-full min-w-[1200px] table-auto">
               <thead>
                 <tr className="bg-blue-50">
                   {[
-                    "PRODUCT TYPE",
-                    "BOOKED PRODUCT",
-                    "SUPPLIER REFERENCE",
-                    "INV REQUIRED",
-                    "TO BE PAID",
-                    "PAID TILL DATE",
-                    "PAYMENT REMAINING"
+                    { key: "productType", label: "PRODUCT TYPE" },
+                    { key: "bookedProduct", label: "BOOKED PRODUCT" },
+                    { key: "supplierReference", label: "SUPPLIER REFERENCE" },
+                    { key: "invRequired", label: "INV REQUIRED" },
+                    { key: "toBePaid", label: "TO BE PAID" },
+                    { key: "paidTillDate", label: "PAID TILL DATE" },
+                    { key: "paymentRemaining", label: "PAYMENT REMAINING" }
                   ].map((header) => (
                     <th
-                      key={header}
-                      className="border-b-2 border-blue-200 py-3 px-4 text-left"
+                      key={header.key}
+                      className="border-b-2 border-blue-200 py-3 px-4 text-left cursor-pointer hover:bg-blue-100 transition-colors"
+                      onClick={() => handleServicesSort(header.key)}
                     >
-                      <MT.Typography
-                        variant="small"
-                        className="text-xs font-bold text-blue-gray-700 uppercase"
-                        placeholder={undefined}
-                        onPointerEnterCapture={undefined}
-                        onPointerLeaveCapture={undefined}
-                      >
-                        {header}
-                      </MT.Typography>
+                      <div className="flex items-center justify-between">
+                        <MT.Typography
+                          variant="small"
+                          className="text-xs font-bold text-blue-gray-700 uppercase"
+                          placeholder={undefined}
+                          onPointerEnterCapture={undefined}
+                          onPointerLeaveCapture={undefined}
+                        >
+                          {header.label}
+                        </MT.Typography>
+                        <div className="flex flex-col ml-1">
+                          <ArrowUpIcon className={`h-3 w-3 ${servicesSortConfig?.key === header.key && servicesSortConfig.direction === 'asc' ? 'text-blue-600' : 'text-gray-300'}`} />
+                          <ArrowDownIcon className={`h-3 w-3 -mt-1 ${servicesSortConfig?.key === header.key && servicesSortConfig.direction === 'desc' ? 'text-blue-600' : 'text-gray-300'}`} />
+                        </div>
+                      </div>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {services.map(
+                {filteredAndSortedServices.map(
                   (item: BookingPayment, index: number) => {
                     const isLastRow = index === services.length - 1;
                     const rowClass = `${!isLastRow ? "border-b border-gray-200" : ""}`;
@@ -1474,42 +1715,136 @@ export default function BookingDetails() {
               Add Guest
             </MT.Button>
           </div>
+
+          {/* Search, Sort, Filter Controls for Guests */}
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+              {/* Search */}
+              <div className="relative flex-1 max-w-md">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search guests..."
+                  value={guestsSearchTerm}
+                  onChange={(e) => handleGuestsSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Filters */}
+              <div className="flex flex-wrap gap-3">
+                <div className="relative">
+                  <FunnelIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <select
+                    value={guestsFilters.destination}
+                    onChange={(e) => handleGuestsFilter('destination', e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                  >
+                    <option value="">All Destinations</option>
+                    {destinations.map((dest) => (
+                      <option key={dest} value={dest}>{dest}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={guestsFilters.tourStartMonth}
+                    onChange={(e) => handleGuestsFilter('tourStartMonth', e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                  >
+                    <option value="">All Start Months</option>
+                    {([...new Set(guests.map((g: GuestTour) => g.tourStartMonth))] as string[]).sort().map((month) => (
+                      <option key={month} value={month}>{month}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={guestsFilters.tourEndMonth}
+                    onChange={(e) => handleGuestsFilter('tourEndMonth', e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                  >
+                    <option value="">All End Months</option>
+                    {([...new Set(guests.map((g: GuestTour) => g.tourEndMonth))] as string[]).sort().map((month) => (
+                      <option key={month} value={month}>{month}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={guestsFilters.paymentStatus}
+                    onChange={(e) => handleGuestsFilter('paymentStatus', e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                  >
+                    <option value="">All Payment Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="partial">Partial</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={guestsFilters.profitStatus}
+                    onChange={(e) => handleGuestsFilter('profitStatus', e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                  >
+                    <option value="">All Profit Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="partial">Partial</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <MT.CardBody className="overflow-x-auto px-0 pt-0 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             <table className="w-full min-w-[1600px] table-auto">
               <thead>
                 <tr className="bg-blue-50">
                   {[
-                    "NAME OF GUEST",
-                    "DESTINATION",
-                    "ARRIVAL DATE",
-                    "DEPARTURE DATE",
-                    "TOUR START MONTH",
-                    "TOUR END MONTH",
-                    "TO BE COLLECTED",
-                    "COLLECTED TILL DATE",
-                    "BALANCE COLLECTION",
-                    "PROFIT",
-                    "PROFIT BOOKED TILL DATE"
+                    { key: "guestName", label: "NAME OF GUEST" },
+                    { key: "destination", label: "DESTINATION" },
+                    { key: "arrivalDate", label: "ARRIVAL DATE" },
+                    { key: "departureDate", label: "DEPARTURE DATE" },
+                    { key: "tourStartMonth", label: "TOUR START MONTH" },
+                    { key: "tourEndMonth", label: "TOUR END MONTH" },
+                    { key: "toBeCollected", label: "TO BE COLLECTED" },
+                    { key: "collectedTillDate", label: "COLLECTED TILL DATE" },
+                    { key: "balanceCollection", label: "BALANCE COLLECTION" },
+                    { key: "profit", label: "PROFIT" },
+                    { key: "profitBookedTillDate", label: "PROFIT BOOKED TILL DATE" }
                   ].map((header) => (
                     <th
-                      key={header}
-                      className="border-b-2 border-blue-200 py-3 px-3 text-left"
+                      key={header.key}
+                      className="border-b-2 border-blue-200 py-3 px-3 text-left cursor-pointer hover:bg-blue-100 transition-colors"
+                      onClick={() => handleGuestsSort(header.key)}
                     >
-                      <MT.Typography
-                        variant="small"
-                        className="text-xs font-bold text-blue-gray-700 uppercase"
-                        placeholder={undefined}
-                        onPointerEnterCapture={undefined}
-                        onPointerLeaveCapture={undefined}
-                      >
-                        {header}
-                      </MT.Typography>
+                      <div className="flex items-center justify-between">
+                        <MT.Typography
+                          variant="small"
+                          className="text-xs font-bold text-blue-gray-700 uppercase"
+                          placeholder={undefined}
+                          onPointerEnterCapture={undefined}
+                          onPointerLeaveCapture={undefined}
+                        >
+                          {header.label}
+                        </MT.Typography>
+                        <div className="flex flex-col ml-1">
+                          <ArrowUpIcon className={`h-3 w-3 ${guestsSortConfig?.key === header.key && guestsSortConfig.direction === 'asc' ? 'text-blue-600' : 'text-gray-300'}`} />
+                          <ArrowDownIcon className={`h-3 w-3 -mt-1 ${guestsSortConfig?.key === header.key && guestsSortConfig.direction === 'desc' ? 'text-blue-600' : 'text-gray-300'}`} />
+                        </div>
+                      </div>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {guests.map(
+                {filteredAndSortedGuests.map(
                   (item: GuestTour, index: number) => {
                     const isLastRow = index === guests.length - 1;
                     const rowClass = `${!isLastRow ? "border-b border-gray-200" : ""}`;

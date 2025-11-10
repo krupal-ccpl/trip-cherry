@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import * as MT from "@material-tailwind/react";
-import { PlusIcon, PencilIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, PencilIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import flightsData from "@/data/flights-data.js";
 import AddFlightModal from "@/components/AddFlightModal";
@@ -33,6 +33,15 @@ interface Flight {
 export default function Flights() {
   const [flights, setFlights] = useState(flightsData);
   const [isFormOpen, setIsFormOpen] = useState(false);
+
+  // Search, Sort, Filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState<{key: string; direction: 'asc' | 'desc'} | null>(null);
+  const [filters, setFilters] = useState({
+    portal: '',
+    airline: '',
+    ticketType: ''
+  });
 
   // Inline editing state
   const [editingFlight, setEditingFlight] = useState<{ index: number; field: string } | null>(null);
@@ -129,12 +138,6 @@ export default function Flights() {
     "Two Way", 
     "Multi City"
   ];
-
-  // Calculate totals
-  const totalCollected = flights.reduce((sum: number, item: Flight) => sum + item.collectedTillDate, 0);
-  const totalGrossFare = flights.reduce((sum: number, item: Flight) => sum + item.grossFare, 0);
-  const totalGrossProfit = flights.reduce((sum: number, item: Flight) => sum + item.grossProfit, 0);
-  const totalNettProfit = flights.reduce((sum: number, item: Flight) => sum + item.netProfit, 0);
 
   // Inline editing functions
   const startEditingFlight = (index: number, field: string, currentValue: any) => {
@@ -428,6 +431,91 @@ export default function Flights() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Search, Sort, Filter functions
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+  };
+
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const handleFilter = (filterType: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const getFilteredAndSortedFlights = () => {
+    let filtered = flights.filter((flight: Flight) => {
+      // Search filter
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch = !searchTerm || 
+        flight.guestName.toLowerCase().includes(searchLower) ||
+        flight.airline.toLowerCase().includes(searchLower) ||
+        flight.portal.toLowerCase().includes(searchLower) ||
+        flight.sector.toLowerCase().includes(searchLower) ||
+        flight.pnr.toLowerCase().includes(searchLower) ||
+        flight.bookingDate.includes(searchTerm) ||
+        flight.ticketType.toLowerCase().includes(searchLower);
+
+      // Portal filter
+      const matchesPortal = !filters.portal || flight.portal === filters.portal;
+
+      // Airline filter
+      const matchesAirline = !filters.airline || flight.airline === filters.airline;
+
+      // Ticket type filter
+      const matchesTicketType = !filters.ticketType || flight.ticketType === filters.ticketType;
+
+      return matchesSearch && matchesPortal && matchesAirline && matchesTicketType;
+    });
+
+    // Sort
+    if (sortConfig) {
+      filtered.sort((a: Flight, b: Flight) => {
+        let aValue: any = a[sortConfig.key as keyof typeof a];
+        let bValue: any = b[sortConfig.key as keyof typeof b];
+
+        // Handle numeric fields
+        if (['collectedTillDate', 'quotedFareInclSeatAncillary', 'quotedFareExclSeatAncillary', 
+             'seat', 'ancillary', 'grossFare', 'grossProfit', 'gpat', 'netFare', 'netProfit', 'npat', 'cumuProfit'].includes(sortConfig.key)) {
+          aValue = parseFloat(aValue) || 0;
+          bValue = parseFloat(bValue) || 0;
+        }
+
+        // Handle date fields
+        if (['bookingDate', 'departureDate', 'arrivalDate'].includes(sortConfig.key)) {
+          aValue = new Date(aValue).getTime();
+          bValue = new Date(bValue).getTime();
+        }
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return filtered;
+  };
+
+  const filteredAndSortedFlights = getFilteredAndSortedFlights();
+
+  // Calculate totals from filtered data
+  const totalCollected = filteredAndSortedFlights.reduce((sum: number, item: Flight) => sum + item.collectedTillDate, 0);
+  const totalGrossFare = filteredAndSortedFlights.reduce((sum: number, item: Flight) => sum + item.grossFare, 0);
+  const totalGrossProfit = filteredAndSortedFlights.reduce((sum: number, item: Flight) => sum + item.grossProfit, 0);
+  const totalNettProfit = filteredAndSortedFlights.reduce((sum: number, item: Flight) => sum + item.netProfit, 0);
+
   return (
     <div className="mt-8">
       {/* Header with Add Button */}
@@ -447,6 +535,64 @@ export default function Flights() {
         </MT.Button>
       </div>
 
+      {/* Search, Sort, Filter Controls */}
+      <div className="mb-6 flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+        {/* Search */}
+        <div className="relative flex-1 max-w-md">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search flights..."
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap gap-3">
+          <div className="relative">
+            <FunnelIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <select
+              value={filters.portal}
+              onChange={(e) => handleFilter('portal', e.target.value)}
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+            >
+              <option value="">All Portals</option>
+              {portals.map((portal) => (
+                <option key={portal} value={portal}>{portal}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="relative">
+            <select
+              value={filters.airline}
+              onChange={(e) => handleFilter('airline', e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+            >
+              <option value="">All Airlines</option>
+              {airlines.map((airline) => (
+                <option key={airline} value={airline}>{airline}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="relative">
+            <select
+              value={filters.ticketType}
+              onChange={(e) => handleFilter('ticketType', e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+            >
+              <option value="">All Ticket Types</option>
+              {ticketTypes.map((type) => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-col gap-8">
         {/* Flights Table */}
         <MT.Card className="shadow-lg border border-gray-100" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
@@ -460,49 +606,58 @@ export default function Flights() {
               <thead>
                 <tr className="bg-blue-50">
                   {[
-                    "Sr No",
-                    "Booking Date",
-                    "Portal",
-                    "Guest Name",
-                    "Airline",
-                    "Ticket Type",
-                    "Sector",
-                    "Departure Date",
-                    "Arrival Date",
-                    "PNR",
-                    "Collected till date",
-                    "Quoted Fare (Incl seat and ancillary)",
-                    "Quoted Fare (excl seat and ancillary)",
-                    "Seat",
-                    "Ancillary (Luggage/Meal)",
-                    "Gross Fare",
-                    "Gross Profit",
-                    "GPAT",
-                    "Net Fare",
-                    "Net Profit",
-                    "NPAT",
-                    "Cumu Profit",
-                    "Actions",
+                    { key: "srNo", label: "Sr No" },
+                    { key: "bookingDate", label: "Booking Date" },
+                    { key: "portal", label: "Portal" },
+                    { key: "guestName", label: "Guest Name" },
+                    { key: "airline", label: "Airline" },
+                    { key: "ticketType", label: "Ticket Type" },
+                    { key: "sector", label: "Sector" },
+                    { key: "departureDate", label: "Departure Date" },
+                    { key: "arrivalDate", label: "Arrival Date" },
+                    { key: "pnr", label: "PNR" },
+                    { key: "collectedTillDate", label: "Collected till date" },
+                    { key: "quotedFareInclSeatAncillary", label: "Quoted Fare (Incl seat and ancillary)" },
+                    { key: "quotedFareExclSeatAncillary", label: "Quoted Fare (excl seat and ancillary)" },
+                    { key: "seat", label: "Seat" },
+                    { key: "ancillary", label: "Ancillary (Luggage/Meal)" },
+                    { key: "grossFare", label: "Gross Fare" },
+                    { key: "grossProfit", label: "Gross Profit" },
+                    { key: "gpat", label: "GPAT" },
+                    { key: "netFare", label: "Net Fare" },
+                    { key: "netProfit", label: "Net Profit" },
+                    { key: "npat", label: "NPAT" },
+                    { key: "cumuProfit", label: "Cumu Profit" },
+                    { key: "actions", label: "Actions" },
                   ].map((header) => (
                     <th
-                      key={header}
-                      className="border-b-2 border-blue-200 py-3 px-3 text-left"
+                      key={header.key}
+                      className={`border-b-2 border-blue-200 py-3 px-3 text-left ${header.key !== 'actions' ? 'cursor-pointer hover:bg-blue-100 transition-colors' : ''}`}
+                      onClick={() => header.key !== 'actions' && handleSort(header.key)}
                     >
-                      <MT.Typography
-                        variant="small"
-                        className="text-xs font-bold text-blue-gray-700 uppercase"
-                        placeholder={undefined}
-                        onPointerEnterCapture={undefined}
-                        onPointerLeaveCapture={undefined}
-                      >
-                        {header}
-                      </MT.Typography>
+                      <div className="flex items-center justify-between">
+                        <MT.Typography
+                          variant="small"
+                          className="text-xs font-bold text-blue-gray-700 uppercase"
+                          placeholder={undefined}
+                          onPointerEnterCapture={undefined}
+                          onPointerLeaveCapture={undefined}
+                        >
+                          {header.label}
+                        </MT.Typography>
+                        {header.key !== 'actions' && (
+                          <div className="flex flex-col ml-1">
+                            <ArrowUpIcon className={`h-3 w-3 ${sortConfig?.key === header.key && sortConfig.direction === 'asc' ? 'text-blue-600' : 'text-gray-300'}`} />
+                            <ArrowDownIcon className={`h-3 w-3 -mt-1 ${sortConfig?.key === header.key && sortConfig.direction === 'desc' ? 'text-blue-600' : 'text-gray-300'}`} />
+                          </div>
+                        )}
+                      </div>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {flights.map(
+                {filteredAndSortedFlights.map(
                 (item: Flight, index: number) => {
                   const isLastRow = index === flights.length - 1;
                     const rowClass = `${!isLastRow ? "border-b border-gray-200" : ""}`;
