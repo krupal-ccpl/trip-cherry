@@ -28,6 +28,7 @@ export default function BookingList() {
   const [editValues, setEditValues] = useState<any>({});
   const [showCustomerSuggestions, setShowCustomerSuggestions] = useState(false);
   const [filteredCustomers, setFilteredCustomers] = useState<typeof customerNames>([]);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
   const customerInputRef = useRef<HTMLInputElement>(null);
   
   // Inline ADD functionality state
@@ -230,6 +231,7 @@ export default function BookingList() {
       );
       setFilteredCustomers(filtered);
       setShowCustomerSuggestions(true);
+      setSelectedSuggestionIndex(-1);
     } else {
       setShowCustomerSuggestions(false);
       setFilteredCustomers([]);
@@ -251,6 +253,26 @@ export default function BookingList() {
         customerInputRef.current.focus();
       }
     }, 0);
+  };
+
+  const handleCustomerKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showCustomerSuggestions || filteredCustomers.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedSuggestionIndex(prev =>
+        prev < filteredCustomers.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedSuggestionIndex(prev => (prev > 0 ? prev - 1 : -1));
+    } else if (e.key === "Enter" && selectedSuggestionIndex >= 0) {
+      e.preventDefault();
+      selectCustomerSuggestion(filteredCustomers[selectedSuggestionIndex].name);
+    } else if (e.key === "Escape") {
+      setShowCustomerSuggestions(false);
+      setSelectedSuggestionIndex(-1);
+    }
   };
 
   const formatDateToDisplay = (isoDate: string) => {
@@ -323,6 +345,7 @@ export default function BookingList() {
         );
         setFilteredCustomers(filtered);
         setShowCustomerSuggestions(true);
+        setSelectedSuggestionIndex(-1);
       } else {
         setShowCustomerSuggestions(false);
         setFilteredCustomers([]);
@@ -537,20 +560,26 @@ export default function BookingList() {
                               type="text"
                               value={editValues.customerName !== undefined ? editValues.customerName : booking.customerName}
                               onChange={(e) => handleCustomerChange(e.target.value)}
+                              onKeyDown={handleCustomerKeyDown}
                               className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                               placeholder="Type customer name..."
                               onClick={(e) => e.stopPropagation()}
                             />
                             {showCustomerSuggestions && filteredCustomers.length > 0 && (
-                              <div className="absolute z-50 w-full mt-20 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
                                 {filteredCustomers.map((customer, idx) => (
                                   <div
                                     key={idx}
-                                    onClick={(e) => {
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
                                       e.stopPropagation();
                                       selectCustomerSuggestion(customer.name);
                                     }}
-                                    className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100"
+                                    className={`flex items-center gap-2 px-3 py-2 cursor-pointer transition-colors ${
+                                      idx === selectedSuggestionIndex
+                                        ? "bg-blue-100 text-blue-900"
+                                        : "hover:bg-gray-100"
+                                    }`}
                                   >
                                     <img src={customer.avatar} alt={customer.name} className="w-6 h-6 rounded-full" />
                                     <span className="text-sm">{customer.name}</span>
@@ -833,6 +862,7 @@ export default function BookingList() {
                           type="text"
                           value={newRowData.customerName}
                           onChange={(e) => handleNewRowChange('customerName', e.target.value)}
+                          onKeyDown={handleCustomerKeyDown}
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                           placeholder="Type customer name..."
                         />
