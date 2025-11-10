@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import * as MT from "@material-tailwind/react";
-import { ArrowLeftIcon, PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import bookingPaymentsData from "@/data/booking-payments-data.js";
 // @ts-expect-error: JS module has no types
@@ -10,6 +10,7 @@ import guestTourData from "@/data/guest-tour-data.js";
 import bookingsListData from "@/data/bookings-list-data.js";
 import AddServiceModal from "@/components/AddServiceModal";
 import AddGuestModal from "@/components/AddGuestModal";
+import AddBookingModal from "@/components/AddBookingModal";
 import PaymentModal from "@/components/PaymentModal";
 import HistoryPopover from "@/components/HistoryPopover";
 
@@ -17,6 +18,7 @@ interface Booking {
   id: number;
   bookingDate: string;
   customerName: string;
+  phone: string;
   type: string;
   destination: string;
   arrivalDate: string;
@@ -118,6 +120,10 @@ export default function BookingDetails() {
     profit: 0,
     profitBookedTillDate: 0,
   });
+
+  // Expand/collapse state for booking details
+  const [isBookingDetailsExpanded, setIsBookingDetailsExpanded] = useState(false);
+  const [isEditBookingModalOpen, setIsEditBookingModalOpen] = useState(false);
 
   // Sample data for autocomplete and selects
   const supplierNames = [
@@ -745,6 +751,16 @@ export default function BookingDetails() {
   // Find the booking by ID
   const booking = bookingsListData.find((b: Booking) => b.id === Number(id));
 
+  // Handle booking update
+  const handleBookingUpdate = (updatedBooking: Booking) => {
+    // Update the booking in the data (this would typically be an API call)
+    const bookingIndex = bookingsListData.findIndex((b: Booking) => b.id === Number(id));
+    if (bookingIndex !== -1) {
+      bookingsListData[bookingIndex] = updatedBooking;
+    }
+    setIsEditBookingModalOpen(false);
+  };
+
   // Calculate totals for payment table - ensure all values are treated as numbers
   const totalToBePaid = services.reduce((sum: number, item: BookingPayment) => sum + (parseFloat(item.toBePaid as any) || 0), 0);
   const totalPaidTillDate = services.reduce((sum: number, item: BookingPayment) => sum + (parseFloat(item.paidTillDate as any) || 0), 0);
@@ -797,6 +813,214 @@ export default function BookingDetails() {
             color={booking.type === "International" ? "blue" : "green"}
           />
         </div>
+
+        {/* Comprehensive Booking Details - Expandable/Collapsible */}
+        <MT.Card className="shadow-lg border border-gray-100 mt-6" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+          <div
+            className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl cursor-pointer hover:from-blue-700 hover:to-blue-800 transition-all"
+            onClick={() => setIsBookingDetailsExpanded(!isBookingDetailsExpanded)}
+          >
+            <div className="flex justify-between items-center">
+              <MT.Typography variant="h6" color="white" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                Complete Booking Information
+              </MT.Typography>
+              <div className="flex items-center gap-2">
+                <PencilIcon 
+                  className="h-5 w-5 text-white hover:text-blue-200 cursor-pointer transition-colors" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditBookingModalOpen(true);
+                  }}
+                  title="Edit Booking Details"
+                />
+                {isBookingDetailsExpanded ? (
+                  <ChevronUpIcon className="h-6 w-6 text-white" />
+                ) : (
+                  <ChevronDownIcon className="h-6 w-6 text-white" />
+                )}
+              </div>
+            </div>
+          </div>
+
+          {isBookingDetailsExpanded && (
+            <MT.CardBody className="px-6 py-6" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Basic Information */}
+                <div className="space-y-4">
+                  <MT.Typography variant="h6" color="blue-gray" className="font-semibold border-b border-gray-200 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    Basic Information
+                  </MT.Typography>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Booking ID:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        #{booking.id}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Customer Name:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        {booking.customerName}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Phone Number:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        {booking.phone || 'N/A'}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Booking Type:
+                      </MT.Typography>
+                      <MT.Chip
+                        size="sm"
+                        value={booking.type}
+                        color={booking.type === "International" ? "blue" : "green"}
+                      />
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Destination:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        {booking.destination}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Booking Date:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        {formatDateToDisplay(booking.bookingDate)}
+                      </MT.Typography>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Travel Dates */}
+                <div className="space-y-4">
+                  <MT.Typography variant="h6" color="blue-gray" className="font-semibold border-b border-gray-200 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    Travel Dates
+                  </MT.Typography>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Arrival Date:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        {formatDateToDisplay(booking.arrivalDate)}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Departure Date:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        {formatDateToDisplay(booking.departureDate)}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Tour Start Month:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        {booking.tourStartMonth}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Tour End Month:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        {booking.tourEndMonth}
+                      </MT.Typography>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Financial Information */}
+                <div className="space-y-4">
+                  <MT.Typography variant="h6" color="blue-gray" className="font-semibold border-b border-gray-200 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    Financial Details
+                  </MT.Typography>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        TCS Amount:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="green" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        ₹{booking.toBeCollectedTCS?.toLocaleString() || '0'}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        GST Amount:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="green" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        ₹{booking.toBeCollectedGST?.toLocaleString() || '0'}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Collected Till Date:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="blue" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        ₹{booking.collectedTillDate?.toLocaleString() || '0'}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Collection Remaining:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="orange" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        ₹{booking.collectionRemaining?.toLocaleString() || '0'}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Total Profit:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="purple" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        ₹{booking.profit?.toLocaleString() || '0'}
+                      </MT.Typography>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        Profit Booked Till Date:
+                      </MT.Typography>
+                      <MT.Typography variant="small" color="purple" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        ₹{booking.profitBookedTillDate?.toLocaleString() || '0'}
+                      </MT.Typography>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </MT.CardBody>
+          )}
+        </MT.Card>
       </div>
 
       <div className="flex flex-col gap-8">
@@ -1785,6 +2009,13 @@ export default function BookingDetails() {
           isOpen={isServiceHistoryPopoverOpen}
           onClose={() => setIsServiceHistoryPopoverOpen(false)}
           history={currentHistoryService !== null ? (servicePaymentHistory[currentHistoryService] || []) : []}
+        />
+
+        <AddBookingModal
+          isOpen={isEditBookingModalOpen}
+          onClose={() => setIsEditBookingModalOpen(false)}
+          onAdd={handleBookingUpdate}
+          booking={booking}
         />
       </div>
     </div>

@@ -5,6 +5,7 @@ interface Booking {
   id: number;
   bookingDate: string;
   customerName: string;
+  phone: string;
   type: string;
   destination: string;
   arrivalDate: string;
@@ -23,9 +24,10 @@ interface AddBookingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (booking: Booking) => void;
+  booking?: Booking; // Optional booking for editing
 }
 
-export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingModalProps) {
+export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: AddBookingModalProps) {
   // Sample customer names for autocomplete with avatars
   const customerNames = [
     { name: "Rajesh Kumar", avatar: "https://i.pravatar.cc/150?img=12", phone: "9876543210" },
@@ -102,6 +104,11 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
   });
 
   const destinations = newBooking.type === 'International' ? internationalDestinations : domesticDestinations;
+  
+  // Include the booking's destination in the options if it's not already there (for editing)
+  const allDestinations = booking && booking.destination && !destinations.includes(booking.destination) 
+    ? [booking.destination, ...destinations] 
+    : destinations;
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -129,6 +136,42 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Prefill form when editing a booking
+  useEffect(() => {
+    if (booking) {
+      setNewBooking({
+        bookingDate: parseDisplayDateToISO(booking.bookingDate),
+        customerName: booking.customerName,
+        phone: booking.phone || '',
+        type: booking.type,
+        destination: booking.destination,
+        arrivalDate: parseDisplayDateToISO(booking.arrivalDate),
+        departureDate: parseDisplayDateToISO(booking.departureDate),
+        toBeCollectedTCS: booking.toBeCollectedTCS.toString(),
+        toBeCollectedGST: booking.toBeCollectedGST.toString(),
+        collectedTillDate: booking.collectedTillDate.toString(),
+        profit: booking.profit.toString(),
+        profitBookedTillDate: booking.profitBookedTillDate.toString(),
+      });
+    } else {
+      // Reset form for new booking
+      setNewBooking({
+        bookingDate: new Date().toISOString().split('T')[0],
+        customerName: '',
+        phone: '',
+        type: 'Domestic',
+        destination: '',
+        arrivalDate: '',
+        departureDate: '',
+        toBeCollectedTCS: '0',
+        toBeCollectedGST: '0',
+        collectedTillDate: '0',
+        profit: '0',
+        profitBookedTillDate: '0',
+      });
+    }
+  }, [booking]);
+
   const handleCustomerNameChange = (value: string) => {
     setNewBooking({ ...newBooking, customerName: value });
     
@@ -146,7 +189,12 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
   };
 
   const handleSuggestionClick = (name: string) => {
-    setNewBooking({ ...newBooking, customerName: name });
+    const selectedCustomer = customerNames.find(customer => customer.name === name);
+    setNewBooking({ 
+      ...newBooking, 
+      customerName: name,
+      phone: selectedCustomer ? selectedCustomer.phone : ''
+    });
     setShowSuggestions(false);
     setFilteredCustomers([]);
   };
@@ -179,6 +227,31 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     return `${day}-${month}-${year}`;
   };
 
+  const parseDisplayDateToISO = (displayDate: string) => {
+    if (!displayDate) return '';
+    // Handle format like "15-Dec-2024"
+    const parts = displayDate.split('-');
+    if (parts.length !== 3) return '';
+    
+    const day = parseInt(parts[0]);
+    const monthName = parts[1];
+    const year = parseInt(parts[2]);
+    
+    // Convert month name to month number
+    const months = {
+      'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+      'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+    };
+    
+    const month = months[monthName as keyof typeof months];
+    if (month === undefined) return '';
+    
+    // Create date string directly to avoid timezone conversion issues
+    const dayStr = day.toString().padStart(2, '0');
+    const monthStr = (month + 1).toString().padStart(2, '0');
+    return `${year}-${monthStr}-${dayStr}`;
+  };
+
   const handleNumberInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'e' || e.key === 'E' || e.key === '-' || e.key === '+') {
       e.preventDefault();
@@ -189,12 +262,14 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     const today = new Date().toISOString().split('T')[0];
     const newErrors: Record<string, string> = {};
 
-    // Validate dates not in past
-    if (newBooking.arrivalDate && new Date(newBooking.arrivalDate) < new Date(today)) {
-      newErrors.arrivalDate = 'Arrival date cannot be in the past';
-    }
-    if (newBooking.departureDate && new Date(newBooking.departureDate) < new Date(today)) {
-      newErrors.departureDate = 'Departure date cannot be in the past';
+    // Validate dates not in past (only for new bookings, allow past dates for editing)
+    if (!booking) {
+      if (newBooking.arrivalDate && new Date(newBooking.arrivalDate) < new Date(today)) {
+        newErrors.arrivalDate = 'Arrival date cannot be in the past';
+      }
+      if (newBooking.departureDate && new Date(newBooking.departureDate) < new Date(today)) {
+        newErrors.departureDate = 'Departure date cannot be in the past';
+      }
     }
     if (newBooking.arrivalDate && newBooking.departureDate && new Date(newBooking.departureDate) < new Date(newBooking.arrivalDate)) {
       newErrors.departureDate = 'Departure date cannot be before arrival date';
@@ -246,25 +321,51 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     const profit = parseFloat(newBooking.profit) || 0;
     const profitBookedTillDate = parseFloat(newBooking.profitBookedTillDate) || 0;
     const collectionRemaining = toBeCollectedTCS + toBeCollectedGST - collectedTillDate;
-    const booking = {
-      ...newBooking,
-      id: Date.now(),
-      bookingDate: formatDateToDisplay(newBooking.bookingDate),
-      customerName: newBooking.customerName.trim(),
-      phone: newBooking.phone,
-      destination: newBooking.destination.trim(),
-      arrivalDate: formatDateToDisplay(newBooking.arrivalDate),
-      departureDate: formatDateToDisplay(newBooking.departureDate),
-      tourStartMonth: newBooking.arrivalDate ? new Date(newBooking.arrivalDate).toLocaleDateString('en-US', { month: 'long' }) : '',
-      tourEndMonth: newBooking.departureDate ? new Date(newBooking.departureDate).toLocaleDateString('en-US', { month: 'long' }) : '',
-      toBeCollectedTCS,
-      toBeCollectedGST,
-      collectedTillDate,
-      profit,
-      profitBookedTillDate,
-      collectionRemaining,
-    };
-    onAdd(booking);
+    
+    if (booking) {
+      // Edit existing booking
+      const updatedBooking = {
+        ...booking,
+        bookingDate: formatDateToDisplay(newBooking.bookingDate),
+        customerName: newBooking.customerName.trim(),
+        phone: newBooking.phone,
+        type: newBooking.type,
+        destination: newBooking.destination.trim(),
+        arrivalDate: formatDateToDisplay(newBooking.arrivalDate),
+        departureDate: formatDateToDisplay(newBooking.departureDate),
+        tourStartMonth: newBooking.arrivalDate ? new Date(newBooking.arrivalDate).toLocaleDateString('en-US', { month: 'long' }) : '',
+        tourEndMonth: newBooking.departureDate ? new Date(newBooking.departureDate).toLocaleDateString('en-US', { month: 'long' }) : '',
+        toBeCollectedTCS,
+        toBeCollectedGST,
+        collectedTillDate,
+        profit,
+        profitBookedTillDate,
+        collectionRemaining,
+      };
+      onAdd(updatedBooking);
+    } else {
+      // Add new booking
+      const booking = {
+        ...newBooking,
+        id: Date.now(),
+        bookingDate: formatDateToDisplay(newBooking.bookingDate),
+        customerName: newBooking.customerName.trim(),
+        phone: newBooking.phone,
+        destination: newBooking.destination.trim(),
+        arrivalDate: formatDateToDisplay(newBooking.arrivalDate),
+        departureDate: formatDateToDisplay(newBooking.departureDate),
+        tourStartMonth: newBooking.arrivalDate ? new Date(newBooking.arrivalDate).toLocaleDateString('en-US', { month: 'long' }) : '',
+        tourEndMonth: newBooking.departureDate ? new Date(newBooking.departureDate).toLocaleDateString('en-US', { month: 'long' }) : '',
+        toBeCollectedTCS,
+        toBeCollectedGST,
+        collectedTillDate,
+        profit,
+        profitBookedTillDate,
+        collectionRemaining,
+      };
+      onAdd(booking);
+    }
+    
     onClose();
     setNewBooking({
       bookingDate: new Date().toISOString().split('T')[0],
@@ -288,7 +389,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     isOpen && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <h2 className="text-xl font-bold mb-4">Add New Booking</h2>
+          <h2 className="text-xl font-bold mb-4">{booking ? 'Edit Booking' : 'Add New Booking'}</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
@@ -376,7 +477,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select Destination</option>
-                {destinations.map((dest) => (
+                {allDestinations.map((dest) => (
                   <option key={dest} value={dest}>{dest}</option>
                 ))}
               </select>
@@ -485,7 +586,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
           </div>
           <div className="flex justify-end gap-2 mt-4">
             <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">Cancel</button>
-            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded">Add Booking</button>
+            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded">{booking ? 'Update Booking' : 'Add Booking'}</button>
           </div>
         </div>
       </div>
