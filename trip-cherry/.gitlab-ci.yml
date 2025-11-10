@@ -1,0 +1,30 @@
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  image: node:18
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - dist
+    expire_in: 1 hour
+  only:
+    - react-panel
+
+pages:
+  stage: deploy
+  image: node:18
+  script:
+    - mv dist public
+    - cp public/index.html public/404.html
+  artifacts:
+    paths:
+      - public
+  dependencies:
+    - build
+  only:
+    - react-panel
