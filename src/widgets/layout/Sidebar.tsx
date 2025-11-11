@@ -9,6 +9,8 @@ import {
   CalendarDaysIcon,
   PaperAirplaneIcon,
   XMarkIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/solid";
 
 const routes = [
@@ -27,9 +29,11 @@ const routes = [
 interface SidebarProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
 }
 
-export default function Sidebar({ open, setOpen }: SidebarProps) {
+export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: SidebarProps) {
   const location = useLocation();
 
   // Helper function to check if a route is active
@@ -44,14 +48,14 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
   return (
     <>
       <aside
-        className={`bg-white shadow-sm fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0 ${
+        className={`bg-white shadow-sm fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] ${collapsed ? 'w-16' : 'w-72'} rounded-xl transition-all duration-300 xl:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-80"
         }`}
       >
         <div className="relative border-b border-blue-gray-50">
-          <Link to="/dashboard/bookings" className="flex items-center gap-4 py-6 px-8">
-            <Typography variant="h5" color="blue-gray" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-              Trip Cherry
+          <Link to="/dashboard/bookings" className={`flex items-center gap-4 py-6 ${collapsed ? 'px-2' : 'px-8'}`}>
+            <Typography variant="h6" color="blue-gray" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+              {!collapsed && "Trip Cherry"}
             </Typography>
           </Link>
           <button
@@ -60,34 +64,67 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           >
             <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-blue-gray-500" />
           </button>
+          <button
+            className={`absolute top-1/2 -translate-y-1/2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors hidden xl:block ${collapsed ? 'left-1/2 -translate-x-1/2' : 'right-4'}`}
+            onClick={() => setCollapsed(!collapsed)}
+          >
+            {collapsed ? (
+              <ChevronRightIcon strokeWidth={2.5} className="h-5 w-5 text-blue-gray-500" />
+            ) : (
+              <ChevronLeftIcon strokeWidth={2.5} className="h-5 w-5 text-blue-gray-500" />
+            )}
+          </button>
         </div>
-        <div className="m-4">
-          <List placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-            {routes.map(({ icon: Icon, name, path }) => {
-              const isActive = isRouteActive(path);
-              return (
-                <Link to={path} key={name}>
-                  <ListItem
-                    className={`
-                      transition-all duration-200 mb-2 rounded-lg
-                      ${isActive
-                        ? "bg-gradient-to-r from-blue-600 to-blue-700 shadow-md hover:shadow-lg hover:from-blue-700 hover:to-blue-800" 
-                        : "hover:bg-blue-50"
-                      }
-                    `}
-                    placeholder={undefined}
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                  >
-                    <ListItemPrefix placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+        <div className={collapsed ? "p-2" : "m-4"}>
+          {collapsed ? (
+            <div className="flex flex-col gap-1">
+              {routes.map(({ icon: Icon, name, path }) => {
+                const isActive = isRouteActive(path);
+                return (
+                  <Link to={path} key={name}>
+                    <div
+                      className={`
+                        transition-all duration-200 flex justify-center items-center h-12 rounded-lg cursor-pointer
+                        ${isActive
+                          ? "bg-blue-600 text-white rounded-full w-12 shadow-md hover:shadow-lg" 
+                          : "hover:bg-blue-50"
+                        }
+                      `}
+                    >
                       <Icon className={`h-5 w-5 ${isActive ? "text-white" : "text-blue-gray-600"}`} />
-                    </ListItemPrefix>
-                    <span className={`font-medium ${isActive ? "text-white" : "text-blue-gray-700"}`}>{name}</span>
-                  </ListItem>
-                </Link>
-              );
-            })}
-          </List>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <List className="" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+              {routes.map(({ icon: Icon, name, path }) => {
+                const isActive = isRouteActive(path);
+                return (
+                  <Link to={path} key={name}>
+                    <ListItem
+                      className={`
+                        transition-all duration-200 mb-2 rounded-lg
+                        ${isActive
+                          ? "bg-gradient-to-r from-blue-600 to-blue-700 shadow-md hover:shadow-lg hover:from-blue-700 hover:to-blue-800"
+                          : "hover:bg-blue-50"
+                        }
+                      `}
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      <ListItemPrefix placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        <Icon className={`h-5 w-5 ${isActive ? "text-white" : "text-blue-gray-600"}`} />
+                      </ListItemPrefix>
+                      <span className={`font-medium ${isActive ? "text-white" : "text-blue-gray-700"}`}>{name}</span>
+                    </ListItem>
+                  </Link>
+                );
+              })}
+            </List>
+          )}
         </div>
       </aside>
     </>

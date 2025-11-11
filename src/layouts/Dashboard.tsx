@@ -8,11 +8,12 @@ import Flights from '../pages/dashboard/Flights';
 
 export default function Dashboard() {
   const [openSidenav, setOpenSidenav] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50">
-      <Sidebar open={openSidenav} setOpen={setOpenSidenav} />
-      <div className="p-4 xl:ml-80">
+      <Sidebar open={openSidenav} setOpen={setOpenSidenav} collapsed={collapsed} setCollapsed={setCollapsed} />
+      <div className={`p-4 ${collapsed ? 'xl:ml-20' : 'xl:ml-80'}`}>
         <Navbar openSidenav={openSidenav} setOpenSidenav={setOpenSidenav} />
         <div className="mt-12">
           <Routes>
