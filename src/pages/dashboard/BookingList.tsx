@@ -604,7 +604,7 @@ export default function BookingList() {
     <div className="mt-8">
       {/* Header with Add Button */}
       <div className="mb-6 flex justify-between items-center">
-        <MT.Typography variant="h4" color="blue-gray" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+        <MT.Typography variant="h4" color="blue-gray" className="dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
           Bookings Management
         </MT.Typography>
         <MT.Button 
@@ -677,7 +677,7 @@ export default function BookingList() {
       </div>
 
       {/* Bookings List Table */}
-      <MT.Card className="shadow-lg border border-gray-100" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+      <MT.Card className="shadow-lg border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl">
           <MT.Typography variant="h6" color="white" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             All Bookings
@@ -686,7 +686,7 @@ export default function BookingList() {
         <MT.CardBody className="overflow-x-auto px-0 pt-0 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
           <table className="w-full min-w-[1800px] table-auto">
             <thead>
-              <tr className="bg-blue-50">
+              <tr className="bg-blue-50 dark:bg-blue-900/50">
                 {[
                   { key: "bookingDate", label: "BOOKING DATE" },
                   { key: "customerName", label: "CUSTOMER NAME" },
@@ -712,7 +712,7 @@ export default function BookingList() {
                     <div className="flex items-center justify-between">
                       <MT.Typography
                         variant="small"
-                        className="text-xs font-bold text-blue-gray-700 uppercase"
+                        className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
                         placeholder={undefined}
                         onPointerEnterCapture={undefined}
                         onPointerLeaveCapture={undefined}
@@ -738,7 +738,7 @@ export default function BookingList() {
                   return (
                     <tr 
                       key={booking.id} 
-                      className="hover:bg-blue-50 transition-colors cursor-pointer"
+                      className="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                       onClick={() => handleRowClick(booking.id)}
                     >
                       <td className={`py-3 px-3 ${rowClass} relative group`}>
@@ -756,7 +756,7 @@ export default function BookingList() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               {booking.bookingDate}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'bookingDate', formatDateToISO(booking.bookingDate)); }} />
@@ -806,7 +806,7 @@ export default function BookingList() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               {booking.customerName}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'customerName', booking.customerName); }} />
@@ -831,7 +831,7 @@ export default function BookingList() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               {booking.phone}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'phone', booking.phone); }} />
@@ -884,7 +884,7 @@ export default function BookingList() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               {booking.destination}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'destination', booking.destination); }} />
@@ -906,7 +906,7 @@ export default function BookingList() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               {booking.arrivalDate}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'arrivalDate', formatDateToISO(booking.arrivalDate)); }} />
@@ -928,7 +928,7 @@ export default function BookingList() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               {booking.departureDate}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'departureDate', formatDateToISO(booking.departureDate)); }} />
@@ -936,12 +936,12 @@ export default function BookingList() {
                         )}
                       </td>
                       <td className={`py-3 px-3 ${rowClass}`}>
-                        <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                           {booking.tourStartMonth}
                         </MT.Typography>
                       </td>
                       <td className={`py-3 px-3 ${rowClass}`}>
-                        <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                        <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                           {booking.tourEndMonth}
                         </MT.Typography>
                       </td>
@@ -962,7 +962,7 @@ export default function BookingList() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               ₹{booking.toBeCollectedTCS.toLocaleString()}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'toBeCollectedTCS', booking.toBeCollectedTCS); }} />
@@ -986,7 +986,7 @@ export default function BookingList() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               ₹{booking.toBeCollectedGST.toLocaleString()}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'toBeCollectedGST', booking.toBeCollectedGST); }} />
@@ -995,7 +995,7 @@ export default function BookingList() {
                       </td>
                       <td className={`py-3 px-3 ${rowClass} relative group`}>
                         <div className="flex items-center justify-between">
-                          <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                          <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                             ₹{booking.collectedTillDate.toLocaleString()}
                           </MT.Typography>
                           <PlusIcon 
@@ -1012,7 +1012,7 @@ export default function BookingList() {
                       <td className={`py-3 px-3 ${rowClass}`}>
                         <div className="flex items-center justify-between">
                           <MT.Typography 
-                            className={`text-sm font-medium ${booking.collectionRemaining < 0 ? 'text-green-600' : booking.collectionRemaining > 0 ? 'text-orange-600' : 'text-gray-900'}`}
+                            className={`text-sm font-medium ${booking.collectionRemaining < 0 ? 'text-green-600 dark:text-green-400' : booking.collectionRemaining > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-900 dark:text-white'}`}
                             placeholder={undefined} 
                             onPointerEnterCapture={undefined} 
                             onPointerLeaveCapture={undefined}
@@ -1047,7 +1047,7 @@ export default function BookingList() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               ₹{booking.profit.toLocaleString()}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'profit', booking.profit); }} />
@@ -1071,7 +1071,7 @@ export default function BookingList() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               ₹{booking.profitBookedTillDate.toLocaleString()}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'profitBookedTillDate', booking.profitBookedTillDate); }} />
@@ -1085,7 +1085,7 @@ export default function BookingList() {
               
               {/* Empty Row for Inline ADD functionality - ENTIRE ROW APPROACH */}
               {true && (
-                <tr className="hover:bg-green-50 transition-colors border-b border-dashed border-gray-300">
+                <tr className="hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors border-b border-dashed border-gray-300 dark:border-gray-600">
                   {isEditingNewRow ? (
                     // EDITING MODE: All fields become inputs, single Save/Cancel for entire row
                     <>

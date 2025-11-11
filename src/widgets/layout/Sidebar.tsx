@@ -65,30 +65,30 @@ export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: Side
   return (
     <>
       <aside
-        className={`bg-white shadow-sm fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] ${collapsed ? 'w-16' : 'w-72'} rounded-xl transition-all duration-300 xl:translate-x-0 ${
+        className={`bg-white dark:bg-gray-800 shadow-sm fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] ${collapsed ? 'w-16' : 'w-72'} rounded-xl transition-all duration-300 xl:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-80"
         }`}
       >
-        <div className="relative border-b border-blue-gray-50">
+        <div className="relative border-b border-blue-gray-50 dark:border-gray-700">
           <Link to="/dashboard/bookings" className={`flex items-center gap-4 py-6 ${collapsed ? 'px-2' : 'px-8'}`} onClick={handleMenuClick}>
-            <Typography variant="h6" color="blue-gray" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+            <Typography variant="h6" color="blue-gray" className="dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               {!collapsed && "Trip Cherry"}
             </Typography>
           </Link>
           <button
-            className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md xl:hidden hover:bg-gray-100 transition-colors"
+            className="absolute top-4 right-4 p-2 bg-white dark:bg-gray-700 rounded-full shadow-md xl:hidden hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             onClick={() => setOpen(false)}
           >
-            <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-blue-gray-500" />
+            <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-blue-gray-500 dark:text-gray-400" />
           </button>
           <button
-            className={`absolute top-1/2 -translate-y-1/2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors hidden xl:block ${collapsed ? 'left-1/2 -translate-x-1/2' : 'right-4'}`}
+            className={`absolute top-1/2 -translate-y-1/2 p-2 bg-white dark:bg-gray-700 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors hidden xl:block ${collapsed ? 'left-1/2 -translate-x-1/2' : 'right-4'}`}
             onClick={() => setCollapsed(!collapsed)}
           >
             {collapsed ? (
-              <ChevronRightIcon strokeWidth={2.5} className="h-5 w-5 text-blue-gray-500" />
+              <ChevronRightIcon strokeWidth={2.5} className="h-5 w-5 text-blue-gray-500 dark:text-gray-400" />
             ) : (
-              <ChevronLeftIcon strokeWidth={2.5} className="h-5 w-5 text-blue-gray-500" />
+              <ChevronLeftIcon strokeWidth={2.5} className="h-5 w-5 text-blue-gray-500 dark:text-gray-400" />
             )}
           </button>
         </div>
@@ -104,11 +104,11 @@ export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: Side
                         transition-all duration-200 flex justify-center items-center h-12 rounded-lg cursor-pointer
                         ${isActive
                           ? "bg-blue-600 text-white rounded-full w-12 shadow-md hover:shadow-lg" 
-                          : "hover:bg-blue-50"
+                          : "hover:bg-blue-50 dark:hover:bg-gray-700"
                         }
                       `}
                     >
-                      <Icon className={`h-5 w-5 ${isActive ? "text-white" : "text-blue-gray-600"}`} />
+                      <Icon className={`h-5 w-5 ${isActive ? "text-white" : "text-blue-gray-600 dark:text-gray-300"}`} />
                     </div>
                   </Link>
                 );
@@ -125,7 +125,7 @@ export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: Side
                         transition-all duration-200 mb-2 rounded-lg
                         ${isActive
                           ? "bg-gradient-to-r from-blue-600 to-blue-700 shadow-md hover:shadow-lg hover:from-blue-700 hover:to-blue-800"
-                          : "hover:bg-blue-50"
+                          : "hover:bg-blue-50 dark:hover:bg-gray-700"
                         }
                       `}
                       placeholder={undefined}
@@ -133,9 +133,9 @@ export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: Side
                       onPointerLeaveCapture={undefined}
                     >
                       <ListItemPrefix placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                        <Icon className={`h-5 w-5 ${isActive ? "text-white" : "text-blue-gray-600"}`} />
+                        <Icon className={`h-5 w-5 ${isActive ? "text-white" : "text-blue-gray-600 dark:text-gray-300"}`} />
                       </ListItemPrefix>
-                      <span className={`font-medium ${isActive ? "text-white" : "text-blue-gray-700"}`}>{name}</span>
+                      <span className={`font-medium ${isActive ? "text-white" : "text-blue-gray-700 dark:text-gray-200"}`}>{name}</span>
                     </ListItem>
                   </Link>
                 );
@@ -147,7 +147,7 @@ export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: Side
           <button
             onClick={handleLogout}
             className={`
-              flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:bg-red-50 text-red-600
+              flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400
               ${collapsed ? 'justify-center' : ''}
             `}
           >

@@ -11,7 +11,7 @@ export default function Dashboard() {
   const [collapsed, setCollapsed] = useState(true);
 
   return (
-    <div className="min-h-screen bg-blue-gray-50/50">
+    <div className="min-h-screen bg-blue-gray-50/50 dark:bg-gray-900">
       <Sidebar open={openSidenav} setOpen={setOpenSidenav} collapsed={collapsed} setCollapsed={setCollapsed} />
       <div className={`p-4 ${collapsed ? 'xl:ml-20' : 'xl:ml-80'}`}>
         <Navbar openSidenav={openSidenav} setOpenSidenav={setOpenSidenav} />

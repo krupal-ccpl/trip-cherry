@@ -262,11 +262,11 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
   return (
     isOpen && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <h2 className="text-xl font-bold mb-4">Add New Guest</h2>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Add New Guest</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Guest Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Guest Name</label>
               <div className="relative">
                 <input
                   ref={guestInputRef}
@@ -276,12 +276,12 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
                   onKeyDown={handleKeyDown}
                   placeholder="Type guest name..."
                   autoComplete="off"
-                  className="w-full px-3 py-2 border border-blue-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-blue-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
                 {showSuggestions && filteredGuests.length > 0 && (
                   <div
                     ref={suggestionsRef}
-                    className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
+                    className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto"
                   >
                     {filteredGuests.map((guest, index) => (
                       <div
@@ -289,8 +289,8 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
                         onClick={() => handleSuggestionClick(guest.name)}
                         className={`flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors ${
                           index === selectedSuggestionIndex
-                            ? "bg-blue-100 text-blue-900"
-                            : "hover:bg-gray-100"
+                            ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
+                            : "hover:bg-gray-100 dark:hover:bg-gray-600"
                         }`}
                       >
                         <img 
@@ -307,22 +307,22 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
               {errors.guestName && <p className="text-red-500 text-sm">{errors.guestName}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
               <select
                 value={newGuest.type}
                 onChange={(e) => setNewGuest({ ...newGuest, type: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="Domestic">Domestic</option>
                 <option value="International">International</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Destination</label>
               <select
                 value={newGuest.destination}
                 onChange={(e) => setNewGuest({ ...newGuest, destination: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">Select Destination</option>
                 {destinations.map((dest) => (
@@ -332,7 +332,7 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
               {errors.destination && <p className="text-red-500 text-sm">{errors.destination}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Arrival Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Arrival Date</label>
               <MT.Input
                 type="date"
                 value={newGuest.arrivalDate}
@@ -345,7 +345,7 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
               {errors.arrivalDate && <p className="text-red-500 text-sm">{errors.arrivalDate}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Departure Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Departure Date</label>
               <MT.Input
                 type="date"
                 value={newGuest.departureDate}
@@ -360,7 +360,7 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">To Be Collected</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Be Collected</label>
               <MT.Input
                 type="number"
                 value={newGuest.toBeCollected}
@@ -374,7 +374,7 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
               {errors.toBeCollected && <p className="text-red-500 text-sm">{errors.toBeCollected}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Collected Till Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Collected Till Date</label>
               <MT.Input
                 type="number"
                 value={newGuest.collectedTillDate}
@@ -390,7 +390,7 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Profit</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profit</label>
               <MT.Input
                 type="number"
                 value={newGuest.profit}
@@ -404,7 +404,7 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
               {errors.profit && <p className="text-red-500 text-sm">{errors.profit}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Profit Booked Till Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profit Booked Till Date</label>
               <MT.Input
                 type="number"
                 value={newGuest.profitBookedTillDate}
@@ -419,8 +419,8 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
             </div>
           </div>
           <div className="flex justify-end gap-2 mt-4">
-            <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">Cancel</button>
-            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded">Add Guest</button>
+            <button onClick={onClose} className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500">Cancel</button>
+            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Add Guest</button>
           </div>
         </div>
       </div>

@@ -3,14 +3,17 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router-dom'
-import { ThemeProvider } from "@material-tailwind/react";
+import { ThemeProvider as MTThemeProvider } from "@material-tailwind/react";
+import { ThemeProvider } from './contexts/ThemeContext';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter basename="/trip-cherry">
-      <ThemeProvider>
-        <App />
-      </ThemeProvider>
+      <MTThemeProvider>
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
+      </MTThemeProvider>
     </BrowserRouter>
   </StrictMode>,
 )

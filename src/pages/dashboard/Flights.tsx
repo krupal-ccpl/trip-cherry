@@ -520,7 +520,7 @@ export default function Flights() {
     <div className="mt-8">
       {/* Header with Add Button */}
       <div className="mb-6 flex justify-between items-center">
-        <MT.Typography variant="h4" color="blue-gray" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+        <MT.Typography variant="h4" color="blue-gray" className="dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
           Flights Management
         </MT.Typography>
         <MT.Button 
@@ -545,7 +545,7 @@ export default function Flights() {
             placeholder="Search flights..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
@@ -556,7 +556,7 @@ export default function Flights() {
             <select
               value={filters.portal}
               onChange={(e) => handleFilter('portal', e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
             >
               <option value="">All Portals</option>
               {portals.map((portal) => (
@@ -569,7 +569,7 @@ export default function Flights() {
             <select
               value={filters.airline}
               onChange={(e) => handleFilter('airline', e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+              className="px-4 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
             >
               <option value="">All Airlines</option>
               {airlines.map((airline) => (
@@ -582,7 +582,7 @@ export default function Flights() {
             <select
               value={filters.ticketType}
               onChange={(e) => handleFilter('ticketType', e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+              className="px-4 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
             >
               <option value="">All Ticket Types</option>
               {ticketTypes.map((type) => (
@@ -595,7 +595,7 @@ export default function Flights() {
 
       <div className="flex flex-col gap-8">
         {/* Flights Table */}
-        <MT.Card className="shadow-lg border border-gray-100" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+        <MT.Card className="shadow-lg border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl">
             <MT.Typography variant="h6" color="white" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               Flight Bookings
@@ -604,7 +604,7 @@ export default function Flights() {
           <MT.CardBody className="overflow-x-auto px-0 pt-0 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             <table className="w-full min-w-[2400px] table-auto">
               <thead>
-                <tr className="bg-blue-50">
+                <tr className="bg-blue-50 dark:bg-blue-900/50">
                   {[
                     { key: "srNo", label: "Sr No" },
                     { key: "bookingDate", label: "Booking Date" },
@@ -638,7 +638,7 @@ export default function Flights() {
                       <div className="flex items-center justify-between">
                         <MT.Typography
                           variant="small"
-                          className="text-xs font-bold text-blue-gray-700 uppercase"
+                          className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
                           placeholder={undefined}
                           onPointerEnterCapture={undefined}
                           onPointerLeaveCapture={undefined}
@@ -663,9 +663,9 @@ export default function Flights() {
                     const rowClass = `${!isLastRow ? "border-b border-gray-200" : ""}`;
 
                     return (
-                      <tr key={index} className="hover:bg-blue-50 transition-colors">
+                      <tr key={index} className="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
                         <td className={`py-3 px-3 ${rowClass}`}>
-                          <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                          <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                             {item.srNo}
                           </MT.Typography>
                         </td>
@@ -676,7 +676,7 @@ export default function Flights() {
                                 type="date"
                                 value={editValues.bookingDate !== undefined ? editValues.bookingDate : formatDateToISO(item.bookingDate)}
                                 onChange={(e) => setEditValues({ ...editValues, bookingDate: e.target.value })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -684,7 +684,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.bookingDate}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'bookingDate', formatDateToISO(item.bookingDate)); }} />
@@ -697,7 +697,7 @@ export default function Flights() {
                               <select
                                 value={editValues.portal !== undefined ? editValues.portal : item.portal}
                                 onChange={(e) => setEditValues({ ...editValues, portal: e.target.value })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <option value="">Select Portal</option>
@@ -710,7 +710,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.portal}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'portal', item.portal); }} />
@@ -726,12 +726,12 @@ export default function Flights() {
                                 value={editValues.guestName !== undefined ? editValues.guestName : item.guestName}
                                 onChange={(e) => handleGuestChange(e.target.value)}
                                 onKeyDown={handleGuestKeyDown}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="Type guest name..."
                                 onClick={(e) => e.stopPropagation()}
                               />
                               {showGuestSuggestions && filteredGuests.length > 0 && (
-                                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
                                   {filteredGuests.map((guest, idx) => (
                                     <div
                                       key={idx}
@@ -757,7 +757,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.guestName}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'guestName', item.guestName); }} />
@@ -770,7 +770,7 @@ export default function Flights() {
                               <select
                                 value={editValues.airline !== undefined ? editValues.airline : item.airline}
                                 onChange={(e) => setEditValues({ ...editValues, airline: e.target.value })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <option value="">Select Airline</option>
@@ -783,7 +783,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.airline}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'airline', item.airline); }} />
@@ -796,7 +796,7 @@ export default function Flights() {
                               <select
                                 value={editValues.ticketType !== undefined ? editValues.ticketType : item.ticketType}
                                 onChange={(e) => setEditValues({ ...editValues, ticketType: e.target.value })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {ticketTypes.map((type) => (
@@ -808,7 +808,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.ticketType}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'ticketType', item.ticketType); }} />
@@ -822,7 +822,7 @@ export default function Flights() {
                                 type="text"
                                 value={editValues.sector !== undefined ? editValues.sector : item.sector}
                                 onChange={(e) => setEditValues({ ...editValues, sector: e.target.value })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -830,7 +830,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.sector}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'sector', item.sector); }} />
@@ -844,7 +844,7 @@ export default function Flights() {
                                 type="date"
                                 value={editValues.departureDate !== undefined ? editValues.departureDate : formatDateToISO(item.departureDate)}
                                 onChange={(e) => setEditValues({ ...editValues, departureDate: e.target.value })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -852,7 +852,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.departureDate}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'departureDate', formatDateToISO(item.departureDate)); }} />
@@ -866,7 +866,7 @@ export default function Flights() {
                                 type="date"
                                 value={editValues.arrivalDate !== undefined ? editValues.arrivalDate : formatDateToISO(item.arrivalDate)}
                                 onChange={(e) => setEditValues({ ...editValues, arrivalDate: e.target.value })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -874,7 +874,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.arrivalDate}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'arrivalDate', formatDateToISO(item.arrivalDate)); }} />
@@ -888,7 +888,7 @@ export default function Flights() {
                                 type="text"
                                 value={editValues.pnr !== undefined ? editValues.pnr : item.pnr}
                                 onChange={(e) => setEditValues({ ...editValues, pnr: e.target.value.toUpperCase() })}
-                                className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -896,7 +896,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.pnr}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'pnr', item.pnr); }} />
@@ -911,7 +911,7 @@ export default function Flights() {
                                 value={editValues.collectedTillDate !== undefined ? editValues.collectedTillDate : item.collectedTillDate}
                                 onChange={(e) => setEditValues({ ...editValues, collectedTillDate: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -919,7 +919,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.collectedTillDate.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'collectedTillDate', item.collectedTillDate); }} />
@@ -934,7 +934,7 @@ export default function Flights() {
                                 value={editValues.quotedFareInclSeatAncillary !== undefined ? editValues.quotedFareInclSeatAncillary : item.quotedFareInclSeatAncillary}
                                 onChange={(e) => setEditValues({ ...editValues, quotedFareInclSeatAncillary: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -942,7 +942,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.quotedFareInclSeatAncillary.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'quotedFareInclSeatAncillary', item.quotedFareInclSeatAncillary); }} />
@@ -957,7 +957,7 @@ export default function Flights() {
                                 value={editValues.quotedFareExclSeatAncillary !== undefined ? editValues.quotedFareExclSeatAncillary : item.quotedFareExclSeatAncillary}
                                 onChange={(e) => setEditValues({ ...editValues, quotedFareExclSeatAncillary: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -965,7 +965,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.quotedFareExclSeatAncillary.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'quotedFareExclSeatAncillary', item.quotedFareExclSeatAncillary); }} />
@@ -980,7 +980,7 @@ export default function Flights() {
                                 value={editValues.seat !== undefined ? editValues.seat : item.seat}
                                 onChange={(e) => setEditValues({ ...editValues, seat: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -988,7 +988,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.seat.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'seat', item.seat); }} />
@@ -1003,7 +1003,7 @@ export default function Flights() {
                                 value={editValues.ancillary !== undefined ? editValues.ancillary : item.ancillary}
                                 onChange={(e) => setEditValues({ ...editValues, ancillary: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -1011,7 +1011,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.ancillary.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'ancillary', item.ancillary); }} />
@@ -1026,7 +1026,7 @@ export default function Flights() {
                                 value={editValues.grossFare !== undefined ? editValues.grossFare : item.grossFare}
                                 onChange={(e) => setEditValues({ ...editValues, grossFare: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -1034,7 +1034,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.grossFare.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'grossFare', item.grossFare); }} />
@@ -1049,7 +1049,7 @@ export default function Flights() {
                                 value={editValues.grossProfit !== undefined ? editValues.grossProfit : item.grossProfit}
                                 onChange={(e) => setEditValues({ ...editValues, grossProfit: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -1057,7 +1057,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.grossProfit.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'grossProfit', item.grossProfit); }} />
@@ -1072,7 +1072,7 @@ export default function Flights() {
                                 value={editValues.gpat !== undefined ? editValues.gpat : item.gpat}
                                 onChange={(e) => setEditValues({ ...editValues, gpat: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -1080,7 +1080,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.gpat.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'gpat', item.gpat); }} />
@@ -1095,7 +1095,7 @@ export default function Flights() {
                                 value={editValues.netFare !== undefined ? editValues.netFare : item.netFare}
                                 onChange={(e) => setEditValues({ ...editValues, netFare: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -1103,7 +1103,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.netFare.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'netFare', item.netFare); }} />
@@ -1118,7 +1118,7 @@ export default function Flights() {
                                 value={editValues.netProfit !== undefined ? editValues.netProfit : item.netProfit}
                                 onChange={(e) => setEditValues({ ...editValues, netProfit: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -1126,7 +1126,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.netProfit.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'netProfit', item.netProfit); }} />
@@ -1141,7 +1141,7 @@ export default function Flights() {
                                 value={editValues.npat !== undefined ? editValues.npat : item.npat}
                                 onChange={(e) => setEditValues({ ...editValues, npat: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -1149,7 +1149,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.npat.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'npat', item.npat); }} />
@@ -1164,7 +1164,7 @@ export default function Flights() {
                                 value={editValues.cumuProfit !== undefined ? editValues.cumuProfit : item.cumuProfit}
                                 onChange={(e) => setEditValues({ ...editValues, cumuProfit: parseFloat(e.target.value) || 0 })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm font-bold border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm font-bold border border-blue-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveFlightEdit(); }} />
@@ -1172,7 +1172,7 @@ export default function Flights() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-bold text-blue-600" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-bold text-blue-600 dark:text-blue-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.cumuProfit.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingFlight(index, 'cumuProfit', item.cumuProfit); }} />
@@ -1186,7 +1186,7 @@ export default function Flights() {
 
                 {/* Empty Row for Inline ADD functionality - ENTIRE ROW APPROACH */}
                 {true && (
-                  <tr className="hover:bg-green-50 transition-colors border-b border-dashed border-gray-300">
+                  <tr className="hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors border-b border-dashed border-gray-300 dark:border-gray-600">
                     {isEditingNewRow ? (
                       // EDITING MODE: All fields become inputs, single Save/Cancel for entire row
                       <>
@@ -1200,14 +1200,14 @@ export default function Flights() {
                             type="date"
                             value={newRowData.bookingDate}
                             onChange={(e) => handleNewRowChange('bookingDate', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </td>
                         <td className="py-3 px-3">
                           <select
                             value={newRowData.portal}
                             onChange={(e) => handleNewRowChange('portal', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                           >
                             <option value="">Select Portal</option>
                             {portals.map((portal) => (
@@ -1222,16 +1222,16 @@ export default function Flights() {
                             value={newRowData.guestName}
                             onChange={(e) => handleNewRowChange('guestName', e.target.value)}
                             onKeyDown={handleGuestKeyDown}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Type guest name..."
                           />
                           {showGuestSuggestions && filteredGuests.length > 0 && (
-                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
                               {filteredGuests.map((guest, idx) => (
                                 <div
                                   key={idx}
                                   onMouseDown={(e) => selectNewRowGuest(guest.name, e)}
-                                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100"
+                                  className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 ${idx === selectedSuggestionIndex ? "bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-200" : "hover:bg-gray-100 dark:hover:bg-gray-600"}`}
                                 >
                                   <img src={guest.avatar} alt={guest.name} className="w-6 h-6 rounded-full" />
                                   <span className="text-sm">{guest.name}</span>
@@ -1244,7 +1244,7 @@ export default function Flights() {
                           <select
                             value={newRowData.airline}
                             onChange={(e) => handleNewRowChange('airline', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                           >
                             <option value="">Select Airline</option>
                             {airlines.map((airline) => (
@@ -1256,7 +1256,7 @@ export default function Flights() {
                           <select
                             value={newRowData.ticketType}
                             onChange={(e) => handleNewRowChange('ticketType', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                           >
                             {ticketTypes.map((type) => (
                               <option key={type} value={type}>{type}</option>
@@ -1268,7 +1268,7 @@ export default function Flights() {
                             type="text"
                             value={newRowData.sector}
                             onChange={(e) => handleNewRowChange('sector', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Sector"
                           />
                         </td>
@@ -1277,7 +1277,7 @@ export default function Flights() {
                             type="date"
                             value={newRowData.departureDate}
                             onChange={(e) => handleNewRowChange('departureDate', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </td>
                         <td className="py-3 px-3">
@@ -1285,7 +1285,7 @@ export default function Flights() {
                             type="date"
                             value={newRowData.arrivalDate}
                             onChange={(e) => handleNewRowChange('arrivalDate', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                         </td>
                         <td className="py-3 px-3">
@@ -1293,7 +1293,7 @@ export default function Flights() {
                             type="text"
                             value={newRowData.pnr}
                             onChange={(e) => handleNewRowChange('pnr', e.target.value.toUpperCase())}
-                            className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="PNR"
                           />
                         </td>
@@ -1303,7 +1303,7 @@ export default function Flights() {
                             value={newRowData.collectedTillDate}
                             onChange={(e) => handleNewRowChange('collectedTillDate', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Collected"
                           />
                         </td>
@@ -1313,7 +1313,7 @@ export default function Flights() {
                             value={newRowData.quotedFareInclSeatAncillary}
                             onChange={(e) => handleNewRowChange('quotedFareInclSeatAncillary', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Quoted (Incl)"
                           />
                         </td>
@@ -1323,7 +1323,7 @@ export default function Flights() {
                             value={newRowData.quotedFareExclSeatAncillary}
                             onChange={(e) => handleNewRowChange('quotedFareExclSeatAncillary', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Quoted (Excl)"
                           />
                         </td>
@@ -1333,7 +1333,7 @@ export default function Flights() {
                             value={newRowData.seat}
                             onChange={(e) => handleNewRowChange('seat', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Seat"
                           />
                         </td>
@@ -1343,7 +1343,7 @@ export default function Flights() {
                             value={newRowData.ancillary}
                             onChange={(e) => handleNewRowChange('ancillary', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Ancillary"
                           />
                         </td>
@@ -1353,7 +1353,7 @@ export default function Flights() {
                             value={newRowData.grossFare}
                             onChange={(e) => handleNewRowChange('grossFare', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Gross Fare"
                           />
                         </td>
@@ -1363,7 +1363,7 @@ export default function Flights() {
                             value={newRowData.grossProfit}
                             onChange={(e) => handleNewRowChange('grossProfit', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Gross Profit"
                           />
                         </td>
@@ -1373,7 +1373,7 @@ export default function Flights() {
                             value={newRowData.gpat}
                             onChange={(e) => handleNewRowChange('gpat', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="GPAT"
                           />
                         </td>
@@ -1383,7 +1383,7 @@ export default function Flights() {
                             value={newRowData.netFare}
                             onChange={(e) => handleNewRowChange('netFare', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm font-medium border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Net Fare"
                           />
                         </td>
@@ -1393,7 +1393,7 @@ export default function Flights() {
                             value={newRowData.netProfit}
                             onChange={(e) => handleNewRowChange('netProfit', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Net Profit"
                           />
                         </td>
@@ -1403,7 +1403,7 @@ export default function Flights() {
                             value={newRowData.npat}
                             onChange={(e) => handleNewRowChange('npat', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="NPAT"
                           />
                         </td>
@@ -1413,7 +1413,7 @@ export default function Flights() {
                             value={newRowData.cumuProfit}
                             onChange={(e) => handleNewRowChange('cumuProfit', parseFloat(e.target.value) || 0)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm font-bold border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm font-bold border border-blue-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Cumu Profit"
                           />
                         </td>
@@ -1558,31 +1558,31 @@ export default function Flights() {
                 )}
 
                 {/* Total Row */}
-                <tr className="bg-blue-50 font-bold border-t-2 border-blue-200">
+                <tr className="bg-blue-50 dark:bg-blue-900/50 font-bold border-t-2 border-blue-200">
                   <td colSpan={10} className="py-3 px-3 text-right">
-                    <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       Total
                     </MT.Typography>
                   </td>
                   <td className="py-3 px-3">
-                    <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalCollected.toLocaleString()}
                     </MT.Typography>
                   </td>
                   <td colSpan={4} className="py-3 px-3"></td>
                   <td className="py-3 px-3">
-                    <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalGrossFare.toLocaleString()}
                     </MT.Typography>
                   </td>
                   <td className="py-3 px-3">
-                    <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalGrossProfit.toLocaleString()}
                     </MT.Typography>
                   </td>
                   <td colSpan={2} className="py-3 px-3"></td>
                   <td className="py-3 px-3">
-                    <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalNettProfit.toLocaleString()}
                     </MT.Typography>
                   </td>

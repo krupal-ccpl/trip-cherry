@@ -320,13 +320,13 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
   return (
     isOpen && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-          <h2 className="text-xl font-bold mb-4">Add New Flight</h2>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Add New Flight</h2>
           
           {/* Basic Information */}
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Booking Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Booking Date</label>
               <MT.Input
                 type="date"
                 value={newFlight.bookingDate}
@@ -338,11 +338,11 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Portal</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Portal</label>
               <select
                 value={newFlight.portal}
                 onChange={(e) => setNewFlight({ ...newFlight, portal: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">Select Portal</option>
                 {portals.map((portal) => (
@@ -352,7 +352,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.portal && <p className="text-red-500 text-sm">{errors.portal}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Guest Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Guest Name</label>
               <div className="relative">
                 <input
                   ref={guestInputRef}
@@ -362,12 +362,12 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
                   onKeyDown={handleKeyDown}
                   placeholder="Type guest name..."
                   autoComplete="off"
-                  className="w-full px-3 py-2 border border-blue-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-blue-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
                 {showSuggestions && filteredGuests.length > 0 && (
                   <div
                     ref={suggestionsRef}
-                    className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
+                    className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto"
                   >
                     {filteredGuests.map((guest, index) => (
                       <div
@@ -375,8 +375,8 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
                         onClick={() => handleSuggestionClick(guest.name)}
                         className={`flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors ${
                           index === selectedSuggestionIndex
-                            ? "bg-blue-100 text-blue-900"
-                            : "hover:bg-gray-100"
+                            ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
+                            : "hover:bg-gray-100 dark:hover:bg-gray-600"
                         }`}
                       >
                         <img 
@@ -397,11 +397,11 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
           {/* Flight Details */}
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Airline</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Airline</label>
               <select
                 value={newFlight.airline}
                 onChange={(e) => setNewFlight({ ...newFlight, airline: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">Select Airline</option>
                 {airlines.map((airline) => (
@@ -411,11 +411,11 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.airline && <p className="text-red-500 text-sm">{errors.airline}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Ticket Type</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ticket Type</label>
               <select
                 value={newFlight.ticketType}
                 onChange={(e) => setNewFlight({ ...newFlight, ticketType: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 {ticketTypes.map((type) => (
                   <option key={type} value={type}>{type}</option>
@@ -423,7 +423,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Sector</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sector</label>
               <MT.Input
                 type="text"
                 value={newFlight.sector}
@@ -439,7 +439,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
           {/* Dates and PNR */}
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Departure Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Departure Date</label>
               <MT.Input
                 type="date"
                 value={newFlight.departureDate}
@@ -452,7 +452,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.departureDate && <p className="text-red-500 text-sm">{errors.departureDate}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Arrival Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Arrival Date</label>
               <MT.Input
                 type="date"
                 value={newFlight.arrivalDate}
@@ -465,7 +465,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.arrivalDate && <p className="text-red-500 text-sm">{errors.arrivalDate}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">PNR</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PNR</label>
               <MT.Input
                 type="text"
                 value={newFlight.pnr}
@@ -481,7 +481,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
           {/* Financial Details - Row 1 */}
           <div className="grid grid-cols-4 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Collected Till Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Collected Till Date</label>
               <MT.Input
                 type="number"
                 value={newFlight.collectedTillDate}
@@ -495,7 +495,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.collectedTillDate && <p className="text-red-500 text-sm">{errors.collectedTillDate}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Quoted Fare (Incl Seat & Ancillary)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quoted Fare (Incl Seat & Ancillary)</label>
               <MT.Input
                 type="number"
                 value={newFlight.quotedFareInclSeatAncillary}
@@ -509,7 +509,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.quotedFareInclSeatAncillary && <p className="text-red-500 text-sm">{errors.quotedFareInclSeatAncillary}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Quoted Fare (Excl Seat & Ancillary)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quoted Fare (Excl Seat & Ancillary)</label>
               <MT.Input
                 type="number"
                 value={newFlight.quotedFareExclSeatAncillary}
@@ -523,7 +523,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.quotedFareExclSeatAncillary && <p className="text-red-500 text-sm">{errors.quotedFareExclSeatAncillary}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Seat</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seat</label>
               <MT.Input
                 type="number"
                 value={newFlight.seat}
@@ -541,7 +541,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
           {/* Financial Details - Row 2 */}
           <div className="grid grid-cols-4 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Ancillary (Luggage/Meal)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ancillary (Luggage/Meal)</label>
               <MT.Input
                 type="number"
                 value={newFlight.ancillary}
@@ -555,7 +555,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.ancillary && <p className="text-red-500 text-sm">{errors.ancillary}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gross Fare</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gross Fare</label>
               <MT.Input
                 type="number"
                 value={newFlight.grossFare}
@@ -569,7 +569,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.grossFare && <p className="text-red-500 text-sm">{errors.grossFare}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gross Profit</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gross Profit</label>
               <MT.Input
                 type="number"
                 value={newFlight.grossProfit}
@@ -583,7 +583,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.grossProfit && <p className="text-red-500 text-sm">{errors.grossProfit}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">GPAT</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GPAT</label>
               <MT.Input
                 type="number"
                 value={newFlight.gpat}
@@ -601,7 +601,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
           {/* Financial Details - Row 3 */}
           <div className="grid grid-cols-4 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Net Fare</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Net Fare</label>
               <MT.Input
                 type="number"
                 value={newFlight.netFare}
@@ -615,7 +615,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.netFare && <p className="text-red-500 text-sm">{errors.netFare}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Net Profit</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Net Profit</label>
               <MT.Input
                 type="number"
                 value={newFlight.netProfit}
@@ -629,7 +629,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.netProfit && <p className="text-red-500 text-sm">{errors.netProfit}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">NPAT</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">NPAT</label>
               <MT.Input
                 type="number"
                 value={newFlight.npat}
@@ -643,7 +643,7 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
               {errors.npat && <p className="text-red-500 text-sm">{errors.npat}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Cumulative Profit</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cumulative Profit</label>
               <MT.Input
                 type="number"
                 value={newFlight.cumuProfit}
@@ -659,8 +659,8 @@ export default function AddFlightModal({ isOpen, onClose, onAdd }: AddFlightModa
           </div>
 
           <div className="flex justify-end gap-2 mt-6">
-            <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">Cancel</button>
-            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded">Add Flight</button>
+            <button onClick={onClose} className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500">Cancel</button>
+            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Add Flight</button>
           </div>
         </div>
       </div>

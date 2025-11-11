@@ -64,12 +64,12 @@ export default function PaymentModal({ isOpen, onClose, onAdd, maxAmount, curren
   return (
     isOpen && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg max-w-md w-full">
-          <h2 className="text-xl font-bold mb-4 text-blue-gray-900">Add Payment</h2>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full">
+          <h2 className="text-xl font-bold mb-4 text-blue-gray-900 dark:text-white">Add Payment</h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Amount (₹)
               </label>
               <MT.Input
@@ -86,14 +86,14 @@ export default function PaymentModal({ isOpen, onClose, onAdd, maxAmount, curren
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Maximum allowed: ₹{(maxAmount - currentCollected).toLocaleString()}
               </p>
               {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Payment Method
               </label>
               <div className="flex gap-4">

@@ -23,19 +23,19 @@ export default function SignIn() {
   };
 
   return (
-    <section className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
-      <Card color="white" shadow={true} className="p-8 w-full max-w-md" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+    <section className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 p-4">
+      <Card color="white" shadow={true} className="p-8 w-full max-w-md bg-white dark:bg-gray-800" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
         <div className="text-center mb-6">
-          <Typography variant="h2" className="font-bold mb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+          <Typography variant="h2" className="font-bold mb-2 text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             Trip Cherry
           </Typography>
-          <Typography color="gray" className="font-normal" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+          <Typography color="gray" className="font-normal text-gray-600 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             Sign in to your account
           </Typography>
         </div>
         <form onSubmit={handleSignIn} className="space-y-6">
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">
+            <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               Your email <span className="text-red-500">*</span>
             </label>
             <Input
@@ -51,7 +51,7 @@ export default function SignIn() {
             />
           </div>
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">
+            <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               Password <span className="text-red-500">*</span>
             </label>
             <Input
@@ -77,7 +77,7 @@ export default function SignIn() {
               onPointerLeaveCapture={undefined}
               crossOrigin={undefined}
             />
-            <Typography variant="small" className="font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+            <Typography variant="small" className="font-medium text-gray-900 dark:text-gray-100" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               <a href="#">
                 Forgot Password
               </a>

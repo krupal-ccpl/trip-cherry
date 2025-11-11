@@ -388,11 +388,11 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
   return (
     isOpen && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <h2 className="text-xl font-bold mb-4">{booking ? 'Edit Booking' : 'Add New Booking'}</h2>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{booking ? 'Edit Booking' : 'Add New Booking'}</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Name</label>
               <div className="relative">
                 <input
                   ref={customerInputRef}
@@ -402,12 +402,12 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                   onKeyDown={handleKeyDown}
                   placeholder="Type customer name..."
                   autoComplete="off"
-                  className="w-full px-3 py-2 border border-blue-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-blue-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
                 {showSuggestions && filteredCustomers.length > 0 && (
                   <div
                     ref={suggestionsRef}
-                    className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
+                    className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto"
                   >
                     {filteredCustomers.map((customer, index) => (
                       <div
@@ -415,8 +415,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                         onClick={() => handleSuggestionClick(customer.name)}
                         className={`flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors ${
                           index === selectedSuggestionIndex
-                            ? "bg-blue-100 text-blue-900"
-                            : "hover:bg-gray-100"
+                            ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
+                            : "hover:bg-gray-100 dark:hover:bg-gray-600"
                         }`}
                       >
                         <img 
@@ -436,7 +436,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
               {errors.customerName && <p className="text-red-500 text-sm">{errors.customerName}</p>}
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
               <input
                 type="text"
                 value={newBooking.phone}
@@ -454,27 +454,27 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                 }}
                 placeholder="10-digit phone number"
                 maxLength={10}
-                className="w-full px-3 py-2 border border-blue-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-blue-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
               {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
               <select
                 value={newBooking.type}
                 onChange={(e) => setNewBooking({ ...newBooking, type: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="Domestic">Domestic</option>
                 <option value="International">International</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Destination</label>
               <select
                 value={newBooking.destination}
                 onChange={(e) => setNewBooking({ ...newBooking, destination: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">Select Destination</option>
                 {allDestinations.map((dest) => (
@@ -484,7 +484,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
               {errors.destination && <p className="text-red-500 text-sm">{errors.destination}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Arrival Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Arrival Date</label>
               <MT.Input
                 type="date"
                 value={newBooking.arrivalDate}
@@ -497,7 +497,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
               {errors.arrivalDate && <p className="text-red-500 text-sm">{errors.arrivalDate}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Departure Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Departure Date</label>
               <MT.Input
                 type="date"
                 value={newBooking.departureDate}
@@ -512,7 +512,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
           </div>
           <div className="grid grid-cols-3 gap-4 mt-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">To Be Collected (TCS)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Be Collected (TCS)</label>
               <MT.Input
                 type="number"
                 value={newBooking.toBeCollectedTCS}
@@ -526,7 +526,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
               {errors.toBeCollectedTCS && <p className="text-red-500 text-sm">{errors.toBeCollectedTCS}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">To Be Collected (GST)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Be Collected (GST)</label>
               <MT.Input
                 type="number"
                 value={newBooking.toBeCollectedGST}
@@ -540,7 +540,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
               {errors.toBeCollectedGST && <p className="text-red-500 text-sm">{errors.toBeCollectedGST}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Collected Till Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Collected Till Date</label>
               <MT.Input
                 type="number"
                 value={newBooking.collectedTillDate}
@@ -556,7 +556,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Profit</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profit</label>
               <MT.Input
                 type="number"
                 value={newBooking.profit}
@@ -570,7 +570,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
               {errors.profit && <p className="text-red-500 text-sm">{errors.profit}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Profit Booked Till Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profit Booked Till Date</label>
               <MT.Input
                 type="number"
                 value={newBooking.profitBookedTillDate}
@@ -585,8 +585,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
             </div>
           </div>
           <div className="flex justify-end gap-2 mt-4">
-            <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">Cancel</button>
-            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded">{booking ? 'Update Booking' : 'Add Booking'}</button>
+            <button onClick={onClose} className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500">Cancel</button>
+            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{booking ? 'Update Booking' : 'Add Booking'}</button>
           </div>
         </div>
       </div>

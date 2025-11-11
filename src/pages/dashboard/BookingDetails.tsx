@@ -975,7 +975,7 @@ export default function BookingDetails() {
       {/* Header with Back Button */}
       <div className="mb-6">
         <MT.Button 
-          className="flex items-center gap-2 mb-4 bg-white text-blue-gray-700 shadow-md hover:shadow-lg transition-all border border-gray-300"
+          className="flex items-center gap-2 mb-4 bg-white dark:bg-gray-700 text-blue-gray-700 dark:text-gray-200 shadow-md hover:shadow-lg transition-all border border-gray-300 dark:border-gray-600"
           onClick={() => navigate("/dashboard/bookings")}
           placeholder={undefined} 
           onPointerEnterCapture={undefined} 
@@ -987,10 +987,10 @@ export default function BookingDetails() {
         
         <div className="flex justify-between items-center">
           <div>
-            <MT.Typography variant="h4" color="blue-gray" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+            <MT.Typography variant="h4" color="blue-gray" className="dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               Booking Details - {booking.customerName}
             </MT.Typography>
-            <MT.Typography variant="small" color="gray" className="mt-1" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+            <MT.Typography variant="small" color="gray" className="mt-1 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               {booking.destination} • {booking.bookingDate}
             </MT.Typography>
           </div>
@@ -1002,7 +1002,7 @@ export default function BookingDetails() {
         </div>
 
         {/* Comprehensive Booking Details - Expandable/Collapsible */}
-        <MT.Card className="shadow-lg border border-gray-100 mt-6" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+        <MT.Card className="shadow-lg border border-gray-100 mt-6 bg-white dark:bg-gray-800 dark:border-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
           <div
             className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl cursor-pointer hover:from-blue-700 hover:to-blue-800 transition-all"
             onClick={() => setIsBookingDetailsExpanded(!isBookingDetailsExpanded)}
@@ -1034,40 +1034,40 @@ export default function BookingDetails() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Basic Information */}
                 <div className="space-y-4">
-                  <MT.Typography variant="h6" color="blue-gray" className="font-semibold border-b border-gray-200 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                  <MT.Typography variant="h6" color="blue-gray" className="font-semibold border-b border-gray-200 pb-2 dark:text-white dark:border-gray-600" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                     Basic Information
                   </MT.Typography>
 
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Booking ID:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         #{booking.id}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Customer Name:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         {booking.customerName}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Phone Number:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         {booking.phone || 'N/A'}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Booking Type:
                       </MT.Typography>
                       <MT.Chip
@@ -1078,19 +1078,19 @@ export default function BookingDetails() {
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Destination:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         {booking.destination}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Booking Date:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         {formatDateToDisplay(booking.bookingDate)}
                       </MT.Typography>
                     </div>
@@ -1099,43 +1099,43 @@ export default function BookingDetails() {
 
                 {/* Travel Dates */}
                 <div className="space-y-4">
-                  <MT.Typography variant="h6" color="blue-gray" className="font-semibold border-b border-gray-200 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                  <MT.Typography variant="h6" color="blue-gray" className="font-semibold border-b border-gray-200 pb-2 dark:text-white dark:border-gray-600" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                     Travel Dates
                   </MT.Typography>
 
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Arrival Date:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         {formatDateToDisplay(booking.arrivalDate)}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Departure Date:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         {formatDateToDisplay(booking.departureDate)}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Tour Start Month:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         {booking.tourStartMonth}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Tour End Month:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="blue-gray" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="blue-gray" className="font-semibold dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         {booking.tourEndMonth}
                       </MT.Typography>
                     </div>
@@ -1144,61 +1144,61 @@ export default function BookingDetails() {
 
                 {/* Financial Information */}
                 <div className="space-y-4">
-                  <MT.Typography variant="h6" color="blue-gray" className="font-semibold border-b border-gray-200 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                  <MT.Typography variant="h6" color="blue-gray" className="font-semibold border-b border-gray-200 pb-2 dark:text-white dark:border-gray-600" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                     Financial Details
                   </MT.Typography>
 
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         TCS Amount:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="green" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="green" className="font-bold dark:text-green-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         ₹{booking.toBeCollectedTCS?.toLocaleString() || '0'}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         GST Amount:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="green" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="green" className="font-bold dark:text-green-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         ₹{booking.toBeCollectedGST?.toLocaleString() || '0'}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Collected Till Date:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="blue" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="blue" className="font-bold dark:text-blue-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         ₹{booking.collectedTillDate?.toLocaleString() || '0'}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Collection Remaining:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="orange" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="orange" className="font-bold dark:text-orange-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         ₹{booking.collectionRemaining?.toLocaleString() || '0'}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Total Profit:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="purple" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="purple" className="font-bold dark:text-purple-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         ₹{booking.profit?.toLocaleString() || '0'}
                       </MT.Typography>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <MT.Typography variant="small" color="gray" className="font-medium" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="gray" className="font-medium dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         Profit Booked Till Date:
                       </MT.Typography>
-                      <MT.Typography variant="small" color="purple" className="font-bold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.Typography variant="small" color="purple" className="font-bold dark:text-purple-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                         ₹{booking.profitBookedTillDate?.toLocaleString() || '0'}
                       </MT.Typography>
                     </div>
@@ -1212,7 +1212,7 @@ export default function BookingDetails() {
 
       <div className="flex flex-col gap-8">
         {/* Booking Payments Table */}
-        <MT.Card className="shadow-lg border border-gray-100" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+        <MT.Card className="shadow-lg border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl flex justify-between items-center">
             <MT.Typography variant="h6" color="white" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               Services
@@ -1230,7 +1230,7 @@ export default function BookingDetails() {
           </div>
 
           {/* Search, Sort, Filter Controls for Services */}
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 dark:bg-gray-700 dark:border-gray-600">
             <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
               {/* Search */}
               <div className="relative flex-1 max-w-md">
@@ -1278,7 +1278,7 @@ export default function BookingDetails() {
           <MT.CardBody className="overflow-x-auto px-0 pt-0 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             <table className="w-full min-w-[1200px] table-auto">
               <thead>
-                <tr className="bg-blue-50">
+                <tr className="bg-blue-50 dark:bg-blue-900/50">
                   {[
                     { key: "productType", label: "PRODUCT TYPE" },
                     { key: "bookedProduct", label: "BOOKED PRODUCT" },
@@ -1296,7 +1296,7 @@ export default function BookingDetails() {
                       <div className="flex items-center justify-between">
                         <MT.Typography
                           variant="small"
-                          className="text-xs font-bold text-blue-gray-700 uppercase"
+                          className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
                           placeholder={undefined}
                           onPointerEnterCapture={undefined}
                           onPointerLeaveCapture={undefined}
@@ -1319,7 +1319,7 @@ export default function BookingDetails() {
                     const rowClass = `${!isLastRow ? "border-b border-gray-200" : ""}`;
 
                     return (
-                      <tr key={index} className="hover:bg-gray-50 transition-colors">
+                      <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                         <td className={`py-3 px-4 ${rowClass} relative group`}>
                           {editingService?.index === index && editingService?.field === 'productType' ? (
                             <div className="flex items-center gap-2">
@@ -1338,7 +1338,7 @@ export default function BookingDetails() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.productType}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingService(index, 'productType', item.productType)} />
@@ -1363,7 +1363,7 @@ export default function BookingDetails() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.bookedProduct}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingService(index, 'bookedProduct', item.bookedProduct)} />
@@ -1400,7 +1400,7 @@ export default function BookingDetails() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.supplierReference}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingService(index, 'supplierReference', item.supplierReference)} />
@@ -1424,7 +1424,7 @@ export default function BookingDetails() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.invRequired}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingService(index, 'invRequired', item.invRequired === 'Yes')} />
@@ -1447,7 +1447,7 @@ export default function BookingDetails() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.toBePaid.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingService(index, 'toBePaid', item.toBePaid)} />
@@ -1470,7 +1470,7 @@ export default function BookingDetails() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.paidTillDate.toLocaleString()}
                               </MT.Typography>
                               <PlusIcon 
@@ -1486,7 +1486,7 @@ export default function BookingDetails() {
                         </td>
                         <td className={`py-3 px-4 ${rowClass}`}>
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               ₹{item.paymentRemaining.toLocaleString()}
                             </MT.Typography>
                             <ClockIcon 
@@ -1662,33 +1662,33 @@ export default function BookingDetails() {
                 )}
                 
                 {/* Total Row */}
-                <tr className="bg-blue-50 font-bold border-t-2 border-blue-200">
+                <tr className="bg-blue-50 font-bold border-t-2 border-blue-200 dark:bg-blue-900/50 dark:border-blue-700">
                   <td colSpan={4} className="py-3 px-4 text-right">
-                    <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       Total
                     </MT.Typography>
                   </td>
                   <td className="py-3 px-4">
-                    <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalToBePaid.toLocaleString()}
                     </MT.Typography>
-                    <MT.Typography className="text-xs font-medium text-gray-600" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-xs font-medium text-gray-600 dark:text-gray-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       Amount To Be Paid
                     </MT.Typography>
                   </td>
                   <td className="py-3 px-4">
-                    <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalPaidTillDate.toLocaleString()}
                     </MT.Typography>
-                    <MT.Typography className="text-xs font-medium text-gray-600" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-xs font-medium text-gray-600 dark:text-gray-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       Amount Paid
                     </MT.Typography>
                   </td>
                   <td className="py-3 px-4">
-                    <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalPaymentRemaining.toLocaleString()}
                     </MT.Typography>
-                    <MT.Typography className="text-xs font-medium text-gray-600" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-xs font-medium text-gray-600 dark:text-gray-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       Balance Payment
                     </MT.Typography>
                   </td>
@@ -1699,7 +1699,7 @@ export default function BookingDetails() {
         </MT.Card>
 
         {/* Guest Tour Table */}
-        <MT.Card className="shadow-lg border border-gray-100" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+        <MT.Card className="shadow-lg border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl flex justify-between items-center">
             <MT.Typography variant="h6" color="white" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               Guest Tour Details
@@ -1717,7 +1717,7 @@ export default function BookingDetails() {
           </div>
 
           {/* Search, Sort, Filter Controls for Guests */}
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 dark:bg-gray-700 dark:border-gray-600">
             <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
               {/* Search */}
               <div className="relative flex-1 max-w-md">
@@ -1805,7 +1805,7 @@ export default function BookingDetails() {
           <MT.CardBody className="overflow-x-auto px-0 pt-0 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             <table className="w-full min-w-[1600px] table-auto">
               <thead>
-                <tr className="bg-blue-50">
+                <tr className="bg-blue-50 dark:bg-blue-900/50">
                   {[
                     { key: "guestName", label: "NAME OF GUEST" },
                     { key: "destination", label: "DESTINATION" },
@@ -1827,7 +1827,7 @@ export default function BookingDetails() {
                       <div className="flex items-center justify-between">
                         <MT.Typography
                           variant="small"
-                          className="text-xs font-bold text-blue-gray-700 uppercase"
+                          className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
                           placeholder={undefined}
                           onPointerEnterCapture={undefined}
                           onPointerLeaveCapture={undefined}
@@ -1850,7 +1850,7 @@ export default function BookingDetails() {
                     const rowClass = `${!isLastRow ? "border-b border-gray-200" : ""}`;
 
                     return (
-                      <tr key={index} className="hover:bg-blue-50 transition-colors">
+                      <tr key={index} className="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
                           {editingGuest?.index === index && editingGuest?.field === 'guestName' ? (
                             <div className="relative flex items-center gap-2">
@@ -1863,12 +1863,12 @@ export default function BookingDetails() {
                                 placeholder="Type guest name..."
                               />
                               {showGuestSuggestions && guestSuggestions.length > 0 && (
-                                <div className="absolute z-50 w-full mt-20 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                                <div className="absolute z-50 w-full mt-20 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-40 overflow-y-auto">
                                   {guestSuggestions.map((guest, idx) => (
                                     <div
                                       key={idx}
                                       onClick={() => selectGuestSuggestion(guest.name)}
-                                      className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100"
+                                      className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-900 dark:text-white"
                                     >
                                       <img src={guest.avatar} alt={guest.name} className="w-6 h-6 rounded-full" />
                                       <span className="text-sm">{guest.name}</span>
@@ -1881,7 +1881,7 @@ export default function BookingDetails() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.guestName}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingGuest(index, 'guestName', item.guestName)} />
@@ -1894,7 +1894,7 @@ export default function BookingDetails() {
                               <select
                                 value={editValues.destination !== undefined ? editValues.destination : item.destination}
                                 onChange={(e) => setEditValues({ ...editValues, destination: e.target.value })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               >
                                 <option value="">Select Destination</option>
                                 {destinations.map((dest) => (
@@ -1906,7 +1906,7 @@ export default function BookingDetails() {
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.destination}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingGuest(index, 'destination', item.destination)} />
@@ -1914,12 +1914,12 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-3 ${rowClass}`}>
-                          <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                          <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                             {item.tourStartMonth}
                           </MT.Typography>
                         </td>
                         <td className={`py-3 px-3 ${rowClass}`}>
-                          <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                          <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                             {item.tourEndMonth}
                           </MT.Typography>
                         </td>
@@ -1930,14 +1930,14 @@ export default function BookingDetails() {
                                 type="date"
                                 value={editValues.arrivalDate !== undefined ? editValues.arrivalDate : item.arrivalDate}
                                 onChange={(e) => setEditValues({ ...editValues, arrivalDate: e.target.value })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={saveGuestEdit} />
                               <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" onClick={cancelGuestEdit} />
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.arrivalDate}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingGuest(index, 'arrivalDate', item.arrivalDate)} />
@@ -1951,14 +1951,14 @@ export default function BookingDetails() {
                                 type="date"
                                 value={editValues.departureDate !== undefined ? editValues.departureDate : item.departureDate}
                                 onChange={(e) => setEditValues({ ...editValues, departureDate: e.target.value })}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={saveGuestEdit} />
                               <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" onClick={cancelGuestEdit} />
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm text-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 {item.departureDate}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingGuest(index, 'departureDate', item.departureDate)} />
@@ -1973,14 +1973,14 @@ export default function BookingDetails() {
                                 value={editValues.toBeCollected !== undefined ? editValues.toBeCollected : item.toBeCollected}
                                 onChange={(e) => setEditValues({ ...editValues, toBeCollected: e.target.value })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={saveGuestEdit} />
                               <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" onClick={cancelGuestEdit} />
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.toBeCollected.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingGuest(index, 'toBeCollected', item.toBeCollected)} />
@@ -1989,7 +1989,7 @@ export default function BookingDetails() {
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               ₹{item.collectedTillDate.toLocaleString()}
                             </MT.Typography>
                             <PlusIcon 
@@ -2004,7 +2004,7 @@ export default function BookingDetails() {
                         </td>
                         <td className={`py-3 px-3 ${rowClass}`}>
                           <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm font-medium text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                               ₹{item.balanceCollection.toLocaleString()}
                             </MT.Typography>
                             <ClockIcon 
@@ -2025,14 +2025,14 @@ export default function BookingDetails() {
                                 value={editValues.profit !== undefined ? editValues.profit : item.profit}
                                 onChange={(e) => setEditValues({ ...editValues, profit: e.target.value })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={saveGuestEdit} />
                               <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" onClick={cancelGuestEdit} />
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.profit.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingGuest(index, 'profit', item.profit)} />
@@ -2047,14 +2047,14 @@ export default function BookingDetails() {
                                 value={editValues.profitBookedTillDate !== undefined ? editValues.profitBookedTillDate : item.profitBookedTillDate}
                                 onChange={(e) => setEditValues({ ...editValues, profitBookedTillDate: e.target.value })}
                                 onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                               />
                               <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={saveGuestEdit} />
                               <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" onClick={cancelGuestEdit} />
                             </div>
                           ) : (
                             <div className="flex items-center justify-between">
-                              <MT.Typography className="text-sm font-bold text-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              <MT.Typography className="text-sm font-bold text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                                 ₹{item.profitBookedTillDate.toLocaleString()}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingGuest(index, 'profitBookedTillDate', item.profitBookedTillDate)} />
@@ -2068,7 +2068,7 @@ export default function BookingDetails() {
                 
                 {/* Empty Row for Inline ADD functionality - ENTIRE ROW APPROACH */}
                 {hasEmptyGuestRow && (
-                  <tr className="hover:bg-green-50 transition-colors border-b border-dashed border-gray-300">
+                  <tr className="hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors border-b border-dashed border-gray-300 dark:border-gray-600">
                     {isEditingNewGuest ? (
                       // EDITING MODE: All fields become inputs, single Save/Cancel for entire row
                       <>
@@ -2078,16 +2078,16 @@ export default function BookingDetails() {
                             type="text"
                             value={newGuestData.guestName}
                             onChange={(e) => handleNewGuestChange('guestName', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             placeholder="Type guest name..."
                           />
                           {showGuestSuggestions && guestSuggestions.length > 0 && (
-                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-40 overflow-y-auto">
                               {guestSuggestions.map((guest, idx) => (
                                 <div
                                   key={idx}
                                   onMouseDown={(e) => selectNewGuestSuggestion(guest.name, e)}
-                                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100"
+                                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-900 dark:text-white"
                                 >
                                   <img src={guest.avatar} alt={guest.name} className="w-6 h-6 rounded-full" />
                                   <span className="text-sm">{guest.name}</span>
@@ -2100,7 +2100,7 @@ export default function BookingDetails() {
                           <select
                             value={newGuestData.destination}
                             onChange={(e) => handleNewGuestChange('destination', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                           >
                             <option value="">Select Destination</option>
                             {destinations.map((dest) => (
@@ -2113,7 +2113,7 @@ export default function BookingDetails() {
                             type="date"
                             value={newGuestData.arrivalDate}
                             onChange={(e) => handleNewGuestChange('arrivalDate', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                           />
                         </td>
                         <td className="py-3 px-3">
@@ -2121,7 +2121,7 @@ export default function BookingDetails() {
                             type="date"
                             value={newGuestData.departureDate}
                             onChange={(e) => handleNewGuestChange('departureDate', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                           />
                         </td>
                         <td className="py-3 px-3">
@@ -2140,7 +2140,7 @@ export default function BookingDetails() {
                             value={newGuestData.toBeCollected}
                             onChange={(e) => handleNewGuestChange('toBeCollected', e.target.value)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             min="0"
                             placeholder="To Be Collected"
                           />
@@ -2151,7 +2151,7 @@ export default function BookingDetails() {
                             value={newGuestData.collectedTillDate}
                             onChange={(e) => handleNewGuestChange('collectedTillDate', e.target.value)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             min="0"
                             placeholder="Collected"
                           />
@@ -2167,7 +2167,7 @@ export default function BookingDetails() {
                             value={newGuestData.profit}
                             onChange={(e) => handleNewGuestChange('profit', e.target.value)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             min="0"
                             placeholder="Profit"
                           />
@@ -2178,7 +2178,7 @@ export default function BookingDetails() {
                             value={newGuestData.profitBookedTillDate}
                             onChange={(e) => handleNewGuestChange('profitBookedTillDate', e.target.value)}
                             onKeyDown={handleNumberInput}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             min="0"
                             placeholder="Profit Booked"
                           />
@@ -2269,34 +2269,34 @@ export default function BookingDetails() {
                 )}
                 
                 {/* Total Row */}
-                <tr className="bg-blue-100 font-bold border-t-2 border-blue-300">
+                <tr className="bg-blue-100 font-bold border-t-2 border-blue-300 dark:bg-blue-900/50 dark:border-blue-700">
                   <td colSpan={6} className="py-3 px-3 text-left">
-                    <MT.Typography className="text-sm font-bold text-blue-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-blue-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       Total
                     </MT.Typography>
                   </td>
                   <td className="py-3 px-3">
-                    <MT.Typography className="text-sm font-bold text-blue-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-blue-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalToBeCollected.toLocaleString()}
                     </MT.Typography>
                   </td>
                   <td className="py-3 px-3">
-                    <MT.Typography className="text-sm font-bold text-blue-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-blue-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalCollectedTillDate.toLocaleString()}
                     </MT.Typography>
                   </td>
                   <td className="py-3 px-3">
-                    <MT.Typography className="text-sm font-bold text-blue-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-blue-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalBalanceCollection.toLocaleString()}
                     </MT.Typography>
                   </td>
                   <td className="py-3 px-3">
-                    <MT.Typography className="text-sm font-bold text-blue-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-blue-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalProfit.toLocaleString()}
                     </MT.Typography>
                   </td>
                   <td className="py-3 px-3">
-                    <MT.Typography className="text-sm font-bold text-blue-gray-900" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                    <MT.Typography className="text-sm font-bold text-blue-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       ₹{totalProfitBookedTillDate.toLocaleString()}
                     </MT.Typography>
                   </td>

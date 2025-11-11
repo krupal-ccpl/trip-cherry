@@ -10,7 +10,7 @@ import {
   MoonIcon,
   Bars3Icon,
 } from "@heroicons/react/24/solid";
-import { useState } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface NavbarProps {
   openSidenav: boolean;
@@ -19,7 +19,7 @@ interface NavbarProps {
 
 export default function Navbar({ openSidenav, setOpenSidenav }: NavbarProps) {
   const location = useLocation();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const getPageName = () => {
     const path = location.pathname;
@@ -28,14 +28,10 @@ export default function Navbar({ openSidenav, setOpenSidenav }: NavbarProps) {
     return 'Dashboard';
   };
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
   return (
     <MTNavbar
       color="white"
-      className="rounded-xl transition-all px-0 py-1 shadow-md"
+      className="rounded-xl transition-all px-0 py-1 shadow-md bg-white dark:bg-gray-800"
       fullWidth
       placeholder={undefined}
       onPointerEnterCapture={undefined}
@@ -55,7 +51,7 @@ export default function Navbar({ openSidenav, setOpenSidenav }: NavbarProps) {
           >
             <Bars3Icon className="h-6 w-6" />
           </IconButton>
-          <Typography variant="h6" color="blue-gray" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+          <Typography variant="h6" color="blue-gray" className="dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             {getPageName()}
           </Typography>
         </div>
@@ -69,14 +65,14 @@ export default function Navbar({ openSidenav, setOpenSidenav }: NavbarProps) {
             onPointerEnterCapture={undefined} 
             onPointerLeaveCapture={undefined}
           >
-            {isDarkMode ? (
-              <SunIcon className="h-5 w-5 text-blue-gray-500" />
+            {theme === 'dark' ? (
+              <SunIcon className="h-5 w-5 text-blue-gray-500 dark:text-gray-400" />
             ) : (
-              <MoonIcon className="h-5 w-5 text-blue-gray-500" />
+              <MoonIcon className="h-5 w-5 text-blue-gray-500 dark:text-gray-400" />
             )}
           </IconButton>
-          <IconButton variant="text" color="blue-gray" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-            <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
+          <IconButton variant="text" color="blue-gray" className="dark:text-gray-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+            <UserCircleIcon className="h-5 w-5 text-blue-gray-500 dark:text-gray-400" />
           </IconButton>
         </div>
       </div>
