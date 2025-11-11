@@ -1,15 +1,16 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import {
   Navbar as MTNavbar,
   Typography,
-  Button,
   IconButton,
 } from "@material-tailwind/react";
 import {
   UserCircleIcon,
-  ArrowRightOnRectangleIcon,
+  SunIcon,
+  MoonIcon,
   Bars3Icon,
 } from "@heroicons/react/24/solid";
+import { useState } from 'react';
 
 interface NavbarProps {
   openSidenav: boolean;
@@ -18,7 +19,7 @@ interface NavbarProps {
 
 export default function Navbar({ openSidenav, setOpenSidenav }: NavbarProps) {
   const location = useLocation();
-  const navigate = useNavigate();
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const getPageName = () => {
     const path = location.pathname;
@@ -27,8 +28,8 @@ export default function Navbar({ openSidenav, setOpenSidenav }: NavbarProps) {
     return 'Dashboard';
   };
 
-  const handleLogout = () => {
-    navigate('/auth/sign-in');
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
   };
 
   return (
@@ -59,21 +60,24 @@ export default function Navbar({ openSidenav, setOpenSidenav }: NavbarProps) {
           </Typography>
         </div>
         <div className="flex items-center gap-2">
+          <IconButton 
+            variant="text" 
+            color="blue-gray" 
+            // @ts-expect-error: IconButton has onClick prop
+            onClick={toggleTheme} 
+            placeholder={undefined} 
+            onPointerEnterCapture={undefined} 
+            onPointerLeaveCapture={undefined}
+          >
+            {isDarkMode ? (
+              <SunIcon className="h-5 w-5 text-blue-gray-500" />
+            ) : (
+              <MoonIcon className="h-5 w-5 text-blue-gray-500" />
+            )}
+          </IconButton>
           <IconButton variant="text" color="blue-gray" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
           </IconButton>
-          <Button
-            variant="text"
-            color="blue-gray"
-            className="flex items-center gap-2"
-            onClick={handleLogout}
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            <ArrowRightOnRectangleIcon className="h-5 w-5" />
-            <span className="hidden md:inline">Sign Out</span>
-          </Button>
         </div>
       </div>
     </MTNavbar>

@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Typography,
   List,
@@ -11,6 +11,7 @@ import {
   XMarkIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/solid";
 
 const routes = [
@@ -35,6 +36,22 @@ interface SidebarProps {
 
 export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: SidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Close sidebar on mobile before navigating to sign-in
+    if (open) {
+      setOpen(false);
+    }
+    navigate('/auth/sign-in');
+  };
+
+  const handleMenuClick = () => {
+    // Close sidebar on mobile when menu item is clicked
+    if (open) {
+      setOpen(false);
+    }
+  };
 
   // Helper function to check if a route is active
   const isRouteActive = (path: string) => {
@@ -53,7 +70,7 @@ export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: Side
         }`}
       >
         <div className="relative border-b border-blue-gray-50">
-          <Link to="/dashboard/bookings" className={`flex items-center gap-4 py-6 ${collapsed ? 'px-2' : 'px-8'}`}>
+          <Link to="/dashboard/bookings" className={`flex items-center gap-4 py-6 ${collapsed ? 'px-2' : 'px-8'}`} onClick={handleMenuClick}>
             <Typography variant="h6" color="blue-gray" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               {!collapsed && "Trip Cherry"}
             </Typography>
@@ -81,7 +98,7 @@ export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: Side
               {routes.map(({ icon: Icon, name, path }) => {
                 const isActive = isRouteActive(path);
                 return (
-                  <Link to={path} key={name}>
+                  <Link to={path} key={name} onClick={handleMenuClick}>
                     <div
                       className={`
                         transition-all duration-200 flex justify-center items-center h-12 rounded-lg cursor-pointer
@@ -102,7 +119,7 @@ export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: Side
               {routes.map(({ icon: Icon, name, path }) => {
                 const isActive = isRouteActive(path);
                 return (
-                  <Link to={path} key={name}>
+                  <Link to={path} key={name} onClick={handleMenuClick}>
                     <ListItem
                       className={`
                         transition-all duration-200 mb-2 rounded-lg
@@ -125,6 +142,18 @@ export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: Side
               })}
             </List>
           )}
+        </div>
+        <div className={`absolute bottom-4 ${collapsed ? 'left-1/2 -translate-x-1/2' : 'left-4'} w-auto`}>
+          <button
+            onClick={handleLogout}
+            className={`
+              flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:bg-red-50 text-red-600
+              ${collapsed ? 'justify-center' : ''}
+            `}
+          >
+            <ArrowRightOnRectangleIcon className="h-5 w-5" />
+            {!collapsed && <span className="font-medium">Sign Out</span>}
+          </button>
         </div>
       </aside>
     </>
