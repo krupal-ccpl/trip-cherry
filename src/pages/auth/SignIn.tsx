@@ -69,7 +69,7 @@ export default function SignIn() {
           <div className="flex items-center justify-between">
             <Checkbox
               label={
-                <Typography color="gray" className="font-normal" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                <Typography color="gray" className="font-normal text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                   Remember Me
                 </Typography>
               }

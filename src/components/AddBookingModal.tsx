@@ -554,36 +554,38 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
               {errors.collectedTillDate && <p className="text-red-500 text-sm">{errors.collectedTillDate}</p>}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profit</label>
-              <MT.Input
-                type="number"
-                value={newBooking.profit}
-                onChange={(e) => setNewBooking({ ...newBooking, profit: e.target.value })}
-                onKeyDown={handleNumberInput}
-                min="0"
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              />
-              {errors.profit && <p className="text-red-500 text-sm">{errors.profit}</p>}
+          {booking && (
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profit</label>
+                <MT.Input
+                  type="number"
+                  value={newBooking.profit}
+                  onChange={(e) => setNewBooking({ ...newBooking, profit: e.target.value })}
+                  onKeyDown={handleNumberInput}
+                  min="0"
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                />
+                {errors.profit && <p className="text-red-500 text-sm">{errors.profit}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profit Booked Till Date</label>
+                <MT.Input
+                  type="number"
+                  value={newBooking.profitBookedTillDate}
+                  onChange={(e) => setNewBooking({ ...newBooking, profitBookedTillDate: e.target.value })}
+                  onKeyDown={handleNumberInput}
+                  min="0"
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                />
+                {errors.profitBookedTillDate && <p className="text-red-500 text-sm">{errors.profitBookedTillDate}</p>}
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profit Booked Till Date</label>
-              <MT.Input
-                type="number"
-                value={newBooking.profitBookedTillDate}
-                onChange={(e) => setNewBooking({ ...newBooking, profitBookedTillDate: e.target.value })}
-                onKeyDown={handleNumberInput}
-                min="0"
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              />
-              {errors.profitBookedTillDate && <p className="text-red-500 text-sm">{errors.profitBookedTillDate}</p>}
-            </div>
-          </div>
+          )}
           <div className="flex justify-end gap-2 mt-4">
             <button onClick={onClose} className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500">Cancel</button>
             <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{booking ? 'Update Booking' : 'Add Booking'}</button>
