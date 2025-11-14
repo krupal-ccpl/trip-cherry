@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import * as MT from "@material-tailwind/react";
-import { ArrowLeftIcon, PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon, ChevronDownIcon, ChevronUpIcon, MagnifyingGlassIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon, MagnifyingGlassIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import bookingPaymentsData from "@/data/booking-payments-data.js";
 // @ts-expect-error: JS module has no types
@@ -129,7 +129,6 @@ export default function BookingDetails() {
   });
 
   // Expand/collapse state for booking details
-  const [isBookingDetailsExpanded, setIsBookingDetailsExpanded] = useState(true);
   const [isEditBookingModalOpen, setIsEditBookingModalOpen] = useState(false);
 
   // Search, Sort, Filter state for Services table
@@ -1088,8 +1087,7 @@ export default function BookingDetails() {
             </div>
           </div>
 
-          {isBookingDetailsExpanded && (
-            <MT.CardBody className="px-6 py-6" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                      <MT.CardBody className="px-6 py-6" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Travel Details */}
                 <div className="space-y-4">
@@ -1182,7 +1180,6 @@ export default function BookingDetails() {
                 </div>
               </div>
             </MT.CardBody>
-          )}
         </MT.Card>
       </div>
 
