@@ -1796,7 +1796,7 @@ export default function BookingDetails() {
                 onPointerLeaveCapture={undefined}
               >
                 <PlusIcon className="h-4 w-4" />
-                Create Group
+                Add Group
               </MT.Button>
             </div>
           </div>

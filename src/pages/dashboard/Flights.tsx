@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import * as MT from "@material-tailwind/react";
 import { PlusIcon, PencilIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import flightsData from "@/data/flights-data.js";
 import AddFlightModal from "@/components/AddFlightModal";
+import { useInlineAutocomplete } from "@/hooks/useInlineAutocomplete";
 
 interface Flight {
   srNo: number;
@@ -46,10 +47,6 @@ export default function Flights() {
   // Inline editing state
   const [editingFlight, setEditingFlight] = useState<{ index: number; field: string } | null>(null);
   const [editValues, setEditValues] = useState<any>({});
-  const [showGuestSuggestions, setShowGuestSuggestions] = useState(false);
-  const [filteredGuests, setFilteredGuests] = useState<typeof guestNames>([]);
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
-  const guestInputRef = useRef<HTMLInputElement>(null);
   
   // Inline ADD functionality state
   const [isEditingNewRow, setIsEditingNewRow] = useState(false);
@@ -139,6 +136,15 @@ export default function Flights() {
     "Multi City"
   ];
 
+  // Use the reusable inline autocomplete hook for guest names
+  const guestAutocomplete = useInlineAutocomplete({
+    items: guestNames,
+    filterFunction: (item, query) => item.name.toLowerCase().includes(query.toLowerCase()),
+    onSelect: (guest) => {
+      setEditValues({ ...editValues, guestName: guest.name });
+    },
+  });
+
   // Inline editing functions
   const startEditingFlight = (index: number, field: string, currentValue: any) => {
     setEditingFlight({ index, field });
@@ -176,68 +182,13 @@ export default function Flights() {
     setFlights(updatedFlights);
     setEditingFlight(null);
     setEditValues({});
-    setShowGuestSuggestions(false);
-    setFilteredGuests([]);
+    guestAutocomplete.reset();
   };
 
   const cancelFlightEdit = () => {
     setEditingFlight(null);
     setEditValues({});
-    setShowGuestSuggestions(false);
-    setFilteredGuests([]);
-  };
-
-  const handleGuestChange = (value: string) => {
-    setEditValues({ ...editValues, guestName: value });
-    
-    if (value.length >= 2) {
-      const filtered = guestNames.filter(guest =>
-        guest.name.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredGuests(filtered);
-      setShowGuestSuggestions(true);
-      setSelectedSuggestionIndex(-1);
-    } else {
-      setShowGuestSuggestions(false);
-      setFilteredGuests([]);
-    }
-  };
-
-  const selectGuestSuggestion = (name: string, e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    setEditValues({ ...editValues, guestName: name });
-    setShowGuestSuggestions(false);
-    setFilteredGuests([]);
-    
-    // Focus back to input if it exists
-    setTimeout(() => {
-      if (guestInputRef.current) {
-        guestInputRef.current.focus();
-      }
-    }, 0);
-  };
-
-  const handleGuestKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showGuestSuggestions || filteredGuests.length === 0) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedSuggestionIndex(prev =>
-        prev < filteredGuests.length - 1 ? prev + 1 : prev
-      );
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedSuggestionIndex(prev => (prev > 0 ? prev - 1 : -1));
-    } else if (e.key === "Enter" && selectedSuggestionIndex >= 0) {
-      e.preventDefault();
-      selectGuestSuggestion(filteredGuests[selectedSuggestionIndex].name);
-    } else if (e.key === "Escape") {
-      setShowGuestSuggestions(false);
-      setSelectedSuggestionIndex(-1);
-    }
+    guestAutocomplete.reset();
   };
 
   const formatDateToDisplay = (isoDate: string) => {
@@ -312,21 +263,6 @@ export default function Flights() {
       (updatedData as any)[field] = value;
     }
     
-    // Handle guest name change for autocomplete
-    if (field === 'guestName') {
-      if (value.length >= 2) {
-        const filtered = guestNames.filter(guest =>
-          guest.name.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredGuests(filtered);
-        setShowGuestSuggestions(true);
-        setSelectedSuggestionIndex(-1);
-      } else {
-        setShowGuestSuggestions(false);
-        setFilteredGuests([]);
-      }
-    }
-    
     setNewRowData(updatedData);
   };
 
@@ -348,8 +284,7 @@ export default function Flights() {
     
     setFlights([...flights, newFlight]);
     setIsEditingNewRow(false);
-    setShowGuestSuggestions(false);
-    setFilteredGuests([]);
+    guestAutocomplete.reset();
     
     // Reset for next entry
     setNewRowData({
@@ -380,8 +315,7 @@ export default function Flights() {
 
   const cancelNewFlight = () => {
     setIsEditingNewRow(false);
-    setShowGuestSuggestions(false);
-    setFilteredGuests([]);
+    guestAutocomplete.reset();
     setNewRowData({
       srNo: -1,
       bookingDate: new Date().toISOString().split('T')[0],
@@ -407,29 +341,6 @@ export default function Flights() {
       cumuProfit: 0,
     });
   };
-
-  const selectNewRowGuest = (name: string, e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    handleNewRowChange('guestName', name);
-    setShowGuestSuggestions(false);
-    setFilteredGuests([]);
-  };
-
-  // Click outside handler
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (guestInputRef.current && !guestInputRef.current.contains(event.target as Node)) {
-        setShowGuestSuggestions(false);
-        setFilteredGuests([]);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   // Search, Sort, Filter functions
   const handleSearch = (term: string) => {
@@ -721,27 +632,30 @@ export default function Flights() {
                           {editingFlight?.index === index && editingFlight?.field === 'guestName' ? (
                             <div className="relative flex items-center gap-2">
                               <input
-                                ref={guestInputRef}
+                                ref={guestAutocomplete.inputRef}
                                 type="text"
                                 value={editValues.guestName !== undefined ? editValues.guestName : item.guestName}
-                                onChange={(e) => handleGuestChange(e.target.value)}
-                                onKeyDown={handleGuestKeyDown}
+                                onChange={(e) => {
+                                  setEditValues({ ...editValues, guestName: e.target.value });
+                                  guestAutocomplete.handleChange(e.target.value);
+                                }}
+                                onKeyDown={guestAutocomplete.handleKeyDown}
                                 className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="Type guest name..."
                                 onClick={(e) => e.stopPropagation()}
                               />
-                              {showGuestSuggestions && filteredGuests.length > 0 && (
+                              {guestAutocomplete.showSuggestions && guestAutocomplete.filteredItems.length > 0 && (
                                 <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
-                                  {filteredGuests.map((guest, idx) => (
+                                  {guestAutocomplete.filteredItems.map((guest, idx) => (
                                     <div
                                       key={idx}
                                       onMouseDown={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        selectGuestSuggestion(guest.name);
+                                        guestAutocomplete.selectSuggestion(guest);
                                       }}
                                       className={`flex items-center gap-2 px-3 py-2 cursor-pointer transition-colors ${
-                                        idx === selectedSuggestionIndex
+                                        idx === guestAutocomplete.selectedIndex
                                           ? "bg-blue-100 text-blue-900"
                                           : "hover:bg-gray-100"
                                       }`}
@@ -1217,21 +1131,33 @@ export default function Flights() {
                         </td>
                         <td className="py-3 px-3 relative">
                           <input
-                            ref={guestInputRef}
+                            ref={guestAutocomplete.inputRef}
                             type="text"
                             value={newRowData.guestName}
-                            onChange={(e) => handleNewRowChange('guestName', e.target.value)}
-                            onKeyDown={handleGuestKeyDown}
+                            onChange={(e) => {
+                              handleNewRowChange('guestName', e.target.value);
+                              guestAutocomplete.handleChange(e.target.value);
+                            }}
+                            onKeyDown={guestAutocomplete.handleKeyDown}
                             className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Type guest name..."
                           />
-                          {showGuestSuggestions && filteredGuests.length > 0 && (
+                          {guestAutocomplete.showSuggestions && guestAutocomplete.filteredItems.length > 0 && (
                             <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
-                              {filteredGuests.map((guest, idx) => (
+                              {guestAutocomplete.filteredItems.map((guest, idx) => (
                                 <div
                                   key={idx}
-                                  onMouseDown={(e) => selectNewRowGuest(guest.name, e)}
-                                  className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 ${idx === selectedSuggestionIndex ? "bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-200" : "hover:bg-gray-100 dark:hover:bg-gray-600"}`}
+                                  onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleNewRowChange('guestName', guest.name);
+                                    guestAutocomplete.reset();
+                                  }}
+                                  className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 ${
+                                    idx === guestAutocomplete.selectedIndex
+                                      ? "bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-200"
+                                      : "hover:bg-gray-100 dark:hover:bg-gray-600"
+                                  }`}
                                 >
                                   <img src={guest.avatar} alt={guest.name} className="w-6 h-6 rounded-full" />
                                   <span className="text-sm">{guest.name}</span>

@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as MT from "@material-tailwind/react";
 import { PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon, MagnifyingGlassIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import bookingsListData from "@/data/bookings-list-data.js";
 import AddBookingModal from "@/components/AddBookingModal";
+import { useInlineAutocomplete } from "@/hooks/useInlineAutocomplete";
 import PaymentModal from "@/components/PaymentModal";
 import HistoryPopover from "@/components/HistoryPopover";
 
@@ -55,10 +56,6 @@ export default function BookingList() {
   // Inline editing state
   const [editingBooking, setEditingBooking] = useState<{ index: number; field: string } | null>(null);
   const [editValues, setEditValues] = useState<any>({});
-  const [showCustomerSuggestions, setShowCustomerSuggestions] = useState(false);
-  const [filteredCustomers, setFilteredCustomers] = useState<typeof customerNames>([]);
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
-  const customerInputRef = useRef<HTMLInputElement>(null);
   
   // Inline ADD functionality state
   const [isEditingNewRow, setIsEditingNewRow] = useState(false);
@@ -141,6 +138,15 @@ export default function BookingList() {
     "Vienna, Austria",
     "Prague, Czech Republic"
   ];
+
+  // Use the reusable inline autocomplete hook for customer names
+  const customerAutocomplete = useInlineAutocomplete({
+    items: customerNames,
+    filterFunction: (item, query) => item.name.toLowerCase().includes(query.toLowerCase()),
+    onSelect: (customer) => {
+      setEditValues({ ...editValues, customerName: customer.name });
+    },
+  });
 
   const handleRowClick = (bookingId: number) => {
     navigate(`/dashboard/bookings/${bookingId}`);
@@ -253,68 +259,13 @@ export default function BookingList() {
     setBookings(updatedBookings);
     setEditingBooking(null);
     setEditValues({});
-    setShowCustomerSuggestions(false);
-    setFilteredCustomers([]);
+    customerAutocomplete.reset();
   };
 
   const cancelBookingEdit = () => {
     setEditingBooking(null);
     setEditValues({});
-    setShowCustomerSuggestions(false);
-    setFilteredCustomers([]);
-  };
-
-  const handleCustomerChange = (value: string) => {
-    setEditValues({ ...editValues, customerName: value });
-    
-    if (value.length >= 2) {
-      const filtered = customerNames.filter(customer =>
-        customer.name.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredCustomers(filtered);
-      setShowCustomerSuggestions(true);
-      setSelectedSuggestionIndex(-1);
-    } else {
-      setShowCustomerSuggestions(false);
-      setFilteredCustomers([]);
-    }
-  };
-
-  const selectCustomerSuggestion = (name: string, e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    setEditValues({ ...editValues, customerName: name });
-    setShowCustomerSuggestions(false);
-    setFilteredCustomers([]);
-    
-    // Focus back to input if it exists
-    setTimeout(() => {
-      if (customerInputRef.current) {
-        customerInputRef.current.focus();
-      }
-    }, 0);
-  };
-
-  const handleCustomerKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showCustomerSuggestions || filteredCustomers.length === 0) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedSuggestionIndex(prev =>
-        prev < filteredCustomers.length - 1 ? prev + 1 : prev
-      );
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedSuggestionIndex(prev => (prev > 0 ? prev - 1 : -1));
-    } else if (e.key === "Enter" && selectedSuggestionIndex >= 0) {
-      e.preventDefault();
-      selectCustomerSuggestion(filteredCustomers[selectedSuggestionIndex].name);
-    } else if (e.key === "Escape") {
-      setShowCustomerSuggestions(false);
-      setSelectedSuggestionIndex(-1);
-    }
+    customerAutocomplete.reset();
   };
 
   const formatDateToDisplay = (isoDate: string) => {
@@ -394,21 +345,6 @@ export default function BookingList() {
       (updatedData as any)[field] = value;
     }
     
-    // Handle customer name change for autocomplete
-    if (field === 'customerName') {
-      if (value.length >= 2) {
-        const filtered = customerNames.filter(customer =>
-          customer.name.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredCustomers(filtered);
-        setShowCustomerSuggestions(true);
-        setSelectedSuggestionIndex(-1);
-      } else {
-        setShowCustomerSuggestions(false);
-        setFilteredCustomers([]);
-      }
-    }
-    
     // Auto-calculate derived fields
     if (field === 'arrivalDate' && value) {
       updatedData.tourStartMonth = new Date(value).toLocaleDateString('en-US', { month: 'long' });
@@ -448,8 +384,7 @@ export default function BookingList() {
     
     setBookings([...bookings, newBooking]);
     setIsEditingNewRow(false);
-    setShowCustomerSuggestions(false);
-    setFilteredCustomers([]);
+    customerAutocomplete.reset();
     
     // Reset for next entry
     setNewRowData({
@@ -475,8 +410,7 @@ export default function BookingList() {
 
   const cancelNewBooking = () => {
     setIsEditingNewRow(false);
-    setShowCustomerSuggestions(false);
-    setFilteredCustomers([]);
+    customerAutocomplete.reset();
     setNewRowData({
       id: -1,
       bookingDate: new Date().toISOString().split('T')[0],
@@ -497,29 +431,6 @@ export default function BookingList() {
       collectionRemaining: 0,
     });
   };
-
-  const selectNewRowCustomer = (name: string, e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    handleNewRowChange('customerName', name);
-    setShowCustomerSuggestions(false);
-    setFilteredCustomers([]);
-  };
-
-  // Click outside handler
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (customerInputRef.current && !customerInputRef.current.contains(event.target as Node)) {
-        setShowCustomerSuggestions(false);
-        setFilteredCustomers([]);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   // Search, Sort, Filter functions
   const handleSearch = (term: string) => {
@@ -776,27 +687,30 @@ export default function BookingList() {
                         {editingBooking?.index === index && editingBooking?.field === 'customerName' ? (
                           <div className="relative flex items-center gap-2">
                             <input
-                              ref={customerInputRef}
+                              ref={customerAutocomplete.inputRef}
                               type="text"
                               value={editValues.customerName !== undefined ? editValues.customerName : booking.customerName}
-                              onChange={(e) => handleCustomerChange(e.target.value)}
-                              onKeyDown={handleCustomerKeyDown}
+                              onChange={(e) => {
+                                setEditValues({ ...editValues, customerName: e.target.value });
+                                customerAutocomplete.handleChange(e.target.value);
+                              }}
+                              onKeyDown={customerAutocomplete.handleKeyDown}
                               className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                               placeholder="Type customer name..."
                               onClick={(e) => e.stopPropagation()}
                             />
-                            {showCustomerSuggestions && filteredCustomers.length > 0 && (
+                            {customerAutocomplete.showSuggestions && customerAutocomplete.filteredItems.length > 0 && (
                               <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
-                                {filteredCustomers.map((customer, idx) => (
+                                {customerAutocomplete.filteredItems.map((customer, idx) => (
                                   <div
                                     key={idx}
                                     onMouseDown={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
-                                      selectCustomerSuggestion(customer.name);
+                                      customerAutocomplete.selectSuggestion(customer);
                                     }}
                                     className={`flex items-center gap-2 px-3 py-2 cursor-pointer transition-colors ${
-                                      idx === selectedSuggestionIndex
+                                      idx === customerAutocomplete.selectedIndex
                                         ? "bg-blue-100 text-blue-900"
                                         : "hover:bg-gray-100"
                                     }`}
@@ -1133,21 +1047,31 @@ export default function BookingList() {
                       </td>
                       <td className="py-3 px-3 relative">
                         <input
-                          ref={customerInputRef}
+                          ref={customerAutocomplete.inputRef}
                           type="text"
                           value={newRowData.customerName}
-                          onChange={(e) => handleNewRowChange('customerName', e.target.value)}
-                          onKeyDown={handleCustomerKeyDown}
+                          onChange={(e) => {
+                            handleNewRowChange('customerName', e.target.value);
+                            customerAutocomplete.handleChange(e.target.value);
+                          }}
+                          onKeyDown={customerAutocomplete.handleKeyDown}
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                           placeholder="Type customer name..."
                         />
-                        {showCustomerSuggestions && filteredCustomers.length > 0 && (
+                        {customerAutocomplete.showSuggestions && customerAutocomplete.filteredItems.length > 0 && (
                           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
-                            {filteredCustomers.map((customer, idx) => (
+                            {customerAutocomplete.filteredItems.map((customer, idx) => (
                               <div
                                 key={idx}
-                                onMouseDown={(e) => selectNewRowCustomer(customer.name, e)}
-                                className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100"
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleNewRowChange('customerName', customer.name);
+                                  customerAutocomplete.reset();
+                                }}
+                                className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                                  idx === customerAutocomplete.selectedIndex ? "bg-blue-100 text-blue-900" : ""
+                                }`}
                               >
                                 <img src={customer.avatar} alt={customer.name} className="w-6 h-6 rounded-full" />
                                 <div className="flex flex-col">

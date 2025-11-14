@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import * as MT from "@material-tailwind/react";
+import Autocomplete, { type AutocompleteOption } from "./Autocomplete";
 
 interface GuestTour {
   guestName: string;
@@ -108,51 +109,18 @@ export default function AddGroupModal({ isOpen, onClose, onAdd }: AddGroupModalP
   const destinations = groupData.type === 'International' ? internationalDestinations : domesticDestinations;
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showSuggestions, setShowSuggestions] = useState<{ [key: number]: boolean }>({});
-  const [filteredGuests, setFilteredGuests] = useState<{ [key: number]: typeof guestNames }>({});
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState<{ [key: number]: number }>({});
-  const guestInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
-  const suggestionsRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
-  const [showGroupSuggestions, setShowGroupSuggestions] = useState(false);
-  const [filteredGroups, setFilteredGroups] = useState<string[]>([]);
-  const [selectedGroupSuggestionIndex, setSelectedGroupSuggestionIndex] = useState(-1);
-  const groupInputRef = useRef<HTMLInputElement>(null);
-  const groupSuggestionsRef = useRef<HTMLDivElement>(null);
+  // Transform guest names and groups to autocomplete options
+  const guestOptions: AutocompleteOption[] = guestNames.map(guest => ({
+    label: guest.name,
+    value: guest.name,
+    avatar: guest.avatar
+  }));
 
-  // Handle click outside to close suggestions
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      // Check guest name suggestions
-      Object.keys(guestInputRefs.current).forEach((key) => {
-        const index = parseInt(key);
-        const inputRef = guestInputRefs.current[index];
-        const suggestionsRef = suggestionsRefs.current[index];
-        
-        if (
-          inputRef &&
-          !inputRef.contains(event.target as Node) &&
-          suggestionsRef &&
-          !suggestionsRef.contains(event.target as Node)
-        ) {
-          setShowSuggestions(prev => ({ ...prev, [index]: false }));
-        }
-      });
-
-      // Check group suggestions
-      if (
-        groupInputRef.current &&
-        !groupInputRef.current.contains(event.target as Node) &&
-        groupSuggestionsRef.current &&
-        !groupSuggestionsRef.current.contains(event.target as Node)
-      ) {
-        setShowGroupSuggestions(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const groupOptions: AutocompleteOption[] = groups.map(group => ({
+    label: group,
+    value: group
+  }));
 
   // Auto-add empty field when all fields are filled
   useEffect(() => {
@@ -166,90 +134,10 @@ export default function AddGroupModal({ isOpen, onClose, onAdd }: AddGroupModalP
     const newList = [...guestNamesList];
     newList[index] = value;
     setGuestNamesList(newList);
-    
-    if (value.length >= 2) {
-      const filtered = guestNames.filter(guest =>
-        guest.name.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredGuests(prev => ({ ...prev, [index]: filtered }));
-      setShowSuggestions(prev => ({ ...prev, [index]: true }));
-      setSelectedSuggestionIndex(prev => ({ ...prev, [index]: -1 }));
-    } else {
-      setShowSuggestions(prev => ({ ...prev, [index]: false }));
-      setFilteredGuests(prev => ({ ...prev, [index]: [] }));
-    }
   };
 
-  const handleSuggestionClick = (index: number, name: string) => {
-    const newList = [...guestNamesList];
-    newList[index] = name;
-    setGuestNamesList(newList);
-    setShowSuggestions(prev => ({ ...prev, [index]: false }));
-    setFilteredGuests(prev => ({ ...prev, [index]: [] }));
-  };
-
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showSuggestions[index] || !filteredGuests[index] || filteredGuests[index].length === 0) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedSuggestionIndex(prev => ({
-        ...prev,
-        [index]: (prev[index] ?? -1) < filteredGuests[index].length - 1 ? (prev[index] ?? -1) + 1 : prev[index] ?? -1
-      }));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedSuggestionIndex(prev => ({
-        ...prev,
-        [index]: (prev[index] ?? -1) > 0 ? (prev[index] ?? -1) - 1 : -1
-      }));
-    } else if (e.key === "Enter" && (selectedSuggestionIndex[index] ?? -1) >= 0) {
-      e.preventDefault();
-      handleSuggestionClick(index, filteredGuests[index][selectedSuggestionIndex[index]].name);
-    } else if (e.key === "Escape") {
-      setShowSuggestions(prev => ({ ...prev, [index]: false }));
-    }
-  };
-
-  const handleGroupNameChange = (value: string) => {
+  const handleGroupSelect = (value: string) => {
     setGroupData({ ...groupData, group: value });
-    
-    if (value.length >= 2) {
-      const filtered = groups.filter(group =>
-        group.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredGroups(filtered);
-      setShowGroupSuggestions(true);
-      setSelectedGroupSuggestionIndex(-1);
-    } else {
-      setShowGroupSuggestions(false);
-      setFilteredGroups([]);
-    }
-  };
-
-  const handleGroupSuggestionClick = (name: string) => {
-    setGroupData({ ...groupData, group: name });
-    setShowGroupSuggestions(false);
-    setFilteredGroups([]);
-  };
-
-  const handleGroupKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showGroupSuggestions || filteredGroups.length === 0) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedGroupSuggestionIndex(prev =>
-        prev < filteredGroups.length - 1 ? prev + 1 : prev
-      );
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedGroupSuggestionIndex(prev => (prev > 0 ? prev - 1 : -1));
-    } else if (e.key === "Enter" && selectedGroupSuggestionIndex >= 0) {
-      e.preventDefault();
-      handleGroupSuggestionClick(filteredGroups[selectedGroupSuggestionIndex]);
-    } else if (e.key === "Escape") {
-      setShowGroupSuggestions(false);
-    }
   };
 
   const addGuestNameField = () => {
@@ -340,10 +228,6 @@ export default function AddGroupModal({ isOpen, onClose, onAdd }: AddGroupModalP
       group: '',
     });
     setGuestNamesList(['']);
-    setShowSuggestions({});
-    setFilteredGuests({});
-    setShowGroupSuggestions(false);
-    setFilteredGroups([]);
   };
 
   const hasEmptyFields = guestNamesList.some(name => name.trim() === '');
@@ -354,7 +238,16 @@ export default function AddGroupModal({ isOpen, onClose, onAdd }: AddGroupModalP
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Create Group</h2>
           <div className="grid grid-cols-2 gap-4">
-            {/* Guest Names Section */}
+            <div className="col-span-2">
+              <Autocomplete
+                label="Group"
+                value={groupData.group}
+                onChange={handleGroupSelect}
+                options={groupOptions}
+                placeholder="Type group name..."
+              />
+            </div>
+                        {/* Guest Names Section */}
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Guest Names
@@ -362,43 +255,13 @@ export default function AddGroupModal({ isOpen, onClose, onAdd }: AddGroupModalP
               <div className="space-y-2">
                 {guestNamesList.map((guestName, index) => (
                   <div key={index} className="flex gap-2 items-start">
-                    <div className="relative flex-1">
-                      <input
-                        ref={(el) => { guestInputRefs.current[index] = el; }}
-                        type="text"
-                        value={guestName}
-                        onChange={(e) => handleGuestNameChange(index, e.target.value)}
-                        onKeyDown={(e) => handleKeyDown(index, e)}
-                        placeholder={`Guest ${index + 1} name...`}
-                        autoComplete="off"
-                        className="w-full px-3 py-2 border border-blue-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                      />
-                      {showSuggestions[index] && filteredGuests[index] && filteredGuests[index].length > 0 && (
-                        <div
-                          ref={(el) => { suggestionsRefs.current[index] = el; }}
-                          className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto"
-                        >
-                          {filteredGuests[index].map((guest, guestIndex) => (
-                            <div
-                              key={guestIndex}
-                              onClick={() => handleSuggestionClick(index, guest.name)}
-                              className={`flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors ${
-                                guestIndex === (selectedSuggestionIndex[index] ?? -1)
-                                  ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
-                                  : "hover:bg-gray-100 dark:hover:bg-gray-600"
-                              }`}
-                            >
-                              <img 
-                                src={guest.avatar} 
-                                alt={guest.name}
-                                className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
-                              />
-                              <span className="font-medium">{guest.name}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <Autocomplete
+                      value={guestName}
+                      onChange={(value) => handleGuestNameChange(index, value)}
+                      options={guestOptions}
+                      placeholder={`Guest ${index + 1} name...`}
+                      className="flex-1"
+                    />
                     {/* Show X button only if more than 1 guest AND not the auto-added empty field */}
                     {guestNamesList.length > 1 && !(index === guestNamesList.length - 1 && guestName.trim() === '') && (
                       <button
@@ -425,42 +288,6 @@ export default function AddGroupModal({ isOpen, onClose, onAdd }: AddGroupModalP
                 + Add Guest
               </button>
               {errors.guestNames && <p className="text-red-500 text-sm mt-1">{errors.guestNames}</p>}
-            </div>
-
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Group</label>
-              <div className="relative">
-                <input
-                  ref={groupInputRef}
-                  type="text"
-                  value={groupData.group}
-                  onChange={(e) => handleGroupNameChange(e.target.value)}
-                  onKeyDown={handleGroupKeyDown}
-                  placeholder="Type group name..."
-                  autoComplete="off"
-                  className="w-full px-3 py-2 border border-blue-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-                {showGroupSuggestions && filteredGroups.length > 0 && (
-                  <div
-                    ref={groupSuggestionsRef}
-                    className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto"
-                  >
-                    {filteredGroups.map((group, index) => (
-                      <div
-                        key={index}
-                        onClick={() => handleGroupSuggestionClick(group)}
-                        className={`px-4 py-2 cursor-pointer transition-colors ${
-                          index === selectedGroupSuggestionIndex
-                            ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
-                            : "hover:bg-gray-100 dark:hover:bg-gray-600"
-                        }`}
-                      >
-                        <span className="font-medium">{group}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>

@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import * as MT from "@material-tailwind/react";
+import Autocomplete, { type AutocompleteOption } from "./Autocomplete";
 
 interface BookingPayment {
   productType: string;
@@ -83,68 +84,16 @@ export default function AddServiceModal({ isOpen, onClose, onAdd }: AddServiceMo
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [filteredSuppliers, setFilteredSuppliers] = useState<typeof supplierNames>([]);
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
-  const supplierInputRef = useRef<HTMLInputElement>(null);
-  const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // Handle click outside to close suggestions
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        supplierInputRef.current &&
-        !supplierInputRef.current.contains(event.target as Node) &&
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target as Node)
-      ) {
-        setShowSuggestions(false);
-      }
-    };
+  // Transform supplier names to autocomplete options
+  const supplierOptions: AutocompleteOption[] = supplierNames.map(supplier => ({
+    label: supplier.name,
+    value: supplier.name,
+    avatar: supplier.avatar
+  }));
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleSupplierNameChange = (value: string) => {
+  const handleSupplierSelect = (value: string) => {
     setNewService({ ...newService, supplierReference: value });
-    
-    if (value.length >= 2) {
-      const filtered = supplierNames.filter(supplier =>
-        supplier.name.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredSuppliers(filtered);
-      setShowSuggestions(true);
-      setSelectedSuggestionIndex(-1);
-    } else {
-      setShowSuggestions(false);
-      setFilteredSuppliers([]);
-    }
-  };
-
-  const handleSuggestionClick = (name: string) => {
-    setNewService({ ...newService, supplierReference: name });
-    setShowSuggestions(false);
-    setFilteredSuppliers([]);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showSuggestions || filteredSuppliers.length === 0) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedSuggestionIndex(prev =>
-        prev < filteredSuppliers.length - 1 ? prev + 1 : prev
-      );
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedSuggestionIndex(prev => (prev > 0 ? prev - 1 : -1));
-    } else if (e.key === "Enter" && selectedSuggestionIndex >= 0) {
-      e.preventDefault();
-      handleSuggestionClick(filteredSuppliers[selectedSuggestionIndex].name);
-    } else if (e.key === "Escape") {
-      setShowSuggestions(false);
-    }
   };
 
   const handleNumberInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -207,8 +156,6 @@ export default function AddServiceModal({ isOpen, onClose, onAdd }: AddServiceMo
       toBePaid: '0',
       paidTillDate: '0',
     });
-    setShowSuggestions(false);
-    setFilteredSuppliers([]);
   };
 
   return (
@@ -246,45 +193,14 @@ export default function AddServiceModal({ isOpen, onClose, onAdd }: AddServiceMo
               {errors.bookedProduct && <p className="text-red-500 text-sm">{errors.bookedProduct}</p>}
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Supplier Reference</label>
-              <div className="relative">
-                <input
-                  ref={supplierInputRef}
-                  type="text"
-                  value={newService.supplierReference}
-                  onChange={(e) => handleSupplierNameChange(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Type supplier name..."
-                  autoComplete="off"
-                  className="w-full px-3 py-2 border border-blue-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-                {showSuggestions && filteredSuppliers.length > 0 && (
-                  <div
-                    ref={suggestionsRef}
-                    className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto"
-                  >
-                    {filteredSuppliers.map((supplier, index) => (
-                      <div
-                        key={index}
-                        onClick={() => handleSuggestionClick(supplier.name)}
-                        className={`flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors ${
-                          index === selectedSuggestionIndex
-                            ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
-                            : "hover:bg-gray-100 dark:hover:bg-gray-600"
-                        }`}
-                      >
-                        <img 
-                          src={supplier.avatar} 
-                          alt={supplier.name}
-                          className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
-                        />
-                        <span className="font-medium">{supplier.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {errors.supplierReference && <p className="text-red-500 text-sm">{errors.supplierReference}</p>}
+              <Autocomplete
+                label="Supplier Reference"
+                value={newService.supplierReference}
+                onChange={handleSupplierSelect}
+                options={supplierOptions}
+                placeholder="Type supplier name..."
+                error={errors.supplierReference}
+              />
             </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Invoice Required</label>
