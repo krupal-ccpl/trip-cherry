@@ -21,9 +21,8 @@ interface Booking {
   departureDate: string;
   tourStartMonth: string;
   tourEndMonth: string;
-  toBeCollectedTCS: number;
-  toBeCollectedGST: number;
-  collectedTillDate: number;
+  bookingAmount: number;
+  advancePayment: number;
   collectionRemaining: number;
   profit: number;
   profitBookedTillDate: number;
@@ -71,9 +70,8 @@ export default function BookingList() {
     departureDate: '',
     tourStartMonth: '',
     tourEndMonth: '',
-    toBeCollectedTCS: 0,
-    toBeCollectedGST: 0,
-    collectedTillDate: 0,
+    bookingAmount: 0,
+    advancePayment: 0,
     profit: 0,
     profitBookedTillDate: 0,
     collectionRemaining: 0,
@@ -155,8 +153,8 @@ export default function BookingList() {
   // Payment functionality functions
   const openPaymentModal = (index: number) => {
     const booking = bookings[index];
-    const maxAmount = booking.toBeCollectedTCS + booking.toBeCollectedGST;
-    const currentCollected = booking.collectedTillDate;
+    const maxAmount = booking.bookingAmount;
+    const currentCollected = booking.advancePayment;
     
     setCurrentPaymentBooking({ index, maxAmount, currentCollected });
     setIsPaymentModalOpen(true);
@@ -178,8 +176,8 @@ export default function BookingList() {
     const updatedBookings = [...bookings];
     updatedBookings[index] = {
       ...updatedBookings[index],
-      collectedTillDate: updatedBookings[index].collectedTillDate + payment.amount,
-      collectionRemaining: updatedBookings[index].toBeCollectedTCS + updatedBookings[index].toBeCollectedGST - (updatedBookings[index].collectedTillDate + payment.amount)
+      advancePayment: updatedBookings[index].advancePayment + payment.amount,
+      collectionRemaining: updatedBookings[index].bookingAmount - (updatedBookings[index].advancePayment + payment.amount)
     };
 
     setBookings(updatedBookings);
@@ -221,14 +219,11 @@ export default function BookingList() {
     }
 
     // Ensure numeric fields are properly converted
-    if (field === 'toBeCollectedTCS') {
-      updatedBookings[index].toBeCollectedTCS = parseFloat(newValue) || 0;
+    if (field === 'bookingAmount') {
+      updatedBookings[index].bookingAmount = parseFloat(newValue) || 0;
     }
-    if (field === 'toBeCollectedGST') {
-      updatedBookings[index].toBeCollectedGST = parseFloat(newValue) || 0;
-    }
-    if (field === 'collectedTillDate') {
-      updatedBookings[index].collectedTillDate = parseFloat(newValue) || 0;
+    if (field === 'advancePayment') {
+      updatedBookings[index].advancePayment = parseFloat(newValue) || 0;
     }
     if (field === 'profit') {
       updatedBookings[index].profit = parseFloat(newValue) || 0;
@@ -249,11 +244,10 @@ export default function BookingList() {
     }
 
     // Recalculate derived fields
-    if (field === 'toBeCollectedTCS' || field === 'toBeCollectedGST' || field === 'collectedTillDate') {
-      const tcs = parseFloat(updatedBookings[index].toBeCollectedTCS) || 0;
-      const gst = parseFloat(updatedBookings[index].toBeCollectedGST) || 0;
-      const collected = parseFloat(updatedBookings[index].collectedTillDate) || 0;
-      updatedBookings[index].collectionRemaining = tcs + gst - collected;
+    if (field === 'bookingAmount' || field === 'advancePayment') {
+      const bookingAmt = parseFloat(updatedBookings[index].bookingAmount) || 0;
+      const advance = parseFloat(updatedBookings[index].advancePayment) || 0;
+      updatedBookings[index].collectionRemaining = bookingAmt - advance;
     }
 
     setBookings(updatedBookings);
@@ -326,9 +320,8 @@ export default function BookingList() {
       departureDate: '',
       tourStartMonth: '',
       tourEndMonth: '',
-      toBeCollectedTCS: 0,
-      toBeCollectedGST: 0,
-      collectedTillDate: 0,
+      bookingAmount: 0,
+      advancePayment: 0,
       profit: 0,
       profitBookedTillDate: 0,
       collectionRemaining: 0,
@@ -339,7 +332,7 @@ export default function BookingList() {
     const updatedData = { ...newRowData };
     
     // Store numeric fields as numbers, not strings
-    if (['toBeCollectedTCS', 'toBeCollectedGST', 'collectedTillDate', 'profit', 'profitBookedTillDate', 'noOfTravellers'].includes(field)) {
+    if (['bookingAmount', 'advancePayment', 'profit', 'profitBookedTillDate', 'noOfTravellers'].includes(field)) {
       (updatedData as any)[field] = parseFloat(value) || 0;
     } else {
       (updatedData as any)[field] = value;
@@ -354,10 +347,9 @@ export default function BookingList() {
     }
     
     // Calculate collection remaining - ensure all values are numbers
-    const tcs = typeof updatedData.toBeCollectedTCS === 'string' ? parseFloat(updatedData.toBeCollectedTCS) || 0 : updatedData.toBeCollectedTCS || 0;
-    const gst = typeof updatedData.toBeCollectedGST === 'string' ? parseFloat(updatedData.toBeCollectedGST) || 0 : updatedData.toBeCollectedGST || 0;
-    const collected = typeof updatedData.collectedTillDate === 'string' ? parseFloat(updatedData.collectedTillDate) || 0 : updatedData.collectedTillDate || 0;
-    updatedData.collectionRemaining = tcs + gst - collected;
+    const bookingAmt = typeof updatedData.bookingAmount === 'string' ? parseFloat(updatedData.bookingAmount) || 0 : updatedData.bookingAmount || 0;
+    const advance = typeof updatedData.advancePayment === 'string' ? parseFloat(updatedData.advancePayment) || 0 : updatedData.advancePayment || 0;
+    updatedData.collectionRemaining = bookingAmt - advance;
     
     setNewRowData(updatedData);
   };
@@ -399,9 +391,8 @@ export default function BookingList() {
       departureDate: '',
       tourStartMonth: '',
       tourEndMonth: '',
-      toBeCollectedTCS: 0,
-      toBeCollectedGST: 0,
-      collectedTillDate: 0,
+      bookingAmount: 0,
+      advancePayment: 0,
       profit: 0,
       profitBookedTillDate: 0,
       collectionRemaining: 0,
@@ -423,9 +414,8 @@ export default function BookingList() {
       departureDate: '',
       tourStartMonth: '',
       tourEndMonth: '',
-      toBeCollectedTCS: 0,
-      toBeCollectedGST: 0,
-      collectedTillDate: 0,
+      bookingAmount: 0,
+      advancePayment: 0,
       profit: 0,
       profitBookedTillDate: 0,
       collectionRemaining: 0,
@@ -472,8 +462,8 @@ export default function BookingList() {
       // Collection status filter
       let matchesCollectionStatus = true;
       if (filters.collectionStatus) {
-        const totalToCollect = booking.toBeCollectedTCS + booking.toBeCollectedGST;
-        const collected = booking.collectedTillDate;
+        const totalToCollect = booking.bookingAmount;
+        const collected = booking.advancePayment;
         if (filters.collectionStatus === 'pending') {
           matchesCollectionStatus = collected === 0;
         } else if (filters.collectionStatus === 'partial') {
@@ -493,7 +483,7 @@ export default function BookingList() {
         let bValue: any = b[sortConfig.key as keyof typeof b];
 
         // Handle numeric fields
-        if (['toBeCollectedTCS', 'toBeCollectedGST', 'collectedTillDate', 'profit', 'profitBookedTillDate', 'collectionRemaining'].includes(sortConfig.key)) {
+        if (['bookingAmount', 'advancePayment', 'profit', 'profitBookedTillDate', 'collectionRemaining'].includes(sortConfig.key)) {
           aValue = parseFloat(aValue) || 0;
           bValue = parseFloat(bValue) || 0;
         }
@@ -617,9 +607,8 @@ export default function BookingList() {
                   { key: "departureDate", label: "DEPARTURE DATE" },
                   { key: "tourStartMonth", label: "TOUR START MONTH" },
                   { key: "tourEndMonth", label: "TOUR END MONTH" },
-                  { key: "toBeCollectedTCS", label: "TO BE COLLECTED (TCS)" },
-                  { key: "toBeCollectedGST", label: "TO BE COLLECTED (GST)" },
-                  { key: "collectedTillDate", label: "COLLECTED TILL DATE" },
+                  { key: "bookingAmount", label: "BOOKING AMOUNT" },
+                  { key: "advancePayment", label: "ADVANCE PAYMENT" },
                   { key: "collectionRemaining", label: "COLLECTION REMAINING" },
                   { key: "profit", label: "PROFIT" },
                   { key: "profitBookedTillDate", label: "PROFIT BOOKED TILL DATE" }
@@ -894,12 +883,12 @@ export default function BookingList() {
                         </MT.Typography>
                       </td>
                       <td className={`py-3 px-3 ${rowClass} relative group`}>
-                        {editingBooking?.index === index && editingBooking?.field === 'toBeCollectedTCS' ? (
+                        {editingBooking?.index === index && editingBooking?.field === 'bookingAmount' ? (
                           <div className="flex items-center gap-2">
                             <input
                               type="number"
-                              value={editValues.toBeCollectedTCS !== undefined ? editValues.toBeCollectedTCS : booking.toBeCollectedTCS}
-                              onChange={(e) => setEditValues({ ...editValues, toBeCollectedTCS: e.target.value })}
+                              value={editValues.bookingAmount !== undefined ? editValues.bookingAmount : booking.bookingAmount}
+                              onChange={(e) => setEditValues({ ...editValues, bookingAmount: e.target.value })}
                               onKeyDown={handleNumberInput}
                               className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                               min="0"
@@ -911,40 +900,16 @@ export default function BookingList() {
                         ) : (
                           <div className="flex items-center justify-between">
                             <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                              ₹{booking.toBeCollectedTCS.toLocaleString()}
+                              ₹{booking.bookingAmount.toLocaleString()}
                             </MT.Typography>
-                            <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'toBeCollectedTCS', booking.toBeCollectedTCS); }} />
-                          </div>
-                        )}
-                      </td>
-                      <td className={`py-3 px-3 ${rowClass} relative group`}>
-                        {editingBooking?.index === index && editingBooking?.field === 'toBeCollectedGST' ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              value={editValues.toBeCollectedGST !== undefined ? editValues.toBeCollectedGST : booking.toBeCollectedGST}
-                              onChange={(e) => setEditValues({ ...editValues, toBeCollectedGST: e.target.value })}
-                              onKeyDown={handleNumberInput}
-                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                              min="0"
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                            <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveBookingEdit(); }} />
-                            <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); cancelBookingEdit(); }} />
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                              ₹{booking.toBeCollectedGST.toLocaleString()}
-                            </MT.Typography>
-                            <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'toBeCollectedGST', booking.toBeCollectedGST); }} />
+                            <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'bookingAmount', booking.bookingAmount); }} />
                           </div>
                         )}
                       </td>
                       <td className={`py-3 px-3 ${rowClass} relative group`}>
                         <div className="flex items-center justify-between">
                           <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                            ₹{booking.collectedTillDate.toLocaleString()}
+                            ₹{booking.advancePayment.toLocaleString()}
                           </MT.Typography>
                           <PlusIcon 
                             className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
@@ -1156,34 +1121,23 @@ export default function BookingList() {
                       <td className="py-3 px-3">
                         <input
                           type="number"
-                          value={newRowData.toBeCollectedTCS}
-                          onChange={(e) => handleNewRowChange('toBeCollectedTCS', e.target.value)}
+                          value={newRowData.bookingAmount}
+                          onChange={(e) => handleNewRowChange('bookingAmount', e.target.value)}
                           onKeyDown={handleNumberInput}
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                           min="0"
-                          placeholder="TCS Amount"
+                          placeholder="Booking Amount"
                         />
                       </td>
                       <td className="py-3 px-3">
                         <input
                           type="number"
-                          value={newRowData.toBeCollectedGST}
-                          onChange={(e) => handleNewRowChange('toBeCollectedGST', e.target.value)}
+                          value={newRowData.advancePayment}
+                          onChange={(e) => handleNewRowChange('advancePayment', e.target.value)}
                           onKeyDown={handleNumberInput}
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                           min="0"
-                          placeholder="GST Amount"
-                        />
-                      </td>
-                      <td className="py-3 px-3">
-                        <input
-                          type="number"
-                          value={newRowData.collectedTillDate}
-                          onChange={(e) => handleNewRowChange('collectedTillDate', e.target.value)}
-                          onKeyDown={handleNumberInput}
-                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          min="0"
-                          placeholder="Collected Amount"
+                          placeholder="Advance Payment"
                         />
                       </td>
                       <td className="py-3 px-3">

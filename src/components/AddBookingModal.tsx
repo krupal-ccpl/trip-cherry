@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import * as MT from "@material-tailwind/react";
+import Select from "react-select";
 import Autocomplete, { type AutocompleteOption } from "./Autocomplete";
 
 interface Booking {
@@ -14,9 +15,8 @@ interface Booking {
   departureDate: string;
   tourStartMonth: string;
   tourEndMonth: string;
-  toBeCollectedTCS: number;
-  toBeCollectedGST: number;
-  collectedTillDate: number;
+  bookingAmount: number;
+  advancePayment: number;
   profit: number;
   profitBookedTillDate: number;
   collectionRemaining: number;
@@ -99,9 +99,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
     noOfTravellers: '1',
     arrivalDate: '',
     departureDate: '',
-    toBeCollectedTCS: '0',
-    toBeCollectedGST: '0',
-    collectedTillDate: '0',
+    bookingAmount: '0',
+    advancePayment: '0',
     profit: '0',
     profitBookedTillDate: '0',
   });
@@ -138,9 +137,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         noOfTravellers: booking.noOfTravellers.toString(),
         arrivalDate: parseDisplayDateToISO(booking.arrivalDate),
         departureDate: parseDisplayDateToISO(booking.departureDate),
-        toBeCollectedTCS: booking.toBeCollectedTCS.toString(),
-        toBeCollectedGST: booking.toBeCollectedGST.toString(),
-        collectedTillDate: booking.collectedTillDate.toString(),
+        bookingAmount: booking.bookingAmount.toString(),
+        advancePayment: booking.advancePayment.toString(),
         profit: booking.profit.toString(),
         profitBookedTillDate: booking.profitBookedTillDate.toString(),
       });
@@ -155,9 +153,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         noOfTravellers: '1',
         arrivalDate: '',
         departureDate: '',
-        toBeCollectedTCS: '0',
-        toBeCollectedGST: '0',
-        collectedTillDate: '0',
+        bookingAmount: '0',
+        advancePayment: '0',
         profit: '0',
         profitBookedTillDate: '0',
       });
@@ -241,17 +238,13 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
     }
 
     // Validate numbers
-    const tcs = parseFloat(newBooking.toBeCollectedTCS);
-    if (newBooking.toBeCollectedTCS && (isNaN(tcs) || tcs < 0)) {
-      newErrors.toBeCollectedTCS = 'Must be a valid non-negative number';
+    const bookingAmt = parseFloat(newBooking.bookingAmount);
+    if (newBooking.bookingAmount && (isNaN(bookingAmt) || bookingAmt < 0)) {
+      newErrors.bookingAmount = 'Must be a valid non-negative number';
     }
-    const gst = parseFloat(newBooking.toBeCollectedGST);
-    if (newBooking.toBeCollectedGST && (isNaN(gst) || gst < 0)) {
-      newErrors.toBeCollectedGST = 'Must be a valid non-negative number';
-    }
-    const collected = parseFloat(newBooking.collectedTillDate);
-    if (newBooking.collectedTillDate && (isNaN(collected) || collected < 0)) {
-      newErrors.collectedTillDate = 'Must be a valid non-negative number';
+    const advance = parseFloat(newBooking.advancePayment);
+    if (newBooking.advancePayment && (isNaN(advance) || advance < 0)) {
+      newErrors.advancePayment = 'Must be a valid non-negative number';
     }
     const prof = parseFloat(newBooking.profit);
     if (newBooking.profit && (isNaN(prof) || prof < 0)) {
@@ -269,13 +262,12 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
 
     setErrors({});
 
-    const toBeCollectedTCS = parseFloat(newBooking.toBeCollectedTCS) || 0;
-    const toBeCollectedGST = parseFloat(newBooking.toBeCollectedGST) || 0;
-    const collectedTillDate = parseFloat(newBooking.collectedTillDate) || 0;
+    const bookingAmount = parseFloat(newBooking.bookingAmount) || 0;
+    const advancePayment = parseFloat(newBooking.advancePayment) || 0;
     const profit = parseFloat(newBooking.profit) || 0;
     const profitBookedTillDate = parseFloat(newBooking.profitBookedTillDate) || 0;
     const noOfTravellers = parseInt(newBooking.noOfTravellers) || 1;
-    const collectionRemaining = toBeCollectedTCS + toBeCollectedGST - collectedTillDate;
+    const collectionRemaining = bookingAmount - advancePayment;
     
     if (booking) {
       // Edit existing booking
@@ -291,9 +283,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         departureDate: formatDateToDisplay(newBooking.departureDate),
         tourStartMonth: newBooking.arrivalDate ? new Date(newBooking.arrivalDate).toLocaleDateString('en-US', { month: 'long' }) : '',
         tourEndMonth: newBooking.departureDate ? new Date(newBooking.departureDate).toLocaleDateString('en-US', { month: 'long' }) : '',
-        toBeCollectedTCS,
-        toBeCollectedGST,
-        collectedTillDate,
+        bookingAmount,
+        advancePayment,
         profit,
         profitBookedTillDate,
         collectionRemaining,
@@ -313,9 +304,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         departureDate: formatDateToDisplay(newBooking.departureDate),
         tourStartMonth: newBooking.arrivalDate ? new Date(newBooking.arrivalDate).toLocaleDateString('en-US', { month: 'long' }) : '',
         tourEndMonth: newBooking.departureDate ? new Date(newBooking.departureDate).toLocaleDateString('en-US', { month: 'long' }) : '',
-        toBeCollectedTCS,
-        toBeCollectedGST,
-        collectedTillDate,
+        bookingAmount,
+        advancePayment,
         profit,
         profitBookedTillDate,
         collectionRemaining,
@@ -333,9 +323,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
       noOfTravellers: '1',
       arrivalDate: '',
       departureDate: '',
-      toBeCollectedTCS: '0',
-      toBeCollectedGST: '0',
-      collectedTillDate: '0',
+      bookingAmount: '0',
+      advancePayment: '0',
       profit: '0',
       profitBookedTillDate: '0',
     });
@@ -389,27 +378,59 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
-              <select
-                value={newBooking.type}
-                onChange={(e) => setNewBooking({ ...newBooking, type: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                <option value="Domestic">Domestic</option>
-                <option value="International">International</option>
-              </select>
+              <div className="flex gap-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    value="Domestic"
+                    checked={newBooking.type === 'Domestic'}
+                    onChange={(e) => setNewBooking({ ...newBooking, type: e.target.value })}
+                    className="mr-2"
+                  />
+                  Domestic
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    value="International"
+                    checked={newBooking.type === 'International'}
+                    onChange={(e) => setNewBooking({ ...newBooking, type: e.target.value })}
+                    className="mr-2"
+                  />
+                  International
+                </label>
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Destination</label>
-              <select
-                value={newBooking.destination}
-                onChange={(e) => setNewBooking({ ...newBooking, destination: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                <option value="">Select Destination</option>
-                {allDestinations.map((dest) => (
-                  <option key={dest} value={dest}>{dest}</option>
-                ))}
-              </select>
+              <Select
+                value={allDestinations.find(dest => dest === newBooking.destination) ? { value: newBooking.destination, label: newBooking.destination } : null}
+                onChange={(selectedOption) => setNewBooking({ ...newBooking, destination: selectedOption ? selectedOption.value : '' })}
+                options={allDestinations.map(dest => ({ value: dest, label: dest }))}
+                placeholder="Select Destination"
+                isSearchable
+                theme={(theme) => ({
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    primary: '#3b82f6', // blue-500
+                    primary75: '#60a5fa', // blue-400
+                    primary50: '#93c5fd', // blue-300
+                    primary25: '#dbeafe', // blue-100
+                    neutral0: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff', // control and menu background
+                    neutral5: document.documentElement.classList.contains('dark') ? '#4b5563' : '#f9fafb',
+                    neutral10: document.documentElement.classList.contains('dark') ? '#6b7280' : '#f3f4f6',
+                    neutral20: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#e5e7eb',
+                    neutral30: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#d1d5db',
+                    neutral40: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#6b7280',
+                    neutral50: document.documentElement.classList.contains('dark') ? '#6b7280' : '#374151',
+                    neutral60: document.documentElement.classList.contains('dark') ? '#4b5563' : '#4b5563',
+                    neutral70: document.documentElement.classList.contains('dark') ? '#374151' : '#374151',
+                    neutral80: document.documentElement.classList.contains('dark') ? '#ffffff' : '#1f2937',
+                    neutral90: document.documentElement.classList.contains('dark') ? '#111827' : '#111827',
+                  },
+                })}
+              />
               {errors.destination && <p className="text-red-500 text-sm">{errors.destination}</p>}
             </div>
             <div>
@@ -420,8 +441,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                 onChange={(e) => setNewBooking({ ...newBooking, arrivalDate: e.target.value })}
                 min={today}
                 placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
               />
               {errors.arrivalDate && <p className="text-red-500 text-sm">{errors.arrivalDate}</p>}
             </div>
@@ -433,13 +452,11 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                 onChange={(e) => setNewBooking({ ...newBooking, departureDate: e.target.value })}
                 min={newBooking.arrivalDate || today}
                 placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
               />
               {errors.departureDate && <p className="text-red-500 text-sm">{errors.departureDate}</p>}
             </div>
           </div>
-          <div className="grid grid-cols-4 gap-4 mt-4">
+          <div className="grid grid-cols-3 gap-4 mt-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No of Travellers</label>
               <MT.Input
@@ -449,51 +466,31 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                 onKeyDown={handleNumberInput}
                 min="1"
                 placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">TCS Amount</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Booking Amount</label>
               <MT.Input
                 type="number"
-                value={newBooking.toBeCollectedTCS}
-                onChange={(e) => setNewBooking({ ...newBooking, toBeCollectedTCS: e.target.value })}
+                value={newBooking.bookingAmount}
+                onChange={(e) => setNewBooking({ ...newBooking, bookingAmount: e.target.value })}
                 onKeyDown={handleNumberInput}
                 min="0"
                 placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
               />
-              {errors.toBeCollectedTCS && <p className="text-red-500 text-sm">{errors.toBeCollectedTCS}</p>}
+              {errors.bookingAmount && <p className="text-red-500 text-sm">{errors.bookingAmount}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GST Amount</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Advance Payment</label>
               <MT.Input
                 type="number"
-                value={newBooking.toBeCollectedGST}
-                onChange={(e) => setNewBooking({ ...newBooking, toBeCollectedGST: e.target.value })}
+                value={newBooking.advancePayment}
+                onChange={(e) => setNewBooking({ ...newBooking, advancePayment: e.target.value })}
                 onKeyDown={handleNumberInput}
                 min="0"
                 placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
               />
-              {errors.toBeCollectedGST && <p className="text-red-500 text-sm">{errors.toBeCollectedGST}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Collected</label>
-              <MT.Input
-                type="number"
-                value={newBooking.collectedTillDate}
-                onChange={(e) => setNewBooking({ ...newBooking, collectedTillDate: e.target.value })}
-                onKeyDown={handleNumberInput}
-                min="0"
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              />
-              {errors.collectedTillDate && <p className="text-red-500 text-sm">{errors.collectedTillDate}</p>}
+              {errors.advancePayment && <p className="text-red-500 text-sm">{errors.advancePayment}</p>}
             </div>
           </div>
           {booking && (
@@ -507,8 +504,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                   onKeyDown={handleNumberInput}
                   min="0"
                   placeholder={undefined}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
                 />
                 {errors.profit && <p className="text-red-500 text-sm">{errors.profit}</p>}
               </div>
@@ -521,8 +516,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                   onKeyDown={handleNumberInput}
                   min="0"
                   placeholder={undefined}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
                 />
                 {errors.profitBookedTillDate && <p className="text-red-500 text-sm">{errors.profitBookedTillDate}</p>}
               </div>

@@ -26,9 +26,8 @@ interface Booking {
   departureDate: string;
   tourStartMonth: string;
   tourEndMonth: string;
-  toBeCollectedTCS: number;
-  toBeCollectedGST: number;
-  collectedTillDate: number;
+  bookingAmount: number;
+  advancePayment: number;
   collectionRemaining: number;
   profit: number;
   profitBookedTillDate: number;
