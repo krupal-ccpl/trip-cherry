@@ -1044,24 +1044,17 @@ export default function BookingDetails() {
 
   return (
     <div className="mt-8">
-      {/* Header with Back Button */}
+      {/* Header */}
       <div className="mb-6">
-        <MT.Button 
-          className="flex items-center gap-2 mb-4 bg-white dark:bg-gray-700 text-blue-gray-700 dark:text-gray-200 shadow-md hover:shadow-lg transition-all border border-gray-300 dark:border-gray-600"
-          onClick={() => navigate("/dashboard/bookings")}
-          placeholder={undefined} 
-          onPointerEnterCapture={undefined} 
-          onPointerLeaveCapture={undefined}
-        >
-          <ArrowLeftIcon className="h-5 w-5" />
-          Back to Bookings
-        </MT.Button>
         
         <div className="flex justify-between items-center">
           <div>
-            <MT.Typography variant="h4" color="blue-gray" className="dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-              Booking Details - {booking.customerName}
-            </MT.Typography>
+            <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/dashboard/bookings")}>
+              <ArrowLeftIcon className="h-5 w-5 text-blue-gray-700 dark:text-gray-200" />
+              <MT.Typography variant="h4" color="blue-gray" className="dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                {booking.customerName}
+              </MT.Typography>
+            </div>
             <MT.Typography variant="small" color="gray" className="mt-1 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               {booking.destination} • {booking.bookingDate}
             </MT.Typography>
