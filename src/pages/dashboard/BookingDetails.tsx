@@ -55,6 +55,7 @@ interface GuestTour {
   collectedTillDate: number;
   profit: number;
   profitBookedTillDate: number;
+  group: string;
 }
 
 export default function BookingDetails() {
@@ -91,6 +92,10 @@ export default function BookingDetails() {
   const supplierInputRef = useRef<HTMLInputElement>(null);
   const guestInputRef = useRef<HTMLInputElement>(null);
 
+  const [groupSuggestions, setGroupSuggestions] = useState<string[]>([]);
+  const [showGroupSuggestions, setShowGroupSuggestions] = useState(false);
+  const groupInputRef = useRef<HTMLInputElement>(null);
+
   // Inline ADD functionality state for services
   const [hasEmptyServiceRow, setHasEmptyServiceRow] = useState(true);
   const [isEditingNewService, setIsEditingNewService] = useState(false);
@@ -119,6 +124,7 @@ export default function BookingDetails() {
     collectedTillDate: 0,
     profit: 0,
     profitBookedTillDate: 0,
+    group: '',
   });
 
   // Expand/collapse state for booking details
@@ -138,6 +144,7 @@ export default function BookingDetails() {
   const [guestsSortConfig, setGuestsSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
   const [guestsFilters, setGuestsFilters] = useState({
     destination: '',
+    group: '',
     tourStartMonth: '',
     tourEndMonth: '',
     paymentStatus: '', // 'pending', 'partial', 'completed'
@@ -184,6 +191,19 @@ export default function BookingDetails() {
     { name: "Riya Bose", avatar: "https://i.pravatar.cc/150?img=32" },
     { name: "Manish Agarwal", avatar: "https://i.pravatar.cc/150?img=56" },
     { name: "Swati Pandey", avatar: "https://i.pravatar.cc/150?img=36" }
+  ];
+
+  const groups = [
+    "A's Family",
+    "B's Friends",
+    "Corporate tour by company ABC",
+    "School Trip Group",
+    "Wedding Party",
+    "Adventure Seekers",
+    "Business Conference",
+    "Family Reunion",
+    "College Friends",
+    "Retirement Celebration"
   ];
 
   const productTypes = [
@@ -361,12 +381,16 @@ export default function BookingDetails() {
       const searchLower = guestsSearchTerm.toLowerCase();
       const matchesSearch = !guestsSearchTerm || 
         guest.guestName.toLowerCase().includes(searchLower) ||
+        guest.group.toLowerCase().includes(searchLower) ||
         guest.destination.toLowerCase().includes(searchLower) ||
         guest.tourStartMonth.toLowerCase().includes(searchLower) ||
         guest.tourEndMonth.toLowerCase().includes(searchLower);
 
       // Destination filter
       const matchesDestination = !guestsFilters.destination || guest.destination === guestsFilters.destination;
+
+      // Group filter
+      const matchesGroup = !guestsFilters.group || guest.group === guestsFilters.group;
 
       // Tour start month filter
       const matchesTourStartMonth = !guestsFilters.tourStartMonth || guest.tourStartMonth === guestsFilters.tourStartMonth;
@@ -402,7 +426,7 @@ export default function BookingDetails() {
         }
       }
 
-      return matchesSearch && matchesDestination && matchesTourStartMonth && matchesTourEndMonth && matchesPaymentStatus && matchesProfitStatus;
+      return matchesSearch && matchesDestination && matchesGroup && matchesTourStartMonth && matchesTourEndMonth && matchesPaymentStatus && matchesProfitStatus;
     });
 
     // Sort
@@ -795,6 +819,7 @@ export default function BookingDetails() {
       collectedTillDate: 0,
       profit: 0,
       profitBookedTillDate: 0,
+      group: '',
     });
     setHasEmptyGuestRow(true);
   };
@@ -813,6 +838,7 @@ export default function BookingDetails() {
       collectedTillDate: 0,
       profit: 0,
       profitBookedTillDate: 0,
+      group: '',
     });
   };
 
@@ -837,6 +863,20 @@ export default function BookingDetails() {
       } else {
         setShowGuestSuggestions(false);
         setGuestSuggestions([]);
+      }
+    }
+
+    // Handle group name change for autocomplete
+    if (field === 'group') {
+      if (value.length >= 2) {
+        const filtered = groups.filter(group =>
+          group.toLowerCase().includes(value.toLowerCase())
+        );
+        setGroupSuggestions(filtered);
+        setShowGroupSuggestions(true);
+      } else {
+        setShowGroupSuggestions(false);
+        setGroupSuggestions([]);
       }
     }
     
@@ -885,6 +925,7 @@ export default function BookingDetails() {
       collectedTillDate: 0,
       profit: 0,
       profitBookedTillDate: 0,
+      group: '',
     });
   };
 
@@ -903,6 +944,7 @@ export default function BookingDetails() {
       collectedTillDate: 0,
       profit: 0,
       profitBookedTillDate: 0,
+      group: '',
     });
   };
 
@@ -926,6 +968,26 @@ export default function BookingDetails() {
     setShowGuestSuggestions(false);
   };
 
+  const handleGroupChange = (value: string) => {
+    setEditValues({ ...editValues, group: value });
+
+    if (value.length >= 2) {
+      const filtered = groups.filter(group =>
+        group.toLowerCase().includes(value.toLowerCase())
+      );
+      setGroupSuggestions(filtered);
+      setShowGroupSuggestions(true);
+    } else {
+      setShowGroupSuggestions(false);
+      setGroupSuggestions([]);
+    }
+  };
+
+  const selectGroupSuggestion = (name: string) => {
+    setEditValues({ ...editValues, group: name });
+    setShowGroupSuggestions(false);
+  };
+
   const selectNewGuestSuggestion = (name: string, e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
@@ -933,6 +995,15 @@ export default function BookingDetails() {
     }
     handleNewGuestChange('guestName', name);
     setShowGuestSuggestions(false);
+  };
+
+  const selectNewGroupSuggestion = (name: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    handleNewGuestChange('group', name);
+    setShowGroupSuggestions(false);
   };
 
   // Find the booking by ID
@@ -1749,6 +1820,19 @@ export default function BookingDetails() {
 
                 <div className="relative">
                   <select
+                    value={guestsFilters.group}
+                    onChange={(e) => handleGuestsFilter('group', e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                  >
+                    <option value="">All Groups</option>
+                    {groups.map((group) => (
+                      <option key={group} value={group}>{group}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="relative">
+                  <select
                     value={guestsFilters.tourStartMonth}
                     onChange={(e) => handleGuestsFilter('tourStartMonth', e.target.value)}
                     className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
@@ -1808,6 +1892,7 @@ export default function BookingDetails() {
                 <tr className="bg-blue-50 dark:bg-blue-900/50">
                   {[
                     { key: "guestName", label: "NAME OF GUEST" },
+                    { key: "group", label: "GROUP" },
                     { key: "destination", label: "DESTINATION" },
                     { key: "arrivalDate", label: "ARRIVAL DATE" },
                     { key: "departureDate", label: "DEPARTURE DATE" },
@@ -1885,6 +1970,42 @@ export default function BookingDetails() {
                                 {item.guestName}
                               </MT.Typography>
                               <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingGuest(index, 'guestName', item.guestName)} />
+                            </div>
+                          )}
+                        </td>
+                        <td className={`py-3 px-3 ${rowClass} relative group`}>
+                          {editingGuest?.index === index && editingGuest?.field === 'group' ? (
+                            <div className="relative flex items-center gap-2">
+                              <input
+                                ref={groupInputRef}
+                                type="text"
+                                value={editValues.group !== undefined ? editValues.group : item.group}
+                                onChange={(e) => handleGroupChange(e.target.value)}
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="Type group name..."
+                              />
+                              {showGroupSuggestions && groupSuggestions.length > 0 && (
+                                <div className="absolute z-50 w-full mt-20 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                                  {groupSuggestions.map((group, idx) => (
+                                    <div
+                                      key={idx}
+                                      onClick={() => selectGroupSuggestion(group)}
+                                      className="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-900 dark:text-white"
+                                    >
+                                      <span className="text-sm">{group}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={saveGuestEdit} />
+                              <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" onClick={cancelGuestEdit} />
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                                {item.group}
+                              </MT.Typography>
+                              <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => startEditingGuest(index, 'group', item.group)} />
                             </div>
                           )}
                         </td>
@@ -2096,6 +2217,29 @@ export default function BookingDetails() {
                             </div>
                           )}
                         </td>
+                        <td className="py-3 px-3 relative">
+                          <input
+                            ref={groupInputRef}
+                            type="text"
+                            value={newGuestData.group}
+                            onChange={(e) => handleNewGuestChange('group', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            placeholder="Type group name..."
+                          />
+                          {showGroupSuggestions && groupSuggestions.length > 0 && (
+                            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                              {groupSuggestions.map((group, idx) => (
+                                <div
+                                  key={idx}
+                                  onMouseDown={(e) => selectNewGroupSuggestion(group, e)}
+                                  className="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-900 dark:text-white"
+                                >
+                                  <span className="text-sm">{group}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </td>
                         <td className="py-3 px-3">
                           <select
                             value={newGuestData.destination}
@@ -2204,6 +2348,11 @@ export default function BookingDetails() {
                         <td className="py-3 px-3">
                           <MT.Typography className="text-sm text-gray-400 italic" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                             Click to add new guest
+                          </MT.Typography>
+                        </td>
+                        <td className="py-3 px-3 text-center">
+                          <MT.Typography className="text-sm text-gray-400 italic" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                            Group
                           </MT.Typography>
                         </td>
                         <td className="py-3 px-3 text-center">

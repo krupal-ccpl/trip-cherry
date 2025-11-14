@@ -11,6 +11,7 @@ export const guestTourData = [
     collectedTillDate: 10000,
     profit: 5000,
     profitBookedTillDate: 2000,
+    group: "A's Family",
   },
   {
     guestName: "Priya Sharma",
@@ -24,6 +25,7 @@ export const guestTourData = [
     collectedTillDate: 32000,
     profit: 7000,
     profitBookedTillDate: 6400,
+    group: "B's Friends",
   },
   {
     guestName: "Amit Patel",
@@ -37,6 +39,7 @@ export const guestTourData = [
     collectedTillDate: 18000,
     profit: 8000,
     profitBookedTillDate: 3600,
+    group: "Corporate tour by company ABC",
   },
   {
     guestName: "Neha Gupta",
@@ -50,6 +53,7 @@ export const guestTourData = [
     collectedTillDate: 20000,
     profit: 5600,
     profitBookedTillDate: 4000,
+    group: "School Trip Group",
   },
   {
     guestName: "Rahul Singh",
@@ -63,6 +67,7 @@ export const guestTourData = [
     collectedTillDate: 20000,
     profit: 6400,
     profitBookedTillDate: 4000,
+    group: "Wedding Party",
   },
   {
     guestName: "Anjali Desai",
@@ -76,6 +81,7 @@ export const guestTourData = [
     collectedTillDate: 25000,
     profit: 9000,
     profitBookedTillDate: 5000,
+    group: "Adventure Seekers",
   },
   {
     guestName: "Vikram Reddy",
@@ -89,6 +95,7 @@ export const guestTourData = [
     collectedTillDate: 15000,
     profit: 11000,
     profitBookedTillDate: 3000,
+    group: "Business Conference",
   },
   {
     guestName: "Sneha Iyer",
@@ -102,6 +109,7 @@ export const guestTourData = [
     collectedTillDate: 20000,
     profit: 6000,
     profitBookedTillDate: 4000,
+    group: "Family Reunion",
   },
   {
     guestName: "Karan Malhotra",
@@ -115,6 +123,7 @@ export const guestTourData = [
     collectedTillDate: 23000,
     profit: 7600,
     profitBookedTillDate: 4600,
+    group: "College Friends",
   },
   {
     guestName: "Pooja Nair",
@@ -128,6 +137,7 @@ export const guestTourData = [
     collectedTillDate: 30000,
     profit: 9600,
     profitBookedTillDate: 6000,
+    group: "Retirement Celebration",
   },
 ];
 export default guestTourData;
