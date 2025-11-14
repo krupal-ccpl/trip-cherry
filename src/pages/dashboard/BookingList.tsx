@@ -608,7 +608,7 @@ export default function BookingList() {
                   { key: "tourStartMonth", label: "TOUR START MONTH" },
                   { key: "tourEndMonth", label: "TOUR END MONTH" },
                   { key: "bookingAmount", label: "BOOKING AMOUNT" },
-                  { key: "advancePayment", label: "ADVANCE PAYMENT" },
+                  { key: "advancePayment", label: "PAYMENT RECEIVED" },
                   { key: "collectionRemaining", label: "COLLECTION REMAINING" },
                   { key: "profit", label: "PROFIT" },
                   { key: "profitBookedTillDate", label: "PROFIT BOOKED TILL DATE" }
@@ -911,15 +911,26 @@ export default function BookingList() {
                           <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                             ₹{booking.advancePayment.toLocaleString()}
                           </MT.Typography>
-                          <PlusIcon 
-                            className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              const originalIndex = bookings.findIndex((b: Booking) => b.id === booking.id);
-                              openPaymentModal(originalIndex); 
-                            }} 
-                            title="Add Payment"
-                          />
+                          <div className="flex items-center gap-1">
+                            <PlusIcon 
+                              className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                const originalIndex = bookings.findIndex((b: Booking) => b.id === booking.id);
+                                openPaymentModal(originalIndex); 
+                              }} 
+                              title="Add Payment"
+                            />
+                            <ClockIcon 
+                              className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                const originalIndex = bookings.findIndex((b: Booking) => b.id === booking.id);
+                                openHistoryPopover(originalIndex); 
+                              }} 
+                              title="View Payment History"
+                            />
+                          </div>
                         </div>
                       </td>
                       <td className={`py-3 px-3 ${rowClass}`}>
@@ -932,15 +943,6 @@ export default function BookingList() {
                           >
                             ₹{booking.collectionRemaining.toLocaleString()}
                           </MT.Typography>
-                          <ClockIcon 
-                            className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              const originalIndex = bookings.findIndex((b: Booking) => b.id === booking.id);
-                              openHistoryPopover(originalIndex); 
-                            }} 
-                            title="View Payment History"
-                          />
                         </div>
                       </td>
                       <td className={`py-3 px-3 ${rowClass} relative group`}>
@@ -1137,7 +1139,7 @@ export default function BookingList() {
                           onKeyDown={handleNumberInput}
                           className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                           min="0"
-                          placeholder="Advance Payment"
+                          placeholder="Payment Received"
                         />
                       </td>
                       <td className="py-3 px-3">
@@ -1240,7 +1242,7 @@ export default function BookingList() {
                       </td>
                       <td className="py-3 px-3 text-center">
                         <MT.Typography className="text-sm text-gray-400 italic" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                          GST
+                          Payment Received
                         </MT.Typography>
                       </td>
                       <td className="py-3 px-3 text-center">
