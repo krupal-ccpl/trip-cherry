@@ -8,6 +8,7 @@ interface GuestTour {
   tourEndMonth: string;
   arrivalDate: string;
   departureDate: string;
+  group: string;
 }
 
 interface AddGuestModalProps {
@@ -39,6 +40,19 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
     { name: "Riya Bose", avatar: "https://i.pravatar.cc/150?img=32" },
     { name: "Manish Agarwal", avatar: "https://i.pravatar.cc/150?img=56" },
     { name: "Swati Pandey", avatar: "https://i.pravatar.cc/150?img=36" }
+  ];
+
+  const groups = [
+    "A's Family",
+    "B's Friends",
+    "Corporate tour by company ABC",
+    "School Trip Group",
+    "Wedding Party",
+    "Adventure Seekers",
+    "Business Conference",
+    "Family Reunion",
+    "College Friends",
+    "Retirement Celebration"
   ];
   const domesticDestinations = [
     "Taj Mahal, Agra",
@@ -82,6 +96,7 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
     destination: '',
     arrivalDate: '',
     departureDate: '',
+    group: '',
   });
 
   const destinations = newGuest.type === 'International' ? internationalDestinations : domesticDestinations;
@@ -93,16 +108,27 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
   const guestInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
+  const [showGroupSuggestions, setShowGroupSuggestions] = useState(false);
+  const [filteredGroups, setFilteredGroups] = useState<string[]>([]);
+  const [selectedGroupSuggestionIndex, setSelectedGroupSuggestionIndex] = useState(-1);
+  const groupInputRef = useRef<HTMLInputElement>(null);
+  const groupSuggestionsRef = useRef<HTMLDivElement>(null);
+
   // Handle click outside to close suggestions
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        guestInputRef.current &&
-        !guestInputRef.current.contains(event.target as Node) &&
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target as Node)
+        (guestInputRef.current &&
+          !guestInputRef.current.contains(event.target as Node) &&
+          suggestionsRef.current &&
+          !suggestionsRef.current.contains(event.target as Node)) ||
+        (groupInputRef.current &&
+          !groupInputRef.current.contains(event.target as Node) &&
+          groupSuggestionsRef.current &&
+          !groupSuggestionsRef.current.contains(event.target as Node))
       ) {
         setShowSuggestions(false);
+        setShowGroupSuggestions(false);
       }
     };
 
@@ -148,6 +174,47 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
       handleSuggestionClick(filteredGuests[selectedSuggestionIndex].name);
     } else if (e.key === "Escape") {
       setShowSuggestions(false);
+    }
+  };
+
+  const handleGroupNameChange = (value: string) => {
+    setNewGuest({ ...newGuest, group: value });
+    
+    if (value.length >= 2) {
+      const filtered = groups.filter(group =>
+        group.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredGroups(filtered);
+      setShowGroupSuggestions(true);
+      setSelectedGroupSuggestionIndex(-1);
+    } else {
+      setShowGroupSuggestions(false);
+      setFilteredGroups([]);
+    }
+  };
+
+  const handleGroupSuggestionClick = (name: string) => {
+    setNewGuest({ ...newGuest, group: name });
+    setShowGroupSuggestions(false);
+    setFilteredGroups([]);
+  };
+
+  const handleGroupKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showGroupSuggestions || filteredGroups.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedGroupSuggestionIndex(prev =>
+        prev < filteredGroups.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedGroupSuggestionIndex(prev => (prev > 0 ? prev - 1 : -1));
+    } else if (e.key === "Enter" && selectedGroupSuggestionIndex >= 0) {
+      e.preventDefault();
+      handleGroupSuggestionClick(filteredGroups[selectedGroupSuggestionIndex]);
+    } else if (e.key === "Escape") {
+      setShowGroupSuggestions(false);
     }
   };
   const today = new Date().toISOString().split('T')[0];
@@ -197,6 +264,7 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
       departureDate: formatDateToDisplay(newGuest.departureDate),
       tourStartMonth: newGuest.arrivalDate ? new Date(newGuest.arrivalDate).toLocaleDateString('en-US', { month: 'long' }) : '',
       tourEndMonth: newGuest.departureDate ? new Date(newGuest.departureDate).toLocaleDateString('en-US', { month: 'long' }) : '',
+      group: newGuest.group.trim(),
     };
     onAdd(guest);
     onClose();
@@ -206,9 +274,12 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
       destination: '',
       arrivalDate: '',
       departureDate: '',
+      group: '',
     });
     setShowSuggestions(false);
     setFilteredGuests([]);
+    setShowGroupSuggestions(false);
+    setFilteredGroups([]);
   };
 
   return (
@@ -257,6 +328,41 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
                 )}
               </div>
               {errors.guestName && <p className="text-red-500 text-sm">{errors.guestName}</p>}
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Group</label>
+              <div className="relative">
+                <input
+                  ref={groupInputRef}
+                  type="text"
+                  value={newGuest.group}
+                  onChange={(e) => handleGroupNameChange(e.target.value)}
+                  onKeyDown={handleGroupKeyDown}
+                  placeholder="Type group name..."
+                  autoComplete="off"
+                  className="w-full px-3 py-2 border border-blue-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                />
+                {showGroupSuggestions && filteredGroups.length > 0 && (
+                  <div
+                    ref={groupSuggestionsRef}
+                    className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto"
+                  >
+                    {filteredGroups.map((group, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleGroupSuggestionClick(group)}
+                        className={`px-4 py-2 cursor-pointer transition-colors ${
+                          index === selectedGroupSuggestionIndex
+                            ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
+                            : "hover:bg-gray-100 dark:hover:bg-gray-600"
+                        }`}
+                      >
+                        <span className="font-medium">{group}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
