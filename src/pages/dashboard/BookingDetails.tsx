@@ -10,6 +10,7 @@ import guestTourData from "@/data/guest-tour-data.js";
 import bookingsListData from "@/data/bookings-list-data.js";
 import AddServiceModal from "@/components/AddServiceModal";
 import AddGuestModal from "@/components/AddGuestModal";
+import AddGroupModal from "@/components/AddGroupModal";
 import AddBookingModal from "@/components/AddBookingModal";
 import PaymentModal from "@/components/PaymentModal";
 import HistoryPopover from "@/components/HistoryPopover";
@@ -66,6 +67,7 @@ export default function BookingDetails() {
   const [guests, setGuests] = useState(guestTourData);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
+  const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
 
   // Payment functionality state
   const [guestPaymentHistory, setGuestPaymentHistory] = useState<{[key: number]: Array<{amount: number; method: 'cash' | 'online'; date: string; timestamp: string}>}>({});
@@ -1775,16 +1777,28 @@ export default function BookingDetails() {
             <MT.Typography variant="h6" color="white" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               Guest Tour Details
             </MT.Typography>
-            <MT.Button 
-              className="flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 shadow-md hover:shadow-lg transition-all"
-              onClick={() => setIsGuestModalOpen(true)}
-              placeholder={undefined} 
-              onPointerEnterCapture={undefined} 
-              onPointerLeaveCapture={undefined}
-            >
-              <PlusIcon className="h-4 w-4" />
-              Add Guest
-            </MT.Button>
+            <div className="flex gap-2">
+              <MT.Button 
+                className="flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 shadow-md hover:shadow-lg transition-all"
+                onClick={() => setIsGuestModalOpen(true)}
+                placeholder={undefined} 
+                onPointerEnterCapture={undefined} 
+                onPointerLeaveCapture={undefined}
+              >
+                <PlusIcon className="h-4 w-4" />
+                Add Guest
+              </MT.Button>
+              <MT.Button 
+                className="flex items-center gap-2 bg-green-500 text-white hover:bg-green-600 shadow-md hover:shadow-lg transition-all"
+                onClick={() => setIsGroupModalOpen(true)}
+                placeholder={undefined} 
+                onPointerEnterCapture={undefined} 
+                onPointerLeaveCapture={undefined}
+              >
+                <PlusIcon className="h-4 w-4" />
+                Create Group
+              </MT.Button>
+            </div>
           </div>
 
           {/* Search, Sort, Filter Controls for Guests */}
@@ -2465,6 +2479,12 @@ export default function BookingDetails() {
           isOpen={isGuestModalOpen}
           onClose={() => setIsGuestModalOpen(false)}
           onAdd={(guest) => setGuests([...guests, guest])}
+        />
+
+        <AddGroupModal
+          isOpen={isGroupModalOpen}
+          onClose={() => setIsGroupModalOpen(false)}
+          onAdd={(guestsList) => setGuests([...guests, ...guestsList])}
         />
 
         <PaymentModal
