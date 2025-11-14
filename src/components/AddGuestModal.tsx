@@ -8,11 +8,6 @@ interface GuestTour {
   tourEndMonth: string;
   arrivalDate: string;
   departureDate: string;
-  balanceCollection: number;
-  toBeCollected: number;
-  collectedTillDate: number;
-  profit: number;
-  profitBookedTillDate: number;
 }
 
 interface AddGuestModalProps {
@@ -87,10 +82,6 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
     destination: '',
     arrivalDate: '',
     departureDate: '',
-    toBeCollected: '0',
-    collectedTillDate: '0',
-    profit: '0',
-    profitBookedTillDate: '0',
   });
 
   const destinations = newGuest.type === 'International' ? internationalDestinations : domesticDestinations;
@@ -170,12 +161,6 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
     return `${day}-${month}-${year}`;
   };
 
-  const handleNumberInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'e' || e.key === 'E' || e.key === '-' || e.key === '+') {
-      e.preventDefault();
-    }
-  };
-
   const handleSubmit = () => {
     const newErrors: Record<string, string> = {};
 
@@ -198,36 +183,12 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
       newErrors.destination = 'Destination is required';
     }
 
-    // Validate numbers
-    const toBeCollected = parseFloat(newGuest.toBeCollected);
-    if (newGuest.toBeCollected && (isNaN(toBeCollected) || toBeCollected < 0)) {
-      newErrors.toBeCollected = 'Must be a valid non-negative number';
-    }
-    const collectedTillDate = parseFloat(newGuest.collectedTillDate);
-    if (newGuest.collectedTillDate && (isNaN(collectedTillDate) || collectedTillDate < 0)) {
-      newErrors.collectedTillDate = 'Must be a valid non-negative number';
-    }
-    const profit = parseFloat(newGuest.profit);
-    if (newGuest.profit && (isNaN(profit) || profit < 0)) {
-      newErrors.profit = 'Must be a valid non-negative number';
-    }
-    const profitBookedTillDate = parseFloat(newGuest.profitBookedTillDate);
-    if (newGuest.profitBookedTillDate && (isNaN(profitBookedTillDate) || profitBookedTillDate < 0)) {
-      newErrors.profitBookedTillDate = 'Must be a valid non-negative number';
-    }
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
     setErrors({});
-
-    const toBeCollectedNum = parseFloat(newGuest.toBeCollected) || 0;
-    const collectedTillDateNum = parseFloat(newGuest.collectedTillDate) || 0;
-    const profitNum = parseFloat(newGuest.profit) || 0;
-    const profitBookedTillDateNum = parseFloat(newGuest.profitBookedTillDate) || 0;
-    const balanceCollection = toBeCollectedNum - collectedTillDateNum;
 
     const guest: GuestTour = {
       guestName: newGuest.guestName.trim(),
@@ -236,11 +197,6 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
       departureDate: formatDateToDisplay(newGuest.departureDate),
       tourStartMonth: newGuest.arrivalDate ? new Date(newGuest.arrivalDate).toLocaleDateString('en-US', { month: 'long' }) : '',
       tourEndMonth: newGuest.departureDate ? new Date(newGuest.departureDate).toLocaleDateString('en-US', { month: 'long' }) : '',
-      balanceCollection,
-      toBeCollected: toBeCollectedNum,
-      collectedTillDate: collectedTillDateNum,
-      profit: profitNum,
-      profitBookedTillDate: profitBookedTillDateNum,
     };
     onAdd(guest);
     onClose();
@@ -250,10 +206,6 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
       destination: '',
       arrivalDate: '',
       departureDate: '',
-      toBeCollected: '0',
-      collectedTillDate: '0',
-      profit: '0',
-      profitBookedTillDate: '0',
     });
     setShowSuggestions(false);
     setFilteredGuests([]);
@@ -356,66 +308,6 @@ export default function AddGuestModal({ isOpen, onClose, onAdd }: AddGuestModalP
                 onPointerLeaveCapture={undefined}
               />
               {errors.departureDate && <p className="text-red-500 text-sm">{errors.departureDate}</p>}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Be Collected</label>
-              <MT.Input
-                type="number"
-                value={newGuest.toBeCollected}
-                onChange={(e) => setNewGuest({ ...newGuest, toBeCollected: e.target.value })}
-                onKeyDown={handleNumberInput}
-                min="0"
-                placeholder="0"
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              />
-              {errors.toBeCollected && <p className="text-red-500 text-sm">{errors.toBeCollected}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Collected Till Date</label>
-              <MT.Input
-                type="number"
-                value={newGuest.collectedTillDate}
-                onChange={(e) => setNewGuest({ ...newGuest, collectedTillDate: e.target.value })}
-                onKeyDown={handleNumberInput}
-                min="0"
-                placeholder="0"
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              />
-              {errors.collectedTillDate && <p className="text-red-500 text-sm">{errors.collectedTillDate}</p>}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profit</label>
-              <MT.Input
-                type="number"
-                value={newGuest.profit}
-                onChange={(e) => setNewGuest({ ...newGuest, profit: e.target.value })}
-                onKeyDown={handleNumberInput}
-                min="0"
-                placeholder="0"
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              />
-              {errors.profit && <p className="text-red-500 text-sm">{errors.profit}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Profit Booked Till Date</label>
-              <MT.Input
-                type="number"
-                value={newGuest.profitBookedTillDate}
-                onChange={(e) => setNewGuest({ ...newGuest, profitBookedTillDate: e.target.value })}
-                onKeyDown={handleNumberInput}
-                min="0"
-                placeholder="0"
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              />
-              {errors.profitBookedTillDate && <p className="text-red-500 text-sm">{errors.profitBookedTillDate}</p>}
             </div>
           </div>
           <div className="flex justify-end gap-2 mt-4">
