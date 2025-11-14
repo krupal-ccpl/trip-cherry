@@ -8,6 +8,7 @@ interface Booking {
   phone: string;
   type: string;
   destination: string;
+  noOfTravellers: number;
   arrivalDate: string;
   departureDate: string;
   tourStartMonth: string;
@@ -94,6 +95,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
     phone: '',
     type: 'Domestic',
     destination: '',
+    noOfTravellers: '1',
     arrivalDate: '',
     departureDate: '',
     toBeCollectedTCS: '0',
@@ -145,6 +147,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         phone: booking.phone || '',
         type: booking.type,
         destination: booking.destination,
+        noOfTravellers: booking.noOfTravellers.toString(),
         arrivalDate: parseDisplayDateToISO(booking.arrivalDate),
         departureDate: parseDisplayDateToISO(booking.departureDate),
         toBeCollectedTCS: booking.toBeCollectedTCS.toString(),
@@ -161,6 +164,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         phone: '',
         type: 'Domestic',
         destination: '',
+        noOfTravellers: '1',
         arrivalDate: '',
         departureDate: '',
         toBeCollectedTCS: '0',
@@ -321,6 +325,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
     const collectedTillDate = parseFloat(newBooking.collectedTillDate) || 0;
     const profit = parseFloat(newBooking.profit) || 0;
     const profitBookedTillDate = parseFloat(newBooking.profitBookedTillDate) || 0;
+    const noOfTravellers = parseInt(newBooking.noOfTravellers) || 1;
     const collectionRemaining = toBeCollectedTCS + toBeCollectedGST - collectedTillDate;
     
     if (booking) {
@@ -332,6 +337,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         phone: newBooking.phone,
         type: newBooking.type,
         destination: newBooking.destination.trim(),
+        noOfTravellers,
         arrivalDate: formatDateToDisplay(newBooking.arrivalDate),
         departureDate: formatDateToDisplay(newBooking.departureDate),
         tourStartMonth: newBooking.arrivalDate ? new Date(newBooking.arrivalDate).toLocaleDateString('en-US', { month: 'long' }) : '',
@@ -353,6 +359,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         customerName: newBooking.customerName.trim(),
         phone: newBooking.phone,
         destination: newBooking.destination.trim(),
+        noOfTravellers,
         arrivalDate: formatDateToDisplay(newBooking.arrivalDate),
         departureDate: formatDateToDisplay(newBooking.departureDate),
         tourStartMonth: newBooking.arrivalDate ? new Date(newBooking.arrivalDate).toLocaleDateString('en-US', { month: 'long' }) : '',
@@ -374,6 +381,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
       phone: '',
       type: 'Domestic',
       destination: '',
+      noOfTravellers: '1',
       arrivalDate: '',
       departureDate: '',
       toBeCollectedTCS: '0',
@@ -389,7 +397,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
   return (
     isOpen && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{booking ? 'Edit Booking' : 'Add New Booking'}</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
@@ -511,9 +519,22 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
               {errors.departureDate && <p className="text-red-500 text-sm">{errors.departureDate}</p>}
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
+          <div className="grid grid-cols-4 gap-4 mt-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Be Collected (TCS)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No of Travellers</label>
+              <MT.Input
+                type="number"
+                value={newBooking.noOfTravellers}
+                onChange={(e) => setNewBooking({ ...newBooking, noOfTravellers: e.target.value })}
+                onKeyDown={handleNumberInput}
+                min="1"
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">TCS Amount</label>
               <MT.Input
                 type="number"
                 value={newBooking.toBeCollectedTCS}
@@ -527,7 +548,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
               {errors.toBeCollectedTCS && <p className="text-red-500 text-sm">{errors.toBeCollectedTCS}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Be Collected (GST)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GST Amount</label>
               <MT.Input
                 type="number"
                 value={newBooking.toBeCollectedGST}
@@ -541,7 +562,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
               {errors.toBeCollectedGST && <p className="text-red-500 text-sm">{errors.toBeCollectedGST}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Collected Till Date</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Collected</label>
               <MT.Input
                 type="number"
                 value={newBooking.collectedTillDate}

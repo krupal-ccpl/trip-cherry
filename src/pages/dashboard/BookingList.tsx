@@ -15,6 +15,7 @@ interface Booking {
   phone: string;
   type: string;
   destination: string;
+  noOfTravellers: number;
   arrivalDate: string;
   departureDate: string;
   tourStartMonth: string;
@@ -68,6 +69,7 @@ export default function BookingList() {
     phone: '',
     type: 'Domestic',
     destination: '',
+    noOfTravellers: 1,
     arrivalDate: '',
     departureDate: '',
     tourStartMonth: '',
@@ -228,6 +230,9 @@ export default function BookingList() {
     if (field === 'profitBookedTillDate') {
       updatedBookings[index].profitBookedTillDate = parseFloat(newValue) || 0;
     }
+    if (field === 'noOfTravellers') {
+      updatedBookings[index].noOfTravellers = parseInt(newValue) || 1;
+    }
     if (field === 'phone') {
       // Validate phone number
       if (newValue && (newValue.length !== 10 || !/^\d{10}$/.test(newValue))) {
@@ -365,6 +370,7 @@ export default function BookingList() {
       phone: '',
       type: 'Domestic',
       destination: '',
+      noOfTravellers: 1,
       arrivalDate: '',
       departureDate: '',
       tourStartMonth: '',
@@ -382,7 +388,7 @@ export default function BookingList() {
     const updatedData = { ...newRowData };
     
     // Store numeric fields as numbers, not strings
-    if (['toBeCollectedTCS', 'toBeCollectedGST', 'collectedTillDate', 'profit', 'profitBookedTillDate'].includes(field)) {
+    if (['toBeCollectedTCS', 'toBeCollectedGST', 'collectedTillDate', 'profit', 'profitBookedTillDate', 'noOfTravellers'].includes(field)) {
       (updatedData as any)[field] = parseFloat(value) || 0;
     } else {
       (updatedData as any)[field] = value;
@@ -453,6 +459,7 @@ export default function BookingList() {
       phone: '',
       type: 'Domestic',
       destination: '',
+      noOfTravellers: 1,
       arrivalDate: '',
       departureDate: '',
       tourStartMonth: '',
@@ -477,6 +484,7 @@ export default function BookingList() {
       phone: '',
       type: 'Domestic',
       destination: '',
+      noOfTravellers: 1,
       arrivalDate: '',
       departureDate: '',
       tourStartMonth: '',
@@ -693,6 +701,7 @@ export default function BookingList() {
                   { key: "phone", label: "PHONE" },
                   { key: "type", label: "DOMESTIC / INTERNATIONAL" },
                   { key: "destination", label: "DESTINATION" },
+                  { key: "noOfTravellers", label: "NO OF TRAVELLERS" },
                   { key: "arrivalDate", label: "ARRIVAL DATE" },
                   { key: "departureDate", label: "DEPARTURE DATE" },
                   { key: "tourStartMonth", label: "TOUR START MONTH" },
@@ -888,6 +897,31 @@ export default function BookingList() {
                               {booking.destination}
                             </MT.Typography>
                             <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'destination', booking.destination); }} />
+                          </div>
+                        )}
+                      </td>
+                      <td className={`py-3 px-3 ${rowClass} relative group`}>
+                        {editingBooking?.index === index && editingBooking?.field === 'noOfTravellers' ? (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              value={editValues.noOfTravellers !== undefined ? editValues.noOfTravellers : booking.noOfTravellers}
+                              onChange={(e) => setEditValues({ ...editValues, noOfTravellers: parseInt(e.target.value) || 0 })}
+                              onKeyDown={handleNumberInput}
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              min="1"
+                              placeholder="Number of travellers"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            <CheckIcon className="h-4 w-4 text-green-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); saveBookingEdit(); }} />
+                            <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" onClick={(e) => { e.stopPropagation(); cancelBookingEdit(); }} />
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              {booking.noOfTravellers}
+                            </MT.Typography>
+                            <PencilIcon className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); startEditingBooking(index, 'noOfTravellers', booking.noOfTravellers); }} />
                           </div>
                         )}
                       </td>
@@ -1157,6 +1191,17 @@ export default function BookingList() {
                             <option key={dest} value={dest}>{dest}</option>
                           ))}
                         </select>
+                      </td>
+                      <td className="py-3 px-3">
+                        <input
+                          type="number"
+                          value={newRowData.noOfTravellers}
+                          onChange={(e) => handleNewRowChange('noOfTravellers', e.target.value)}
+                          onKeyDown={handleNumberInput}
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          min="1"
+                          placeholder="No of Travellers"
+                        />
                       </td>
                       <td className="py-3 px-3">
                         <input
