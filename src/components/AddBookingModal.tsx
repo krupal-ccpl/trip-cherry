@@ -177,7 +177,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
     
     if (value.length >= 2) {
       const filtered = customerNames.filter(customer =>
-        customer.name.toLowerCase().includes(value.toLowerCase())
+        customer.name.toLowerCase().includes(value.toLowerCase()) ||
+        customer.phone.includes(value)
       );
       setFilteredCustomers(filtered);
       setShowSuggestions(true);
