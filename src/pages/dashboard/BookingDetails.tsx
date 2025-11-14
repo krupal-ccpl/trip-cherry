@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import * as MT from "@material-tailwind/react";
-import { ArrowLeftIcon, PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon, MagnifyingGlassIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon, MagnifyingGlassIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon, TrashIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import bookingPaymentsData from "@/data/booking-payments-data.js";
 // @ts-expect-error: JS module has no types
@@ -34,6 +34,7 @@ interface Booking {
 }
 
 interface BookingPayment {
+  id: number;
   productType: string;
   bookedProduct: string;
   supplierReference: string;
@@ -62,7 +63,7 @@ export default function BookingDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [services, setServices] = useState(bookingPaymentsData);
+  const [services, setServices] = useState<BookingPayment[]>(() => bookingPaymentsData.map((s: any, i: number) => ({ ...s, id: i + 1 })));
   const [guests, setGuests] = useState(guestTourData);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
@@ -495,20 +496,20 @@ export default function BookingDetails() {
   };
 
   // Service payment functionality functions
-  const openServicePaymentModal = (index: number) => {
-    const service = services[index];
+  const openServicePaymentModal = (serviceId: number) => {
+    const service = services.find((s: BookingPayment) => s.id === serviceId);
+    if (!service) return;
     const maxAmount = service.toBePaid;
     const currentCollected = service.paidTillDate;
     
-    setCurrentServicePayment({ index, maxAmount, currentCollected });
+    setCurrentServicePayment({ index: serviceId, maxAmount, currentCollected });
     setIsServicePaymentModalOpen(true);
   };
 
   const handleServicePaymentAdd = (payment: { amount: number; method: 'cash' | 'online'; date: string; timestamp: string }) => {
     if (!currentServicePayment) return;
 
-    const { index } = currentServicePayment;
-    const serviceId = index; // Using index as service ID for simplicity
+    const { index: serviceId } = currentServicePayment;
 
     // Update payment history
     setServicePaymentHistory(prev => ({
@@ -518,11 +519,13 @@ export default function BookingDetails() {
 
     // Update service paid amount and payment remaining
     setServices((prev: BookingPayment[]) => {
+      const serviceIndex = prev.findIndex(s => s.id === serviceId);
+      if (serviceIndex === -1) return prev;
       const updated = [...prev];
-      updated[index] = {
-        ...updated[index],
-        paidTillDate: updated[index].paidTillDate + payment.amount,
-        paymentRemaining: updated[index].toBePaid - (updated[index].paidTillDate + payment.amount)
+      updated[serviceIndex] = {
+        ...updated[serviceIndex],
+        paidTillDate: updated[serviceIndex].paidTillDate + payment.amount,
+        paymentRemaining: updated[serviceIndex].toBePaid - (updated[serviceIndex].paidTillDate + payment.amount)
       };
       return updated;
     });
@@ -531,9 +534,22 @@ export default function BookingDetails() {
     setCurrentServicePayment(null);
   };
 
-  const openServiceHistoryPopover = (serviceIndex: number) => {
-    setCurrentHistoryService(serviceIndex);
+  const openServiceHistoryPopover = (serviceId: number) => {
+    setCurrentHistoryService(serviceId);
     setIsServiceHistoryPopoverOpen(true);
+  };
+
+  // Delete service function
+  const handleDeleteService = (serviceId: number) => {
+    if (window.confirm('Are you sure you want to delete this service?')) {
+      setServices(services.filter((s: BookingPayment) => s.id !== serviceId));
+      // Remove from payment history
+      setServicePaymentHistory(prev => {
+        const newHistory = { ...prev };
+        delete newHistory[serviceId];
+        return newHistory;
+      });
+    }
   };
 
   // Service editing functions
@@ -663,6 +679,7 @@ export default function BookingDetails() {
     }
     
     const newService: BookingPayment = {
+      id: Math.max(0, ...services.map((s: BookingPayment) => s.id)) + 1,
       ...newServiceData,
       invRequired: newServiceData.invRequired,
     };
@@ -1216,6 +1233,17 @@ export default function BookingDetails() {
                       </div>
                     </th>
                   ))}
+                  <th className="border-b-2 border-blue-200 py-3 px-4 text-left">
+                    <MT.Typography
+                      variant="small"
+                      className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      ACTIONS
+                    </MT.Typography>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -1383,7 +1411,7 @@ export default function BookingDetails() {
                                 className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors" 
                                 onClick={(e) => { 
                                   e.stopPropagation(); 
-                                  openServicePaymentModal(index); 
+                                  openServicePaymentModal(item.id); 
                                 }} 
                                 title="Add Payment"
                               />
@@ -1399,11 +1427,18 @@ export default function BookingDetails() {
                               className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
                               onClick={(e) => { 
                                 e.stopPropagation(); 
-                                openServiceHistoryPopover(index); 
+                                openServiceHistoryPopover(item.id); 
                               }} 
                               title="View Payment History"
                             />
                           </div>
+                        </td>
+                        <td className={`py-3 px-4 ${rowClass}`}>
+                          <TrashIcon 
+                            className="h-5 w-5 text-red-600 cursor-pointer hover:text-red-800" 
+                            onClick={() => handleDeleteService(item.id)} 
+                            title="Delete Service"
+                          />
                         </td>
                       </tr>
                     );
@@ -1597,6 +1632,9 @@ export default function BookingDetails() {
                     <MT.Typography className="text-xs font-medium text-gray-600 dark:text-gray-400" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                       Balance Payment
                     </MT.Typography>
+                  </td>
+                  <td className="py-3 px-4">
+                    {/* Empty for actions */}
                   </td>
                 </tr>
               </tbody>
@@ -2305,7 +2343,7 @@ export default function BookingDetails() {
         <AddServiceModal
           isOpen={isServiceModalOpen}
           onClose={() => setIsServiceModalOpen(false)}
-          onAdd={(service) => setServices([...services, service])}
+          onAdd={(service) => setServices([...services, { ...service, id: Math.max(0, ...services.map((s: BookingPayment) => s.id)) + 1 }])}
         />
 
         <AddGuestModal
