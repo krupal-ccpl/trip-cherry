@@ -132,9 +132,9 @@ export default function BookingDetails() {
   const [isEditBookingModalOpen, setIsEditBookingModalOpen] = useState(false);
 
   // Search, Sort, Filter state for Services table
-  const [servicesSearchTerm, setServicesSearchTerm] = useState('');
+  const [servicesSearchTerm] = useState('');
   const [servicesSortConfig, setServicesSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
-  const [servicesFilters, setServicesFilters] = useState({
+  const [servicesFilters] = useState({
     productType: '',
     invRequired: ''
   });
@@ -291,11 +291,6 @@ export default function BookingDetails() {
     }
   };
 
-  // Search, Sort, Filter handlers for Services table
-  const handleServicesSearch = (term: string) => {
-    setServicesSearchTerm(term);
-  };
-
   const handleServicesSort = (key: string) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (servicesSortConfig && servicesSortConfig.key === key && servicesSortConfig.direction === 'asc') {
@@ -304,12 +299,6 @@ export default function BookingDetails() {
     setServicesSortConfig({ key, direction });
   };
 
-  const handleServicesFilter = (filterType: string, value: string) => {
-    setServicesFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
-  };
 
   // Search, Sort, Filter handlers for Guests table
   const handleGuestsSearch = (term: string) => {
@@ -1190,62 +1179,6 @@ export default function BookingDetails() {
             <MT.Typography variant="h6" color="white" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               Services
             </MT.Typography>
-            <MT.Button 
-              className="flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 shadow-md hover:shadow-lg transition-all"
-              onClick={() => setIsServiceModalOpen(true)}
-              placeholder={undefined} 
-              onPointerEnterCapture={undefined} 
-              onPointerLeaveCapture={undefined}
-            >
-              <PlusIcon className="h-4 w-4" />
-              Add Service
-            </MT.Button>
-          </div>
-
-          {/* Search, Sort, Filter Controls for Services */}
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 dark:bg-gray-700 dark:border-gray-600">
-            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-              {/* Search */}
-              <div className="relative flex-1 max-w-md">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search services..."
-                  value={servicesSearchTerm}
-                  onChange={(e) => handleServicesSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              {/* Filters */}
-              <div className="flex flex-wrap gap-3">
-                <div className="relative">
-                  <FunnelIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <select
-                    value={servicesFilters.productType}
-                    onChange={(e) => handleServicesFilter('productType', e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                  >
-                    <option value="">All Product Types</option>
-                    {productTypes.map((type) => (
-                      <option key={type} value={type}>{type}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="relative">
-                  <select
-                    value={servicesFilters.invRequired}
-                    onChange={(e) => handleServicesFilter('invRequired', e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                  >
-                    <option value="">All Invoice Status</option>
-                    <option value="Yes">Invoice Required</option>
-                    <option value="No">No Invoice</option>
-                  </select>
-                </div>
-              </div>
-            </div>
           </div>
 
           <MT.CardBody className="overflow-x-auto px-0 pt-0 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
