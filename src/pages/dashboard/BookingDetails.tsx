@@ -98,6 +98,10 @@ export default function BookingDetails() {
   const [showGroupSuggestions, setShowGroupSuggestions] = useState(false);
   const groupInputRef = useRef<HTMLInputElement>(null);
 
+  const [productTypeSuggestions, setProductTypeSuggestions] = useState<string[]>([]);
+  const [showProductTypeSuggestions, setShowProductTypeSuggestions] = useState(false);
+  const productTypeInputRef = useRef<HTMLInputElement>(null);
+
   // Inline ADD functionality state for services
   const [hasEmptyServiceRow, setHasEmptyServiceRow] = useState(true);
   const [isEditingNewService, setIsEditingNewService] = useState(false);
@@ -664,6 +668,20 @@ export default function BookingDetails() {
       }
     }
     
+    // Handle product type change for autocomplete
+    if (field === 'productType') {
+      if (value.length >= 1) {
+        const filtered = productTypes.filter(type =>
+          type.toLowerCase().includes(value.toLowerCase())
+        );
+        setProductTypeSuggestions(filtered);
+        setShowProductTypeSuggestions(true);
+      } else {
+        setShowProductTypeSuggestions(false);
+        setProductTypeSuggestions([]);
+      }
+    }
+    
     // Calculate payment remaining - ensure all values are numbers
     const toBePaid = typeof updatedData.toBePaid === 'string' ? parseFloat(updatedData.toBePaid) || 0 : updatedData.toBePaid || 0;
     const paidTillDate = typeof updatedData.paidTillDate === 'string' ? parseFloat(updatedData.paidTillDate) || 0 : updatedData.paidTillDate || 0;
@@ -687,6 +705,7 @@ export default function BookingDetails() {
     setServices([...services, newService]);
     setIsEditingNewService(false);
     setShowSupplierSuggestions(false);
+    setShowProductTypeSuggestions(false);
     
     // Reset for next entry
     setNewServiceData({
@@ -703,6 +722,7 @@ export default function BookingDetails() {
   const cancelNewService = () => {
     setIsEditingNewService(false);
     setShowSupplierSuggestions(false);
+    setShowProductTypeSuggestions(false);
     setNewServiceData({
       productType: '',
       bookedProduct: '',
@@ -741,6 +761,15 @@ export default function BookingDetails() {
     }
     handleNewServiceChange('supplierReference', name);
     setShowSupplierSuggestions(false);
+  };
+
+  const selectNewServiceProductType = (type: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    handleNewServiceChange('productType', type);
+    setShowProductTypeSuggestions(false);
   };
 
   // Guest editing functions
@@ -1451,17 +1480,28 @@ export default function BookingDetails() {
                     {isEditingNewService ? (
                       // EDITING MODE: All fields become inputs, single Save/Cancel for entire row
                       <>
-                        <td className="py-3 px-4">
-                          <select
+                        <td className="py-3 px-4 relative">
+                          <input
+                            ref={productTypeInputRef}
+                            type="text"
                             value={newServiceData.productType}
                             onChange={(e) => handleNewServiceChange('productType', e.target.value)}
                             className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          >
-                            <option value="">Select Product Type</option>
-                            {productTypes.map((type) => (
-                              <option key={type} value={type}>{type}</option>
-                            ))}
-                          </select>
+                            placeholder="Type product type..."
+                          />
+                          {showProductTypeSuggestions && productTypeSuggestions.length > 0 && (
+                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                              {productTypeSuggestions.map((type, idx) => (
+                                <div
+                                  key={idx}
+                                  onMouseDown={(e) => selectNewServiceProductType(type, e)}
+                                  className="px-3 py-2 cursor-pointer hover:bg-gray-100"
+                                >
+                                  <span className="text-sm">{type}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </td>
                         <td className="py-3 px-4">
                           <select
