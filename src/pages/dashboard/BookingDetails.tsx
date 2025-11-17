@@ -102,6 +102,19 @@ export default function BookingDetails() {
   const [showProductTypeSuggestions, setShowProductTypeSuggestions] = useState(false);
   const productTypeInputRef = useRef<HTMLInputElement>(null);
 
+  // Row-level editing states for services
+  const [editingServiceRow, setEditingServiceRow] = useState<{ id: number } | null>(null);
+  const [editServiceRowValues, setEditServiceRowValues] = useState<any>({});
+
+  // Row edit suggestions
+  const [showRowEditSupplierSuggestions, setShowRowEditSupplierSuggestions] = useState(false);
+  const [rowEditSupplierSuggestions, setRowEditSupplierSuggestions] = useState<typeof supplierNames>([]);
+  const rowEditSupplierInputRef = useRef<HTMLInputElement>(null);
+
+  const [showRowEditProductTypeSuggestions, setShowRowEditProductTypeSuggestions] = useState(false);
+  const [rowEditProductTypeSuggestions, setRowEditProductTypeSuggestions] = useState<string[]>([]);
+  const rowEditProductTypeInputRef = useRef<HTMLInputElement>(null);
+
   // Inline ADD functionality state for services
   const [hasEmptyServiceRow, setHasEmptyServiceRow] = useState(true);
   const [isEditingNewService, setIsEditingNewService] = useState(false);
@@ -616,6 +629,104 @@ export default function BookingDetails() {
     if (editingService?.index === -1) {
       addEmptyServiceRow();
     }
+  };
+
+  // Service row-level editing functions
+  const startEditingServiceRow = (serviceId: number) => {
+    const service = services.find(s => s.id === serviceId);
+    if (!service) return;
+    setEditingServiceRow({ id: serviceId });
+    setEditServiceRowValues({
+      productType: service.productType,
+      bookedProduct: service.bookedProduct,
+      supplierReference: service.supplierReference,
+      invRequired: service.invRequired === 'Yes',
+      toBePaid: service.toBePaid,
+      paidTillDate: service.paidTillDate,
+    });
+  };
+
+  const saveServiceRowEdit = () => {
+    if (!editingServiceRow) return;
+    const serviceId = editingServiceRow.id;
+    const serviceIndex = services.findIndex(s => s.id === serviceId);
+    if (serviceIndex === -1) return;
+
+    setServices((prev: BookingPayment[]) => {
+      const updated = [...prev];
+      updated[serviceIndex] = {
+        ...updated[serviceIndex],
+        productType: editServiceRowValues.productType,
+        bookedProduct: editServiceRowValues.bookedProduct,
+        supplierReference: editServiceRowValues.supplierReference,
+        invRequired: editServiceRowValues.invRequired ? 'Yes' : 'No',
+        toBePaid: parseFloat(editServiceRowValues.toBePaid) || 0,
+        paidTillDate: parseFloat(editServiceRowValues.paidTillDate) || 0,
+        paymentRemaining: (parseFloat(editServiceRowValues.toBePaid) || 0) - (parseFloat(editServiceRowValues.paidTillDate) || 0),
+      };
+      return updated;
+    });
+
+    setEditingServiceRow(null);
+    setEditServiceRowValues({});
+    setShowRowEditSupplierSuggestions(false);
+    setShowRowEditProductTypeSuggestions(false);
+  };
+
+  const cancelServiceRowEdit = () => {
+    setEditingServiceRow(null);
+    setEditServiceRowValues({});
+    setShowRowEditSupplierSuggestions(false);
+    setShowRowEditProductTypeSuggestions(false);
+  };
+
+  // Row edit handlers
+  const handleRowEditSupplierChange = (value: string) => {
+    setEditServiceRowValues({ ...editServiceRowValues, supplierReference: value });
+
+    if (value.length >= 2) {
+      const filtered = supplierNames.filter(supplier =>
+        supplier.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setRowEditSupplierSuggestions(filtered);
+      setShowRowEditSupplierSuggestions(true);
+    } else {
+      setShowRowEditSupplierSuggestions(false);
+      setRowEditSupplierSuggestions([]);
+    }
+  };
+
+  const selectRowEditSupplierSuggestion = (name: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setEditServiceRowValues({ ...editServiceRowValues, supplierReference: name });
+    setShowRowEditSupplierSuggestions(false);
+  };
+
+  const handleRowEditProductTypeChange = (value: string) => {
+    setEditServiceRowValues({ ...editServiceRowValues, productType: value });
+
+    if (value.length >= 1) {
+      const filtered = productTypes.filter(type =>
+        type.toLowerCase().includes(value.toLowerCase())
+      );
+      setRowEditProductTypeSuggestions(filtered);
+      setShowRowEditProductTypeSuggestions(true);
+    } else {
+      setShowRowEditProductTypeSuggestions(false);
+      setRowEditProductTypeSuggestions([]);
+    }
+  };
+
+  const selectRowEditProductTypeSuggestion = (type: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setEditServiceRowValues({ ...editServiceRowValues, productType: type });
+    setShowRowEditProductTypeSuggestions(false);
   };
 
   const addEmptyServiceRow = () => {
@@ -1284,7 +1395,34 @@ export default function BookingDetails() {
                     return (
                       <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                         <td className={`py-3 px-4 ${rowClass} relative group`}>
-                          {editingService?.index === index && editingService?.field === 'productType' ? (
+                          {editingServiceRow?.id === item.id ? (
+                            <div className="relative">
+                              <input
+                                ref={rowEditProductTypeInputRef}
+                                type="text"
+                                value={editServiceRowValues.productType || ''}
+                                onChange={(e) => handleRowEditProductTypeChange(e.target.value)}
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="Type product type..."
+                              />
+                              {showRowEditProductTypeSuggestions && rowEditProductTypeSuggestions.length > 0 && (
+                                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                                  {rowEditProductTypeSuggestions.map((type, idx) => (
+                                    <div
+                                      key={idx}
+                                      onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+                                        e.preventDefault();
+                                        selectRowEditProductTypeSuggestion(type, e);
+                                      }}
+                                      className="px-3 py-2 cursor-pointer hover:bg-gray-100"
+                                    >
+                                      <span className="text-sm">{type}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ) : editingService?.index === index && editingService?.field === 'productType' ? (
                             <div className="flex items-center gap-2">
                               <select
                                 value={editValues.productType || item.productType}
@@ -1309,7 +1447,18 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-4 ${rowClass} relative group`}>
-                          {editingService?.index === index && editingService?.field === 'bookedProduct' ? (
+                          {editingServiceRow?.id === item.id ? (
+                            <select
+                              value={editServiceRowValues.bookedProduct || ''}
+                              onChange={(e) => setEditServiceRowValues({ ...editServiceRowValues, bookedProduct: e.target.value })}
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            >
+                              <option value="">Select Booked Product</option>
+                              {bookedProducts.map((product) => (
+                                <option key={product} value={product}>{product}</option>
+                              ))}
+                            </select>
+                          ) : editingService?.index === index && editingService?.field === 'bookedProduct' ? (
                             <div className="flex items-center gap-2">
                               <select
                                 value={editValues.bookedProduct || item.bookedProduct}
@@ -1334,7 +1483,35 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-4 ${rowClass} relative group`}>
-                          {editingService?.index === index && editingService?.field === 'supplierReference' ? (
+                          {editingServiceRow?.id === item.id ? (
+                            <div className="relative">
+                              <input
+                                ref={rowEditSupplierInputRef}
+                                type="text"
+                                value={editServiceRowValues.supplierReference || ''}
+                                onChange={(e) => handleRowEditSupplierChange(e.target.value)}
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="Type supplier name..."
+                              />
+                              {showRowEditSupplierSuggestions && rowEditSupplierSuggestions.length > 0 && (
+                                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                                  {rowEditSupplierSuggestions.map((supplier, idx) => (
+                                    <div
+                                      key={idx}
+                                      onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+                                        e.preventDefault();
+                                        selectRowEditSupplierSuggestion(supplier.name, e);
+                                      }}
+                                      className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100"
+                                    >
+                                      <img src={supplier.avatar} alt={supplier.name} className="w-6 h-6 rounded-full" />
+                                      <span className="text-sm">{supplier.name}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ) : editingService?.index === index && editingService?.field === 'supplierReference' ? (
                             <div className="relative flex items-center gap-2">
                               <input
                                 ref={supplierInputRef}
@@ -1371,7 +1548,17 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-4 ${rowClass} relative group`}>
-                          {editingService?.index === index && editingService?.field === 'invRequired' ? (
+                          {editingServiceRow?.id === item.id ? (
+                            <label className="inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={editServiceRowValues.invRequired || false}
+                                onChange={(e) => setEditServiceRowValues({ ...editServiceRowValues, invRequired: e.target.checked })}
+                                className="sr-only peer"
+                              />
+                              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                          ) : editingService?.index === index && editingService?.field === 'invRequired' ? (
                             <div className="flex items-center gap-2">
                               <label className="inline-flex items-center cursor-pointer">
                                 <input
@@ -1395,7 +1582,16 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-4 ${rowClass} relative group`}>
-                          {editingService?.index === index && editingService?.field === 'toBePaid' ? (
+                          {editingServiceRow?.id === item.id ? (
+                            <input
+                              type="number"
+                              value={editServiceRowValues.toBePaid || 0}
+                              onChange={(e) => setEditServiceRowValues({ ...editServiceRowValues, toBePaid: e.target.value })}
+                              onKeyDown={handleNumberInput}
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              min="0"
+                            />
+                          ) : editingService?.index === index && editingService?.field === 'toBePaid' ? (
                             <div className="flex items-center gap-2">
                               <input
                                 type="number"
@@ -1418,7 +1614,16 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-4 ${rowClass} relative group`}>
-                          {editingService?.index === index && editingService?.field === 'paidTillDate' ? (
+                          {editingServiceRow?.id === item.id ? (
+                            <input
+                              type="number"
+                              value={editServiceRowValues.paidTillDate || 0}
+                              onChange={(e) => setEditServiceRowValues({ ...editServiceRowValues, paidTillDate: e.target.value })}
+                              onKeyDown={handleNumberInput}
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              min="0"
+                            />
+                          ) : editingService?.index === index && editingService?.field === 'paidTillDate' ? (
                             <div className="flex items-center gap-2">
                               <input
                                 type="number"
@@ -1448,26 +1653,54 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-4 ${rowClass}`}>
-                          <div className="flex items-center justify-between">
-                            <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                              ₹{item.paymentRemaining.toLocaleString()}
+                          {editingServiceRow?.id === item.id ? (
+                            <MT.Typography variant="small" className="text-gray-500" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                              ₹{((parseFloat(editServiceRowValues.toBePaid) || 0) - (parseFloat(editServiceRowValues.paidTillDate) || 0)).toLocaleString()}
                             </MT.Typography>
-                            <ClockIcon 
-                              className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
-                              onClick={(e) => { 
-                                e.stopPropagation(); 
-                                openServiceHistoryPopover(item.id); 
-                              }} 
-                              title="View Payment History"
-                            />
-                          </div>
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <MT.Typography className="text-sm font-medium text-gray-900 dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                                ₹{item.paymentRemaining.toLocaleString()}
+                              </MT.Typography>
+                              <ClockIcon 
+                                className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors" 
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  openServiceHistoryPopover(item.id); 
+                                }} 
+                                title="View Payment History"
+                              />
+                            </div>
+                          )}
                         </td>
                         <td className={`py-3 px-4 ${rowClass}`}>
-                          <TrashIcon 
-                            className="h-5 w-5 text-red-600 cursor-pointer hover:text-red-800" 
-                            onClick={() => handleDeleteService(item.id)} 
-                            title="Delete Service"
-                          />
+                          {editingServiceRow?.id === item.id ? (
+                            <div className="flex items-center gap-2">
+                              <CheckIcon 
+                                className="h-5 w-5 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1" 
+                                onClick={saveServiceRowEdit}
+                                title="Save row"
+                              />
+                              <XMarkIcon 
+                                className="h-5 w-5 text-red-600 cursor-pointer hover:bg-red-100 rounded p-1" 
+                                onClick={cancelServiceRowEdit}
+                                title="Cancel row edit"
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <PencilIcon 
+                                className="h-5 w-5 text-blue-600 cursor-pointer hover:text-blue-800" 
+                                onClick={() => startEditingServiceRow(item.id)} 
+                                title="Edit entire row"
+                              />
+                              <TrashIcon 
+                                className="h-5 w-5 text-red-600 cursor-pointer hover:text-red-800" 
+                                onClick={() => handleDeleteService(item.id)} 
+                                title="Delete Service"
+                              />
+                            </div>
+                          )}
                         </td>
                       </tr>
                     );
@@ -1494,7 +1727,7 @@ export default function BookingDetails() {
                               {productTypeSuggestions.map((type, idx) => (
                                 <div
                                   key={idx}
-                                  onMouseDown={(e) => selectNewServiceProductType(type, e)}
+                                  onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => selectNewServiceProductType(type, e)}
                                   className="px-3 py-2 cursor-pointer hover:bg-gray-100"
                                 >
                                   <span className="text-sm">{type}</span>
@@ -1529,7 +1762,7 @@ export default function BookingDetails() {
                               {supplierSuggestions.map((supplier, idx) => (
                                 <div
                                   key={idx}
-                                  onMouseDown={(e) => selectNewServiceSupplier(supplier.name, e)}
+                                  onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => selectNewServiceSupplier(supplier.name, e)}
                                   className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100"
                                 >
                                   <img src={supplier.avatar} alt={supplier.name} className="w-6 h-6 rounded-full" />
@@ -2132,7 +2365,7 @@ export default function BookingDetails() {
                               {guestSuggestions.map((guest, idx) => (
                                 <div
                                   key={idx}
-                                  onMouseDown={(e) => selectNewGuestSuggestion(guest.name, e)}
+                                  onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => selectNewGuestSuggestion(guest.name, e)}
                                   className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-900 dark:text-white"
                                 >
                                   <img src={guest.avatar} alt={guest.name} className="w-6 h-6 rounded-full" />
@@ -2156,7 +2389,7 @@ export default function BookingDetails() {
                               {groupSuggestions.map((group, idx) => (
                                 <div
                                   key={idx}
-                                  onMouseDown={(e) => selectNewGroupSuggestion(group, e)}
+                                  onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => selectNewGroupSuggestion(group, e)}
                                   className="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-900 dark:text-white"
                                 >
                                   <span className="text-sm">{group}</span>
