@@ -72,6 +72,7 @@ interface GuestTour {
   profit: number;
   profitBookedTillDate: number;
   group: string;
+  isAdult: boolean;
   documents: {name: string, uploaded: boolean, path?: string}[];
 }
 
@@ -218,6 +219,7 @@ export default function BookingDetails() {
     profit: 0,
     profitBookedTillDate: 0,
     group: "",
+    isAdult: true,
     documents: [] as {name: string, uploaded: boolean, path?: string}[],
   });
 
@@ -1179,6 +1181,7 @@ export default function BookingDetails() {
       profit: guest.profit,
       profitBookedTillDate: guest.profitBookedTillDate,
       documents: guest.documents,
+      isAdult: guest.isAdult,
     });
     setShowGuestSuggestions(false);
     setShowGroupSuggestions(false);
@@ -1250,6 +1253,7 @@ export default function BookingDetails() {
       profit: 0,
       profitBookedTillDate: 0,
       group: "",
+      isAdult: true,
       documents: [],
     });
     setHasEmptyGuestRow(true);
@@ -1270,6 +1274,7 @@ export default function BookingDetails() {
       profit: 0,
       profitBookedTillDate: 0,
       group: "",
+      isAdult: true,
       documents: [],
     });
   };
@@ -1384,6 +1389,7 @@ export default function BookingDetails() {
       profit: 0,
       profitBookedTillDate: 0,
       group: "",
+      isAdult: true,
       documents: [],
     });
   };
@@ -1404,6 +1410,7 @@ export default function BookingDetails() {
       profit: 0,
       profitBookedTillDate: 0,
       group: "",
+      isAdult: true,
       documents: [],
     });
   };
@@ -3063,6 +3070,7 @@ export default function BookingDetails() {
                 <tr className="bg-blue-50 dark:bg-blue-900/50">
                   {[
                     { key: "guestName", label: "NAME OF GUEST" },
+                    { key: "isAdult", label: "ADULT" },
                     { key: "group", label: "GROUP" },
                     { key: "destination", label: "DESTINATION" },
                     { key: "arrivalDate", label: "ARRIVAL DATE" },
@@ -3250,6 +3258,77 @@ export default function BookingDetails() {
                             </div>
                           )}
                         </td>
+                         <td className={`py-3 px-3 ${rowClass} relative group`}>
+                          {editingGuestRow?.index === index ? (
+                            <label className="inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={editGuestRowValues.isAdult || false}
+                                onChange={(e) =>
+                                  setEditGuestRowValues({
+                                    ...editGuestRowValues,
+                                    isAdult: e.target.checked,
+                                  })
+                                }
+                                className="sr-only peer"
+                              />
+                              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                          ) : editingGuest?.index === index &&
+                            editingGuest?.field === "isAdult" ? (
+                            <div className="flex items-center gap-2">
+                              <label className="inline-flex items-center cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={
+                                    editValues.isAdult !== undefined
+                                      ? editValues.isAdult
+                                      : item.isAdult
+                                  }
+                                  onChange={(
+                                    e: React.ChangeEvent<HTMLInputElement>
+                                  ) =>
+                                    setEditValues({
+                                      ...editValues,
+                                      isAdult: e.target.checked,
+                                    })
+                                  }
+                                  className="sr-only peer"
+                                />
+                                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                              </label>
+                              <CheckIcon
+                                className="h-4 w-4 text-green-600 cursor-pointer"
+                                onClick={saveGuestEdit}
+                              />
+                              <XMarkIcon
+                                className="h-4 w-4 text-red-600 cursor-pointer"
+                                onClick={cancelGuestEdit}
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <MT.Typography
+                                className="text-sm text-gray-700 dark:text-gray-300"
+                                placeholder={undefined}
+                                onPointerEnterCapture={undefined}
+                                onPointerLeaveCapture={undefined}
+                              >
+                                {item.isAdult ? "Yes" : "No"}
+                              </MT.Typography>
+                              <PencilIcon
+                                className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() =>
+                                  startEditingGuest(
+                                    index,
+                                    "isAdult",
+                                    item.isAdult
+                                  )
+                                }
+                              />
+                            </div>
+                          )}
+                        </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
                           {editingGuestRow?.index === index ? (
                             <div className="relative">
@@ -3417,26 +3496,6 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-3 ${rowClass}`}>
-                          <MT.Typography
-                            className="text-sm text-gray-700 dark:text-gray-300"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            {item.tourStartMonth}
-                          </MT.Typography>
-                        </td>
-                        <td className={`py-3 px-3 ${rowClass}`}>
-                          <MT.Typography
-                            className="text-sm text-gray-700 dark:text-gray-300"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            {item.tourEndMonth}
-                          </MT.Typography>
-                        </td>
-                        <td className={`py-3 px-3 ${rowClass}`}>
                           {editingGuestRow?.index === index ? (
                             <input
                               type="date"
@@ -3561,6 +3620,26 @@ export default function BookingDetails() {
                               />
                             </div>
                           )}
+                        </td>
+                        <td className={`py-3 px-3 ${rowClass}`}>
+                          <MT.Typography
+                            className="text-sm text-gray-700 dark:text-gray-300"
+                            placeholder={undefined}
+                            onPointerEnterCapture={undefined}
+                            onPointerLeaveCapture={undefined}
+                          >
+                            {item.tourStartMonth}
+                          </MT.Typography>
+                        </td>
+                        <td className={`py-3 px-3 ${rowClass}`}>
+                          <MT.Typography
+                            className="text-sm text-gray-700 dark:text-gray-300"
+                            placeholder={undefined}
+                            onPointerEnterCapture={undefined}
+                            onPointerLeaveCapture={undefined}
+                          >
+                            {item.tourEndMonth}
+                          </MT.Typography>
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
                           {editingGuestRow?.index === index ? (
@@ -3921,6 +4000,19 @@ export default function BookingDetails() {
                               </div>
                             )}
                         </td>
+                        <td className="py-3 px-3">
+                          <label className="inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={newGuestData.isAdult}
+                              onChange={(e) =>
+                                handleNewGuestChange("isAdult", e.target.checked)
+                              }
+                              className="sr-only peer"
+                            />
+                            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                          </label>
+                        </td>
                         <td className="py-3 px-3 relative">
                           <input
                             ref={groupInputRef}
@@ -4125,6 +4217,16 @@ export default function BookingDetails() {
                             onPointerLeaveCapture={undefined}
                           >
                             Click to add new guest
+                          </MT.Typography>
+                        </td>
+                        <td className="py-3 px-3 text-center">
+                          <MT.Typography
+                            className="text-sm text-gray-400 italic"
+                            placeholder={undefined}
+                            onPointerEnterCapture={undefined}
+                            onPointerLeaveCapture={undefined}
+                          >
+                            Adult
                           </MT.Typography>
                         </td>
                         <td className="py-3 px-3 text-center">
