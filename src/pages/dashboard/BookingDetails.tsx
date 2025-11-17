@@ -167,6 +167,12 @@ export default function BookingDetails() {
   } | null>(null);
   const [editServiceRowValues, setEditServiceRowValues] = useState<any>({});
 
+  // Row-level editing states for guests
+  const [editingGuestRow, setEditingGuestRow] = useState<{
+    index: number;
+  } | null>(null);
+  const [editGuestRowValues, setEditGuestRowValues] = useState<any>({});
+
   // Row edit suggestions
   const [showRowEditSupplierSuggestions, setShowRowEditSupplierSuggestions] =
     useState(false);
@@ -1155,6 +1161,81 @@ export default function BookingDetails() {
     }
   };
 
+  // Guest row editing functions
+  const startEditingGuestRow = (index: number) => {
+    const guest = guests[index];
+    setEditingGuestRow({ index });
+    setEditGuestRowValues({
+      guestName: guest.guestName,
+      group: guest.group,
+      destination: guest.destination,
+      arrivalDate: guest.arrivalDate,
+      departureDate: guest.departureDate,
+      tourStartMonth: guest.tourStartMonth,
+      tourEndMonth: guest.tourEndMonth,
+      toBeCollected: guest.toBeCollected,
+      collectedTillDate: guest.collectedTillDate,
+      balanceCollection: guest.balanceCollection,
+      profit: guest.profit,
+      profitBookedTillDate: guest.profitBookedTillDate,
+      documents: guest.documents,
+    });
+    setShowGuestSuggestions(false);
+    setShowGroupSuggestions(false);
+  };
+
+  const saveGuestRowEdit = () => {
+    if (!editingGuestRow) return;
+
+    const { index } = editingGuestRow;
+    const updatedGuest = { ...editGuestRowValues };
+
+    // Recalculate derived fields
+    if (updatedGuest.arrivalDate) {
+      updatedGuest.tourStartMonth = new Date(updatedGuest.arrivalDate).toLocaleDateString("en-US", { month: "long" });
+      updatedGuest.arrivalDate = formatDateToDisplay(updatedGuest.arrivalDate);
+    }
+    if (updatedGuest.departureDate) {
+      updatedGuest.tourEndMonth = new Date(updatedGuest.departureDate).toLocaleDateString("en-US", { month: "long" });
+      updatedGuest.departureDate = formatDateToDisplay(updatedGuest.departureDate);
+    }
+
+    // Calculate balance collection
+    const toBeCollected = parseFloat(updatedGuest.toBeCollected as any) || 0;
+    const collectedTillDate = parseFloat(updatedGuest.collectedTillDate as any) || 0;
+    updatedGuest.balanceCollection = toBeCollected - collectedTillDate;
+
+    // Ensure numeric fields are properly converted
+    updatedGuest.toBeCollected = toBeCollected;
+    updatedGuest.collectedTillDate = collectedTillDate;
+    updatedGuest.profit = parseFloat(updatedGuest.profit as any) || 0;
+    updatedGuest.profitBookedTillDate = parseFloat(updatedGuest.profitBookedTillDate as any) || 0;
+
+    setGuests((prev: GuestTour[]) => {
+      const updated = [...prev];
+      updated[index] = updatedGuest as GuestTour;
+      return updated;
+    });
+
+    setEditingGuestRow(null);
+    setEditGuestRowValues({});
+    setShowGuestSuggestions(false);
+    setShowGroupSuggestions(false);
+  };
+
+  const cancelGuestRowEdit = () => {
+    setEditingGuestRow(null);
+    setEditGuestRowValues({});
+    setShowGuestSuggestions(false);
+    setShowGroupSuggestions(false);
+  };
+
+  const handleDeleteGuest = (index: number) => {
+    if (window.confirm("Are you sure you want to delete this guest?")) {
+      setGuests((prev: GuestTour[]) => prev.filter((_, i) => i !== index));
+    }
+  };
+
   const addEmptyGuestRow = () => {
     setNewGuestData({
       guestName: "",
@@ -1362,8 +1443,48 @@ export default function BookingDetails() {
     }
   };
 
+  const handleGuestRowChange = (value: string) => {
+    setEditGuestRowValues({ ...editGuestRowValues, guestName: value });
+
+    if (value.length >= 2) {
+      const filtered = guestNames.filter((guest) =>
+        guest.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setGuestSuggestions(filtered);
+      setShowGuestSuggestions(true);
+    } else {
+      setShowGuestSuggestions(false);
+      setGuestSuggestions([]);
+    }
+  };
+
+  const handleGroupRowChange = (value: string) => {
+    setEditGuestRowValues({ ...editGuestRowValues, group: value });
+
+    if (value.length >= 2) {
+      const filtered = groups.filter((group) =>
+        group.toLowerCase().includes(value.toLowerCase())
+      );
+      setGroupSuggestions(filtered);
+      setShowGroupSuggestions(true);
+    } else {
+      setShowGroupSuggestions(false);
+      setGroupSuggestions([]);
+    }
+  };
+
   const selectGroupSuggestion = (name: string) => {
     setEditValues({ ...editValues, group: name });
+    setShowGroupSuggestions(false);
+  };
+
+  const selectGuestRowSuggestion = (name: string) => {
+    setEditGuestRowValues({ ...editGuestRowValues, guestName: name });
+    setShowGuestSuggestions(false);
+  };
+
+  const selectGroupRowSuggestion = (name: string) => {
+    setEditGuestRowValues({ ...editGuestRowValues, group: name });
     setShowGroupSuggestions(false);
   };
 
@@ -3016,6 +3137,17 @@ export default function BookingDetails() {
                       </div>
                     </th>
                   ))}
+                  <th className="border-b-2 border-blue-200 py-3 px-3 text-left">
+                    <MT.Typography
+                      variant="small"
+                      className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      ACTIONS
+                    </MT.Typography>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -3032,8 +3164,44 @@ export default function BookingDetails() {
                         className="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors"
                       >
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuest?.index === index &&
-                          editingGuest?.field === "guestName" ? (
+                          {editingGuestRow?.index === index ? (
+                            <div className="relative">
+                              <input
+                                ref={guestInputRef}
+                                type="text"
+                                value={editGuestRowValues.guestName || ""}
+                                onChange={(e) =>
+                                  handleGuestRowChange(e.target.value)
+                                }
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="Type guest name..."
+                              />
+                              {showGuestSuggestions &&
+                                guestSuggestions.length > 0 && (
+                                  <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                                    {guestSuggestions.map((guest, idx) => (
+                                      <div
+                                        key={idx}
+                                        onClick={() =>
+                                          selectGuestRowSuggestion(guest.name)
+                                        }
+                                        className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-900 dark:text-white"
+                                      >
+                                        <img
+                                          src={guest.avatar}
+                                          alt={guest.name}
+                                          className="w-6 h-6 rounded-full"
+                                        />
+                                        <span className="text-sm">
+                                          {guest.name}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                            </div>
+                          ) : editingGuest?.index === index &&
+                            editingGuest?.field === "guestName" ? (
                             <div className="relative flex items-center gap-2">
                               <input
                                 ref={guestInputRef}
@@ -3105,8 +3273,37 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuest?.index === index &&
-                          editingGuest?.field === "group" ? (
+                          {editingGuestRow?.index === index ? (
+                            <div className="relative">
+                              <input
+                                ref={groupInputRef}
+                                type="text"
+                                value={editGuestRowValues.group || ""}
+                                onChange={(e) =>
+                                  handleGroupRowChange(e.target.value)
+                                }
+                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="Type group name..."
+                              />
+                              {showGroupSuggestions &&
+                                groupSuggestions.length > 0 && (
+                                  <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                                    {groupSuggestions.map((group, idx) => (
+                                      <div
+                                        key={idx}
+                                        onClick={() =>
+                                          selectGroupRowSuggestion(group)
+                                        }
+                                        className="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-900 dark:text-white"
+                                      >
+                                        <span className="text-sm">{group}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                            </div>
+                          ) : editingGuest?.index === index &&
+                            editingGuest?.field === "group" ? (
                             <div className="relative flex items-center gap-2">
                               <input
                                 ref={groupInputRef}
@@ -3167,8 +3364,26 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuest?.index === index &&
-                          editingGuest?.field === "destination" ? (
+                          {editingGuestRow?.index === index ? (
+                            <select
+                              value={editGuestRowValues.destination || ""}
+                              onChange={(e) =>
+                                setEditGuestRowValues({
+                                  ...editGuestRowValues,
+                                  destination: e.target.value,
+                                })
+                              }
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            >
+                              <option value="">Select Destination</option>
+                              {destinations.map((dest) => (
+                                <option key={dest} value={dest}>
+                                  {dest}
+                                </option>
+                              ))}
+                            </select>
+                          ) : editingGuest?.index === index &&
+                            editingGuest?.field === "destination" ? (
                             <div className="flex items-center gap-2">
                               <select
                                 value={
@@ -3243,9 +3458,21 @@ export default function BookingDetails() {
                             {item.tourEndMonth}
                           </MT.Typography>
                         </td>
-                        <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuest?.index === index &&
-                          editingGuest?.field === "arrivalDate" ? (
+                        <td className={`py-3 px-3 ${rowClass}`}>
+                          {editingGuestRow?.index === index ? (
+                            <input
+                              type="date"
+                              value={editGuestRowValues.arrivalDate || ""}
+                              onChange={(e) =>
+                                setEditGuestRowValues({
+                                  ...editGuestRowValues,
+                                  arrivalDate: e.target.value,
+                                })
+                              }
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            />
+                          ) : editingGuest?.index === index &&
+                            editingGuest?.field === "arrivalDate" ? (
                             <div className="flex items-center gap-2">
                               <input
                                 type="date"
@@ -3294,9 +3521,21 @@ export default function BookingDetails() {
                             </div>
                           )}
                         </td>
-                        <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuest?.index === index &&
-                          editingGuest?.field === "departureDate" ? (
+                        <td className={`py-3 px-3 ${rowClass}`}>
+                          {editingGuestRow?.index === index ? (
+                            <input
+                              type="date"
+                              value={editGuestRowValues.departureDate || ""}
+                              onChange={(e) =>
+                                setEditGuestRowValues({
+                                  ...editGuestRowValues,
+                                  departureDate: e.target.value,
+                                })
+                              }
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            />
+                          ) : editingGuest?.index === index &&
+                            editingGuest?.field === "departureDate" ? (
                             <div className="flex items-center gap-2">
                               <input
                                 type="date"
@@ -3346,8 +3585,21 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuest?.index === index &&
-                          editingGuest?.field === "toBeCollected" ? (
+                          {editingGuestRow?.index === index ? (
+                            <input
+                              type="number"
+                              value={editGuestRowValues.toBeCollected || ""}
+                              onChange={(e) =>
+                                setEditGuestRowValues({
+                                  ...editGuestRowValues,
+                                  toBeCollected: e.target.value,
+                                })
+                              }
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              placeholder="0"
+                            />
+                          ) : editingGuest?.index === index &&
+                            editingGuest?.field === "toBeCollected" ? (
                             <div className="flex items-center gap-2">
                               <input
                                 type="number"
@@ -3362,8 +3614,8 @@ export default function BookingDetails() {
                                     toBeCollected: e.target.value,
                                   })
                                 }
-                                onKeyDown={handleNumberInput}
                                 className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                placeholder="0"
                               />
                               <CheckIcon
                                 className="h-4 w-4 text-green-600 cursor-pointer"
@@ -3438,8 +3690,21 @@ export default function BookingDetails() {
                           </div>
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuest?.index === index &&
-                          editingGuest?.field === "profit" ? (
+                          {editingGuestRow?.index === index ? (
+                            <input
+                              type="number"
+                              value={editGuestRowValues.profit || ""}
+                              onChange={(e) =>
+                                setEditGuestRowValues({
+                                  ...editGuestRowValues,
+                                  profit: e.target.value,
+                                })
+                              }
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              placeholder="0"
+                            />
+                          ) : editingGuest?.index === index &&
+                            editingGuest?.field === "profit" ? (
                             <div className="flex items-center gap-2">
                               <input
                                 type="number"
@@ -3490,8 +3755,21 @@ export default function BookingDetails() {
                           )}
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuest?.index === index &&
-                          editingGuest?.field === "profitBookedTillDate" ? (
+                          {editingGuestRow?.index === index ? (
+                            <input
+                              type="number"
+                              value={editGuestRowValues.profitBookedTillDate || ""}
+                              onChange={(e) =>
+                                setEditGuestRowValues({
+                                  ...editGuestRowValues,
+                                  profitBookedTillDate: e.target.value,
+                                })
+                              }
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              placeholder="0"
+                            />
+                          ) : editingGuest?.index === index &&
+                            editingGuest?.field === "profitBookedTillDate" ? (
                             <div className="flex items-center gap-2">
                               <input
                                 type="number"
@@ -3587,6 +3865,35 @@ export default function BookingDetails() {
                               </div>
                             ))}
                           </div>
+                        </td>
+                        <td className={`py-3 px-3 ${rowClass}`}>
+                          {editingGuestRow?.index === index ? (
+                            <div className="flex items-center gap-2">
+                              <CheckIcon
+                                className="h-5 w-5 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1"
+                                onClick={saveGuestRowEdit}
+                                title="Save row"
+                              />
+                              <XMarkIcon
+                                className="h-5 w-5 text-red-600 cursor-pointer hover:bg-red-100 rounded p-1"
+                                onClick={cancelGuestRowEdit}
+                                title="Cancel row edit"
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <PencilIcon
+                                className="h-5 w-5 text-blue-600 cursor-pointer hover:text-blue-800"
+                                onClick={() => startEditingGuestRow(index)}
+                                title="Edit entire row"
+                              />
+                              <TrashIcon
+                                className="h-5 w-5 text-red-600 cursor-pointer hover:text-red-800"
+                                onClick={() => handleDeleteGuest(index)}
+                                title="Delete Guest"
+                              />
+                            </div>
+                          )}
                         </td>
                       </tr>
                     );
@@ -4045,6 +4352,9 @@ export default function BookingDetails() {
                     >
                       {/* Documents total - could show count or status */}
                     </MT.Typography>
+                  </td>
+                  <td className="py-3 px-3">
+                    {/* Empty for actions */}
                   </td>
                 </tr>
               </tbody>
