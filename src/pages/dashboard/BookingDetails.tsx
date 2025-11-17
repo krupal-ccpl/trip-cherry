@@ -2915,28 +2915,6 @@ export default function BookingDetails() {
             >
               Guest Tour Details
             </MT.Typography>
-            <div className="flex gap-2">
-              <MT.Button
-                className="flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 shadow-md hover:shadow-lg transition-all"
-                onClick={() => setIsGuestModalOpen(true)}
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                <PlusIcon className="h-4 w-4" />
-                Add Guest
-              </MT.Button>
-              <MT.Button
-                className="flex items-center gap-2 bg-green-500 text-white hover:bg-green-600 shadow-md hover:shadow-lg transition-all"
-                onClick={() => setIsGroupModalOpen(true)}
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                <PlusIcon className="h-4 w-4" />
-                Add Group
-              </MT.Button>
-            </div>
           </div>
 
           {/* Search, Sort, Filter Controls for Guests */}
