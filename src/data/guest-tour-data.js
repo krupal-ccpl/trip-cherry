@@ -1,3 +1,23 @@
+const domesticDocs = ['Aadhaar Card', 'PAN Card', 'Voter ID', 'Driving License'];
+const internationalDocs = ['Passport', 'Visa', 'Flight Tickets', 'Hotel Bookings'];
+const domesticDestinations = [
+  "Taj Mahal, Agra",
+  "Golden Temple, Amritsar",
+  "Jaipur (Pink City)",
+  "Goa Beaches",
+  "Kerala Backwaters",
+  "Mumbai",
+  "Delhi",
+  "Rishikesh",
+  "Ladakh",
+  "Udaipur",
+  "Varanasi",
+  "Mysore Palace",
+  "Darjeeling",
+  "Shimla",
+  "Andaman Islands"
+];
+
 export const guestTourData = [
   {
     guestName: "Rajesh Kumar",
@@ -12,6 +32,11 @@ export const guestTourData = [
     profit: 5000,
     profitBookedTillDate: 2000,
     group: "A's Family",
+    documents: domesticDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
   },
   {
     guestName: "Priya Sharma",
@@ -26,6 +51,11 @@ export const guestTourData = [
     profit: 7000,
     profitBookedTillDate: 6400,
     group: "B's Friends",
+    documents: domesticDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
   },
   {
     guestName: "Amit Patel",
@@ -40,6 +70,11 @@ export const guestTourData = [
     profit: 8000,
     profitBookedTillDate: 3600,
     group: "Corporate tour by company ABC",
+    documents: domesticDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
   },
   {
     guestName: "Neha Gupta",
@@ -54,6 +89,11 @@ export const guestTourData = [
     profit: 5600,
     profitBookedTillDate: 4000,
     group: "School Trip Group",
+    documents: domesticDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
   },
   {
     guestName: "Rahul Singh",
@@ -68,6 +108,11 @@ export const guestTourData = [
     profit: 6400,
     profitBookedTillDate: 4000,
     group: "Wedding Party",
+    documents: domesticDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
   },
   {
     guestName: "Anjali Desai",
@@ -82,6 +127,11 @@ export const guestTourData = [
     profit: 9000,
     profitBookedTillDate: 5000,
     group: "Adventure Seekers",
+    documents: domesticDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
   },
   {
     guestName: "Vikram Reddy",
@@ -96,6 +146,11 @@ export const guestTourData = [
     profit: 11000,
     profitBookedTillDate: 3000,
     group: "Business Conference",
+    documents: domesticDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
   },
   {
     guestName: "Sneha Iyer",
@@ -110,6 +165,11 @@ export const guestTourData = [
     profit: 6000,
     profitBookedTillDate: 4000,
     group: "Family Reunion",
+    documents: domesticDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
   },
   {
     guestName: "Karan Malhotra",
@@ -124,6 +184,11 @@ export const guestTourData = [
     profit: 7600,
     profitBookedTillDate: 4600,
     group: "College Friends",
+    documents: domesticDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
   },
   {
     guestName: "Pooja Nair",
@@ -138,6 +203,11 @@ export const guestTourData = [
     profit: 9600,
     profitBookedTillDate: 6000,
     group: "Retirement Celebration",
+    documents: domesticDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
   },
 ];
 export default guestTourData;
