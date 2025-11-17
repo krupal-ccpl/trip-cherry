@@ -20,6 +20,7 @@ interface Booking {
   profit: number;
   profitBookedTillDate: number;
   collectionRemaining: number;
+  requiredDocuments: string[];
 }
 
 interface AddBookingModalProps {
@@ -90,6 +91,9 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
     "Prague, Czech Republic"
   ];
 
+  const domesticDocs = ['Aadhaar Card', 'PAN Card', 'Voter ID', 'Driving License'];
+  const internationalDocs = ['Passport', 'Visa', 'Flight Tickets', 'Hotel Bookings'];
+
   const [newBooking, setNewBooking] = useState({
     bookingDate: new Date().toISOString().split('T')[0],
     customerName: '',
@@ -104,6 +108,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
     profit: '0',
     profitBookedTillDate: '0',
   });
+
+  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
   const destinations = newBooking.type === 'International' ? internationalDestinations : domesticDestinations;
   
@@ -142,6 +148,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         profit: booking.profit.toString(),
         profitBookedTillDate: booking.profitBookedTillDate.toString(),
       });
+      setSelectedDocuments(booking.requiredDocuments || (booking.type === 'Domestic' ? domesticDocs : internationalDocs));
     } else {
       // Reset form for new booking
       setNewBooking({
@@ -158,6 +165,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         profit: '0',
         profitBookedTillDate: '0',
       });
+      setSelectedDocuments(domesticDocs);
     }
   }, [booking]);
 
@@ -288,6 +296,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         profit,
         profitBookedTillDate,
         collectionRemaining,
+        requiredDocuments: selectedDocuments,
       };
       onAdd(updatedBooking);
     } else {
@@ -309,6 +318,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         profit,
         profitBookedTillDate,
         collectionRemaining,
+        requiredDocuments: selectedDocuments,
       };
       onAdd(booking);
     }
@@ -328,6 +338,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
       profit: '0',
       profitBookedTillDate: '0',
     });
+    setSelectedDocuments(domesticDocs);
   };
 
   return (
@@ -384,7 +395,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                     type="radio"
                     value="Domestic"
                     checked={newBooking.type === 'Domestic'}
-                    onChange={(e) => setNewBooking({ ...newBooking, type: e.target.value })}
+                    onChange={(e) => {
+                      setNewBooking({ ...newBooking, type: e.target.value });
+                      setSelectedDocuments(domesticDocs);
+                    }}
                     className="mr-2"
                   />
                   Domestic
@@ -394,7 +408,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                     type="radio"
                     value="International"
                     checked={newBooking.type === 'International'}
-                    onChange={(e) => setNewBooking({ ...newBooking, type: e.target.value })}
+                    onChange={(e) => {
+                      setNewBooking({ ...newBooking, type: e.target.value });
+                      setSelectedDocuments(internationalDocs);
+                    }}
                     className="mr-2"
                   />
                   International
@@ -432,6 +449,28 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                 })}
               />
               {errors.destination && <p className="text-red-500 text-sm">{errors.destination}</p>}
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Required Documents</label>
+              <div className="flex flex-wrap gap-4">
+                {(newBooking.type === 'Domestic' ? domesticDocs : internationalDocs).map(doc => (
+                  <label key={doc} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedDocuments.includes(doc)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedDocuments([...selectedDocuments, doc]);
+                        } else {
+                          setSelectedDocuments(selectedDocuments.filter(d => d !== doc));
+                        }
+                      }}
+                      className="mr-2"
+                    />
+                    {doc}
+                  </label>
+                ))}
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Arrival Date</label>
