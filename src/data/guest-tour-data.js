@@ -219,5 +219,65 @@ export const guestTourData = [
       path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
     }))
   },
+  {
+    guestName: "Arjun Rao",
+    destination: "Paris, France",
+    tourStartMonth: "September",
+    tourEndMonth: "September",
+    arrivalDate: "10-Sep-2026",
+    departureDate: "15-Sep-2026",
+    balanceCollection: 25000,
+    toBeCollected: 55000,
+    collectedTillDate: 30000,
+    profit: 11000,
+    profitBookedTillDate: 6000,
+    group: "",
+    isAdult: true,
+    documents: internationalDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
+  },
+  {
+    guestName: "Kavita Joshi",
+    destination: "London, UK",
+    tourStartMonth: "October",
+    tourEndMonth: "October",
+    arrivalDate: "05-Oct-2026",
+    departureDate: "10-Oct-2026",
+    balanceCollection: 20000,
+    toBeCollected: 45000,
+    collectedTillDate: 25000,
+    profit: 9000,
+    profitBookedTillDate: 5000,
+    group: "",
+    isAdult: false,
+    documents: internationalDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
+  },
+  {
+    guestName: "Rohan Verma",
+    destination: "Dubai, UAE",
+    tourStartMonth: "November",
+    tourEndMonth: "November",
+    arrivalDate: "15-Nov-2026",
+    departureDate: "20-Nov-2026",
+    balanceCollection: 15000,
+    toBeCollected: 40000,
+    collectedTillDate: 25000,
+    profit: 8000,
+    profitBookedTillDate: 5000,
+    group: "",
+    isAdult: true,
+    documents: internationalDocs.map(doc => ({
+      name: doc,
+      uploaded: Math.random() > 0.5,
+      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
+    }))
+  },
 ];
 export default guestTourData;

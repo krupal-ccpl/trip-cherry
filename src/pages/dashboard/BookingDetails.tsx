@@ -76,6 +76,12 @@ interface GuestTour {
   documents: {name: string, uploaded: boolean, path?: string}[];
 }
 
+interface Group {
+  name: string;
+  leadPerson: string;
+  members: string[];
+}
+
 export default function BookingDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -87,6 +93,9 @@ export default function BookingDetails() {
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
+
+  // Groups state
+  const [groupList, setGroupList] = useState<Group[]>([]);
 
   // Payment functionality state
   const [guestPaymentHistory, setGuestPaymentHistory] = useState<{
@@ -4442,6 +4451,161 @@ export default function BookingDetails() {
           </MT.CardBody>
         </MT.Card>
 
+        {/* Groups Table */}
+        <MT.Card
+          className="shadow-lg border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl flex justify-between items-center">
+            <MT.Typography
+              variant="h6"
+              color="white"
+              className="font-semibold"
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              Groups
+            </MT.Typography>
+            <MT.Button
+              className="bg-white text-blue-600 hover:bg-blue-50"
+              onClick={() => setIsGroupModalOpen(true)}
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              + Add Group
+            </MT.Button>
+          </div>
+
+          <MT.CardBody
+            className="overflow-x-auto px-0 pt-0 pb-2"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            <table className="w-full min-w-[600px] table-auto">
+              <thead>
+                <tr className="bg-blue-50 dark:bg-blue-900/50">
+                  <th className="border-b-2 border-blue-200 py-3 px-4 text-left">
+                    <MT.Typography
+                      variant="small"
+                      className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      GROUP NAME
+                    </MT.Typography>
+                  </th>
+                  <th className="border-b-2 border-blue-200 py-3 px-4 text-left">
+                    <MT.Typography
+                      variant="small"
+                      className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      LEAD PERSON
+                    </MT.Typography>
+                  </th>
+                  <th className="border-b-2 border-blue-200 py-3 px-4 text-left">
+                    <MT.Typography
+                      variant="small"
+                      className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      MEMBERS
+                    </MT.Typography>
+                  </th>
+                  <th className="border-b-2 border-blue-200 py-3 px-4 text-left">
+                    <MT.Typography
+                      variant="small"
+                      className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      ACTIONS
+                    </MT.Typography>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {groupList.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-8 px-4 text-center">
+                      <MT.Typography
+                        variant="small"
+                        className="text-gray-500 dark:text-gray-400"
+                        placeholder={undefined}
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                      >
+                        No groups created yet. Click "+ Add Group" to create your first group.
+                      </MT.Typography>
+                    </td>
+                  </tr>
+                ) : (
+                  groupList.map((group, index) => (
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <td className="py-3 px-4">
+                        <MT.Typography
+                          className="text-sm font-medium text-gray-900 dark:text-white"
+                          placeholder={undefined}
+                          onPointerEnterCapture={undefined}
+                          onPointerLeaveCapture={undefined}
+                        >
+                          {group.name}
+                        </MT.Typography>
+                      </td>
+                      <td className="py-3 px-4">
+                        <MT.Typography
+                          className="text-sm text-gray-700 dark:text-gray-300"
+                          placeholder={undefined}
+                          onPointerEnterCapture={undefined}
+                          onPointerLeaveCapture={undefined}
+                        >
+                          {group.leadPerson}
+                        </MT.Typography>
+                      </td>
+                      <td className="py-3 px-4">
+                        <MT.Typography
+                          className="text-sm text-gray-700 dark:text-gray-300"
+                          placeholder={undefined}
+                          onPointerEnterCapture={undefined}
+                          onPointerLeaveCapture={undefined}
+                        >
+                          {group.members.length} members
+                        </MT.Typography>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          <PencilIcon
+                            className="h-5 w-5 text-blue-600 cursor-pointer hover:text-blue-800"
+                            title="Edit Group"
+                          />
+                          <TrashIcon
+                            className="h-5 w-5 text-red-600 cursor-pointer hover:text-red-800"
+                            title="Delete Group"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </MT.CardBody>
+        </MT.Card>
+
         <AddServiceModal
           isOpen={isServiceModalOpen}
           onClose={() => setIsServiceModalOpen(false)}
@@ -4466,7 +4630,11 @@ export default function BookingDetails() {
         <AddGroupModal
           isOpen={isGroupModalOpen}
           onClose={() => setIsGroupModalOpen(false)}
-          onAdd={(guestsList) => setGuests([...guests, ...guestsList])}
+          onAdd={(group, updatedGuests) => {
+            setGroupList([...groupList, group]);
+            setGuests(updatedGuests);
+          }}
+          guests={guests}
         />
 
         <PaymentModal
