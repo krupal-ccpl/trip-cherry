@@ -3122,7 +3122,7 @@ export default function BookingDetails() {
                     { key: "departureDate", label: "DEPARTURE DATE", width: "w-[8%]" },
                     { key: "toBeCollected", label: "TO BE COLLECTED", width: "w-[8%]" },
                     { key: "collectedTillDate", label: "COLLECTED TILL DATE", width: "w-[8%]" },
-                    { key: "balanceCollection", label: "BALANCE COLLECTION", width: "w-[8%]" },
+                    { key: "balanceCollection", label: "OUTSTANDING", width: "w-[8%]" },
                     { key: "profit", label: "PROFIT", width: "w-[7%]" },
                     {
                       key: "profitBookedTillDate",
