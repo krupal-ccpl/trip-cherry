@@ -1592,7 +1592,7 @@ export default function BookingDetails() {
           booking.type === 'International' ? 'GSTIN: N/A' : 'GSTIN: Customer GSTIN'
         ]
       },
-      items: services.slice(0, 4).map((service) => ({
+      items: services.filter((s) => s.invRequired === "Yes").map((service) => ({
         descriptionLines: [
           service.bookedProduct,
           `Supplier: ${service.supplierReference}`,
