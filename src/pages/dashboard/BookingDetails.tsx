@@ -15,6 +15,7 @@ import {
   TrashIcon,
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
+  CloudArrowUpIcon,
 } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import bookingPaymentsData from "@/data/booking-payments-data.js";
@@ -241,6 +242,10 @@ export default function BookingDetails() {
     guestIndex: number;
     docIndex: number;
   } | null>(null);
+
+  // Upload documents modal state
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   // Search, Sort, Filter state for Services table
   const [servicesSearchTerm] = useState("");
@@ -1651,11 +1656,21 @@ export default function BookingDetails() {
               {booking.destination} • {booking.bookingDate}
             </MT.Typography>
           </div>
-          <MT.Chip
-            size="lg"
-            value={booking.type}
-            color={booking.type === "International" ? "blue" : "green"}
-          />
+          <div className="flex items-center gap-3">
+            <MT.Chip
+              size="lg"
+              value={booking.type}
+              color={booking.type === "International" ? "blue" : "green"}
+            />
+            <button
+              onClick={() => setIsUploadModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+              title="Upload Documents"
+            >
+              <CloudArrowUpIcon className="h-5 w-5" />
+              <span className="text-sm">Upload Docs</span>
+            </button>
+          </div>
         </div>
 
         {/* Comprehensive Booking Details - Expandable/Collapsible */}
@@ -4690,6 +4705,84 @@ export default function BookingDetails() {
               : ""
           }
         />
+
+        {/* Upload Documents Modal */}
+        <div className={`fixed inset-0 z-50 ${isUploadModalOpen ? 'block' : 'hidden'}`}>
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50"
+            onClick={() => setIsUploadModalOpen(false)}
+          ></div>
+          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-96 max-w-[90vw]">
+            <h2 className="text-lg font-semibold mb-4 dark:text-white">Upload Documents</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+              Select images to upload for this booking.
+            </p>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => setUploadedFiles(Array.from(e.target.files || []))}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-200 dark:text-gray-300"
+            />
+            {uploadedFiles.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <p className="text-sm font-medium dark:text-white">Selected files:</p>
+                {uploadedFiles.map((file, index) => (
+                  <p key={index} className="text-sm text-gray-600 dark:text-gray-300">
+                    {file.name}
+                  </p>
+                ))}
+              </div>
+            )}
+            <div className="flex justify-end space-x-2 mt-6">
+              <button
+                onClick={() => {
+                  setIsUploadModalOpen(false);
+                  setUploadedFiles([]);
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  console.log('Uploading files:', uploadedFiles);
+                  // Add guest entries for each uploaded image
+                  const newGuests: GuestTour[] = uploadedFiles.map(() => {
+                    const randomGuest = guestNames[Math.floor(Math.random() * guestNames.length)];
+                    const isAdult = Math.random() > 0.5; // Random adult/child
+                    const isDomestic = booking.type !== "International";
+                    const docs = isDomestic ? domesticDocs : internationalDocs;
+
+                    return {
+                      guestName: randomGuest.name,
+                      destination: booking.destination,
+                      tourStartMonth: booking.tourStartMonth,
+                      tourEndMonth: booking.tourEndMonth,
+                      arrivalDate: booking.arrivalDate,
+                      departureDate: booking.departureDate,
+                      balanceCollection: 0,
+                      toBeCollected: 0,
+                      collectedTillDate: 0,
+                      profit: 0,
+                      profitBookedTillDate: 0,
+                      group: "",
+                      isAdult,
+                      documents: docs.map(doc => ({ name: doc, uploaded: false })),
+                    };
+                  });
+
+                  setGuests((prev: GuestTour[]) => [...prev, ...newGuests]);
+                  setIsUploadModalOpen(false);
+                  setUploadedFiles([]);
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
+              >
+                Upload
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
