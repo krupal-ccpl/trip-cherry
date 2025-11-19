@@ -1708,6 +1708,28 @@ export default function BookingDetails() {
     0
   );
 
+  // Calculate totals for services without invoice required
+  const totalToBePaidWithoutInvoice = filteredAndSortedServices
+    .filter(s => s.invRequired !== "Yes")
+    .reduce((sum, item) => sum + (parseFloat(item.toBePaid as any) || 0), 0);
+  const totalPaidTillDateWithoutInvoice = filteredAndSortedServices
+    .filter(s => s.invRequired !== "Yes")
+    .reduce((sum, item) => sum + (parseFloat(item.paidTillDate as any) || 0), 0);
+  const totalPaymentRemainingWithoutInvoice = filteredAndSortedServices
+    .filter(s => s.invRequired !== "Yes")
+    .reduce((sum, item) => sum + (parseFloat(item.paymentRemaining as any) || 0), 0);
+
+  // Calculate totals for services with invoice required
+  const totalToBePaidWithInvoice = filteredAndSortedServices
+    .filter(s => s.invRequired === "Yes")
+    .reduce((sum, item) => sum + (parseFloat(item.toBePaid as any) || 0), 0);
+  const totalPaidTillDateWithInvoice = filteredAndSortedServices
+    .filter(s => s.invRequired === "Yes")
+    .reduce((sum, item) => sum + (parseFloat(item.paidTillDate as any) || 0), 0);
+  const totalPaymentRemainingWithInvoice = filteredAndSortedServices
+    .filter(s => s.invRequired === "Yes")
+    .reduce((sum, item) => sum + (parseFloat(item.paymentRemaining as any) || 0), 0);
+
   // Calculate totals for guest tour table from filtered data
   const totalToBeCollected = filteredAndSortedGuests.reduce(
     (sum: number, item: GuestTour) =>
@@ -3050,6 +3072,144 @@ export default function BookingDetails() {
                       onPointerLeaveCapture={undefined}
                     >
                       ₹{totalPaymentRemaining.toLocaleString()}
+                    </MT.Typography>
+                    <MT.Typography
+                      className="text-xs font-medium text-gray-600 dark:text-gray-400"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      Balance Payment
+                    </MT.Typography>
+                  </td>
+                  <td className="py-3 px-4">{/* Empty for actions */}</td>
+                </tr>
+
+                {/* Without Invoice Required Row */}
+                <tr className="bg-green-50 font-bold border-t border-green-200 dark:bg-green-900/50 dark:border-green-700">
+                  <td colSpan={4} className="py-3 px-4 text-right">
+                    <MT.Typography
+                      className="text-sm font-bold text-gray-900 dark:text-white"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      Without Invoice Required
+                    </MT.Typography>
+                  </td>
+                  <td className="py-3 px-4">
+                    <MT.Typography
+                      className="text-sm font-bold text-gray-900 dark:text-white"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      ₹{totalToBePaidWithoutInvoice.toLocaleString()}
+                    </MT.Typography>
+                    <MT.Typography
+                      className="text-xs font-medium text-gray-600 dark:text-gray-400"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      Amount To Be Paid
+                    </MT.Typography>
+                  </td>
+                  <td className="py-3 px-4">
+                    <MT.Typography
+                      className="text-sm font-bold text-gray-900 dark:text-white"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      ₹{totalPaidTillDateWithoutInvoice.toLocaleString()}
+                    </MT.Typography>
+                    <MT.Typography
+                      className="text-xs font-medium text-gray-600 dark:text-gray-400"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      Amount Paid
+                    </MT.Typography>
+                  </td>
+                  <td className="py-3 px-4">
+                    <MT.Typography
+                      className="text-sm font-bold text-gray-900 dark:text-white"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      ₹{totalPaymentRemainingWithoutInvoice.toLocaleString()}
+                    </MT.Typography>
+                    <MT.Typography
+                      className="text-xs font-medium text-gray-600 dark:text-gray-400"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      Balance Payment
+                    </MT.Typography>
+                  </td>
+                  <td className="py-3 px-4">{/* Empty for actions */}</td>
+                </tr>
+
+                {/* With Invoice Required Row */}
+                <tr className="bg-orange-50 font-bold border-t border-orange-200 dark:bg-orange-900/50 dark:border-orange-700">
+                  <td colSpan={4} className="py-3 px-4 text-right">
+                    <MT.Typography
+                      className="text-sm font-bold text-gray-900 dark:text-white"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      With Invoice Required
+                    </MT.Typography>
+                  </td>
+                  <td className="py-3 px-4">
+                    <MT.Typography
+                      className="text-sm font-bold text-gray-900 dark:text-white"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      ₹{totalToBePaidWithInvoice.toLocaleString()}
+                    </MT.Typography>
+                    <MT.Typography
+                      className="text-xs font-medium text-gray-600 dark:text-gray-400"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      Amount To Be Paid
+                    </MT.Typography>
+                  </td>
+                  <td className="py-3 px-4">
+                    <MT.Typography
+                      className="text-sm font-bold text-gray-900 dark:text-white"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      ₹{totalPaidTillDateWithInvoice.toLocaleString()}
+                    </MT.Typography>
+                    <MT.Typography
+                      className="text-xs font-medium text-gray-600 dark:text-gray-400"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      Amount Paid
+                    </MT.Typography>
+                  </td>
+                  <td className="py-3 px-4">
+                    <MT.Typography
+                      className="text-sm font-bold text-gray-900 dark:text-white"
+                      placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
+                    >
+                      ₹{totalPaymentRemainingWithInvoice.toLocaleString()}
                     </MT.Typography>
                     <MT.Typography
                       className="text-xs font-medium text-gray-600 dark:text-gray-400"
