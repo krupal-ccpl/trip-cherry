@@ -2963,29 +2963,30 @@ export default function BookingDetails() {
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
           >
-            <table className="w-full min-w-[1600px] table-auto">
+            <table className="w-full table-fixed">
               <thead>
                 <tr className="bg-blue-50 dark:bg-blue-900/50">
                   {[
-                    { key: "guestName", label: "NAME OF GUEST" },
-                    { key: "isAdult", label: "ADULT" },
-                    { key: "group", label: "GROUP" },
-                    { key: "destination", label: "DESTINATION" },
-                    { key: "arrivalDate", label: "ARRIVAL DATE" },
-                    { key: "departureDate", label: "DEPARTURE DATE" },
-                    { key: "toBeCollected", label: "TO BE COLLECTED" },
-                    { key: "collectedTillDate", label: "COLLECTED TILL DATE" },
-                    { key: "balanceCollection", label: "BALANCE COLLECTION" },
-                    { key: "profit", label: "PROFIT" },
+                    { key: "guestName", label: "NAME OF GUEST", width: "w-[10%]" },
+                    { key: "isAdult", label: "ADULT", width: "w-[5%]" },
+                    { key: "group", label: "GROUP", width: "w-[8%]" },
+                    { key: "destination", label: "DESTINATION", width: "w-[8%]" },
+                    { key: "arrivalDate", label: "ARRIVAL DATE", width: "w-[8%]" },
+                    { key: "departureDate", label: "DEPARTURE DATE", width: "w-[8%]" },
+                    { key: "toBeCollected", label: "TO BE COLLECTED", width: "w-[8%]" },
+                    { key: "collectedTillDate", label: "COLLECTED TILL DATE", width: "w-[8%]" },
+                    { key: "balanceCollection", label: "BALANCE COLLECTION", width: "w-[8%]" },
+                    { key: "profit", label: "PROFIT", width: "w-[7%]" },
                     {
                       key: "profitBookedTillDate",
                       label: "PROFIT BOOKED TILL DATE",
+                      width: "w-[8%]"
                     },
-                    { key: "documents", label: "DOCUMENTS" },
+                    { key: "documents", label: "DOCUMENTS", width: "w-[25%]" },
                   ].map((header) => (
                     <th
                       key={header.key}
-                      className="border-b-2 border-blue-200 py-3 px-3 text-left cursor-pointer hover:bg-blue-100 transition-colors"
+                      className={`border-b-2 border-blue-200 py-3 px-3 text-left cursor-pointer hover:bg-blue-100 transition-colors ${header.width}`}
                       onClick={() => handleGuestsSort(header.key)}
                     >
                       <div className="flex items-center justify-between">
@@ -3019,7 +3020,7 @@ export default function BookingDetails() {
                       </div>
                     </th>
                   ))}
-                  <th className="border-b-2 border-blue-200 py-3 px-3 text-left">
+                  <th className="border-b-2 border-blue-200 py-3 px-3 text-left w-[7%]">
                     <MT.Typography
                       variant="small"
                       className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
