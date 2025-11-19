@@ -190,6 +190,29 @@ export default function BookingList() {
     setIsHistoryPopoverOpen(true);
   };
 
+  const handlePaymentEdit = (index: number, newPayment: { amount: number; method: 'cash' | 'online'; date: string; timestamp: string }) => {
+    if (currentHistoryBooking === null) return;
+
+    const bookingId = bookings[currentHistoryBooking].id;
+    const oldPayment = paymentHistory[bookingId][index];
+    const diff = newPayment.amount - oldPayment.amount;
+
+    // Update payment history
+    setPaymentHistory(prev => ({
+      ...prev,
+      [bookingId]: prev[bookingId].map((p, i) => i === index ? newPayment : p)
+    }));
+
+    // Update booking totals
+    const updatedBookings = [...bookings];
+    updatedBookings[currentHistoryBooking] = {
+      ...updatedBookings[currentHistoryBooking],
+      advancePayment: updatedBookings[currentHistoryBooking].advancePayment + diff,
+      collectionRemaining: updatedBookings[currentHistoryBooking].bookingAmount - (updatedBookings[currentHistoryBooking].advancePayment + diff)
+    };
+    setBookings(updatedBookings);
+  };
+
   // Inline editing functions
   const startEditingBooking = (index: number, field: string, currentValue: any) => {
     setEditingBooking({ index, field });
@@ -1299,6 +1322,7 @@ export default function BookingList() {
         isOpen={isHistoryPopoverOpen}
         onClose={() => setIsHistoryPopoverOpen(false)}
         history={currentHistoryBooking !== null ? (paymentHistory[bookings[currentHistoryBooking]?.id] || []) : []}
+        onEdit={handlePaymentEdit}
       />
 
     </div>

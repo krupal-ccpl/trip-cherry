@@ -676,6 +676,32 @@ export default function BookingDetails() {
     setIsHistoryPopoverOpen(true);
   };
 
+  const handleGuestPaymentEdit = (guestIndex: number, paymentIndex: number, updatedPayment: { amount: number; method: "cash" | "online" }) => {
+    setGuestPaymentHistory((prev) => ({
+      ...prev,
+      [guestIndex]: prev[guestIndex].map((payment, index) =>
+        index === paymentIndex ? { ...payment, ...updatedPayment } : payment
+      ),
+    }));
+
+    // Recalculate collectedTillDate and balanceCollection for the guest
+    const updatedCollectedTillDate = guestPaymentHistory[guestIndex].reduce((sum, payment, index) =>
+      sum + (index === paymentIndex ? updatedPayment.amount : payment.amount), 0
+    );
+
+    setGuests((prevGuests: GuestTour[]) =>
+      prevGuests.map((guest, index) =>
+        index === guestIndex
+          ? {
+              ...guest,
+              collectedTillDate: updatedCollectedTillDate,
+              balanceCollection: guest.toBeCollected - updatedCollectedTillDate,
+            }
+          : guest
+      )
+    );
+  };
+
   // Service payment functionality functions
   const openServicePaymentModal = (serviceId: number) => {
     const service = services.find((s: BookingPayment) => s.id === serviceId);
@@ -725,6 +751,32 @@ export default function BookingDetails() {
   const openServiceHistoryPopover = (serviceId: number) => {
     setCurrentHistoryService(serviceId);
     setIsServiceHistoryPopoverOpen(true);
+  };
+
+  const handleServicePaymentEdit = (serviceId: number, paymentIndex: number, updatedPayment: { amount: number; method: "cash" | "online" }) => {
+    setServicePaymentHistory((prev) => ({
+      ...prev,
+      [serviceId]: prev[serviceId].map((payment, index) =>
+        index === paymentIndex ? { ...payment, ...updatedPayment } : payment
+      ),
+    }));
+
+    // Recalculate paidTillDate and paymentRemaining for the service
+    const updatedPaidTillDate = servicePaymentHistory[serviceId].reduce((sum, payment, index) =>
+      sum + (index === paymentIndex ? updatedPayment.amount : payment.amount), 0
+    );
+
+    setServices((prevServices: BookingPayment[]) =>
+      prevServices.map((service) =>
+        service.id === serviceId
+          ? {
+              ...service,
+              paidTillDate: updatedPaidTillDate,
+              paymentRemaining: service.toBePaid - updatedPaidTillDate,
+            }
+          : service
+      )
+    );
   };
 
   // Delete service function
@@ -4574,6 +4626,7 @@ export default function BookingDetails() {
               ? guestPaymentHistory[currentHistoryGuest] || []
               : []
           }
+          onEdit={(paymentIndex, newPayment) => handleGuestPaymentEdit(currentHistoryGuest!, paymentIndex, { amount: newPayment.amount, method: newPayment.method })}
         />
 
         <PaymentModal
@@ -4592,6 +4645,7 @@ export default function BookingDetails() {
               ? servicePaymentHistory[currentHistoryService] || []
               : []
           }
+          onEdit={(paymentIndex, newPayment) => handleServicePaymentEdit(currentHistoryService!, paymentIndex, { amount: newPayment.amount, method: newPayment.method })}
         />
 
         <AddBookingModal
