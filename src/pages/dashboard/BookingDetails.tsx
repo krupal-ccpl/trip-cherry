@@ -2606,14 +2606,24 @@ export default function BookingDetails() {
                               >
                                 ₹{item.paidTillDate.toLocaleString()}
                               </MT.Typography>
-                              <PlusIcon
-                                className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openServicePaymentModal(item.id);
-                                }}
-                                title="Add Payment"
-                              />
+                              <div className="flex items-center gap-1">
+                                <PlusIcon
+                                  className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openServicePaymentModal(item.id);
+                                  }}
+                                  title="Add Payment"
+                                />
+                                <ClockIcon
+                                  className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openServiceHistoryPopover(item.id);
+                                  }}
+                                  title="View Payment History"
+                                />
+                              </div>
                             </div>
                           )}
                         </td>
@@ -2636,24 +2646,14 @@ export default function BookingDetails() {
                               ).toLocaleString()}
                             </MT.Typography>
                           ) : (
-                            <div className="flex items-center justify-between">
-                              <MT.Typography
-                                className="text-sm font-medium text-gray-900 dark:text-white"
-                                placeholder={undefined}
-                                onPointerEnterCapture={undefined}
-                                onPointerLeaveCapture={undefined}
-                              >
-                                ₹{item.paymentRemaining.toLocaleString()}
-                              </MT.Typography>
-                              <ClockIcon
-                                className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openServiceHistoryPopover(item.id);
-                                }}
-                                title="View Payment History"
-                              />
-                            </div>
+                            <MT.Typography
+                              className="text-sm font-medium text-gray-900 dark:text-white"
+                              placeholder={undefined}
+                              onPointerEnterCapture={undefined}
+                              onPointerLeaveCapture={undefined}
+                            >
+                              ₹{item.paymentRemaining.toLocaleString()}
+                            </MT.Typography>
                           )}
                         </td>
                         <td className={`py-3 px-4 ${rowClass}`}>
@@ -3688,35 +3688,35 @@ export default function BookingDetails() {
                             >
                               ₹{item.collectedTillDate.toLocaleString()}
                             </MT.Typography>
-                            <PlusIcon
-                              className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openGuestPaymentModal(index);
-                              }}
-                              title="Add Payment"
-                            />
+                            <div className="flex items-center gap-1">
+                              <PlusIcon
+                                className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openGuestPaymentModal(index);
+                                }}
+                                title="Add Payment"
+                              />
+                              <ClockIcon
+                                className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openHistoryPopover(index);
+                                }}
+                                title="View Payment History"
+                              />
+                            </div>
                           </div>
                         </td>
                         <td className={`py-3 px-3 ${rowClass}`}>
-                          <div className="flex items-center justify-between">
-                            <MT.Typography
-                              className="text-sm font-medium text-gray-900 dark:text-white"
-                              placeholder={undefined}
-                              onPointerEnterCapture={undefined}
-                              onPointerLeaveCapture={undefined}
-                            >
-                              ₹{item.balanceCollection.toLocaleString()}
-                            </MT.Typography>
-                            <ClockIcon
-                              className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openHistoryPopover(index);
-                              }}
-                              title="View Payment History"
-                            />
-                          </div>
+                          <MT.Typography
+                            className="text-sm font-medium text-gray-900 dark:text-white"
+                            placeholder={undefined}
+                            onPointerEnterCapture={undefined}
+                            onPointerLeaveCapture={undefined}
+                          >
+                            ₹{item.balanceCollection.toLocaleString()}
+                          </MT.Typography>
                         </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
                           {editingGuestRow?.index === index ? (
