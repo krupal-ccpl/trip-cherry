@@ -11,7 +11,6 @@ import {
   MagnifyingGlassIcon,
   ArrowUpIcon,
   ArrowDownIcon,
-  FunnelIcon,
   TrashIcon,
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
@@ -264,7 +263,7 @@ export default function BookingDetails() {
     key: string;
     direction: "asc" | "desc";
   } | null>(null);
-  const [guestsFilters, setGuestsFilters] = useState({
+  const [guestsFilters] = useState({
     destination: "",
     group: "",
     tourStartMonth: "",
@@ -460,13 +459,6 @@ export default function BookingDetails() {
       direction = "desc";
     }
     setGuestsSortConfig({ key, direction });
-  };
-
-  const handleGuestsFilter = (filterType: string, value: string) => {
-    setGuestsFilters((prev) => ({
-      ...prev,
-      [filterType]: value,
-    }));
   };
 
   // Filtered and sorted data functions
@@ -2962,124 +2954,6 @@ export default function BookingDetails() {
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
-
-              {/* Filters */}
-              <div className="flex flex-wrap gap-3">
-                <div className="relative">
-                  <FunnelIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <select
-                    value={guestsFilters.destination}
-                    onChange={(e) =>
-                      handleGuestsFilter("destination", e.target.value)
-                    }
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                  >
-                    <option value="">All Destinations</option>
-                    {destinations.map((dest) => (
-                      <option key={dest} value={dest}>
-                        {dest}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="relative">
-                  <select
-                    value={guestsFilters.group}
-                    onChange={(e) =>
-                      handleGuestsFilter("group", e.target.value)
-                    }
-                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                  >
-                    <option value="">All Groups</option>
-                    {groups.map((group) => (
-                      <option key={group} value={group}>
-                        {group}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="relative">
-                  <select
-                    value={guestsFilters.tourStartMonth}
-                    onChange={(e) =>
-                      handleGuestsFilter("tourStartMonth", e.target.value)
-                    }
-                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                  >
-                    <option value="">All Start Months</option>
-                    {(
-                      [
-                        ...new Set(
-                          guests.map((g: GuestTour) => g.tourStartMonth)
-                        ),
-                      ] as string[]
-                    )
-                      .sort()
-                      .map((month) => (
-                        <option key={month} value={month}>
-                          {month}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-
-                <div className="relative">
-                  <select
-                    value={guestsFilters.tourEndMonth}
-                    onChange={(e) =>
-                      handleGuestsFilter("tourEndMonth", e.target.value)
-                    }
-                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                  >
-                    <option value="">All End Months</option>
-                    {(
-                      [
-                        ...new Set(
-                          guests.map((g: GuestTour) => g.tourEndMonth)
-                        ),
-                      ] as string[]
-                    )
-                      .sort()
-                      .map((month) => (
-                        <option key={month} value={month}>
-                          {month}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-
-                <div className="relative">
-                  <select
-                    value={guestsFilters.paymentStatus}
-                    onChange={(e) =>
-                      handleGuestsFilter("paymentStatus", e.target.value)
-                    }
-                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                  >
-                    <option value="">All Payment Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="partial">Partial</option>
-                    <option value="completed">Completed</option>
-                  </select>
-                </div>
-
-                <div className="relative">
-                  <select
-                    value={guestsFilters.profitStatus}
-                    onChange={(e) =>
-                      handleGuestsFilter("profitStatus", e.target.value)
-                    }
-                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                  >
-                    <option value="">All Profit Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="partial">Partial</option>
-                    <option value="completed">Completed</option>
-                  </select>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -3099,8 +2973,6 @@ export default function BookingDetails() {
                     { key: "destination", label: "DESTINATION" },
                     { key: "arrivalDate", label: "ARRIVAL DATE" },
                     { key: "departureDate", label: "DEPARTURE DATE" },
-                    { key: "tourStartMonth", label: "TOUR START MONTH" },
-                    { key: "tourEndMonth", label: "TOUR END MONTH" },
                     { key: "toBeCollected", label: "TO BE COLLECTED" },
                     { key: "collectedTillDate", label: "COLLECTED TILL DATE" },
                     { key: "balanceCollection", label: "BALANCE COLLECTION" },
@@ -3645,26 +3517,6 @@ export default function BookingDetails() {
                             </div>
                           )}
                         </td>
-                        <td className={`py-3 px-3 ${rowClass}`}>
-                          <MT.Typography
-                            className="text-sm text-gray-700 dark:text-gray-300"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            {item.tourStartMonth}
-                          </MT.Typography>
-                        </td>
-                        <td className={`py-3 px-3 ${rowClass}`}>
-                          <MT.Typography
-                            className="text-sm text-gray-700 dark:text-gray-300"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            {item.tourEndMonth}
-                          </MT.Typography>
-                        </td>
                         <td className={`py-3 px-3 ${rowClass} relative group`}>
                           {editingGuestRow?.index === index ? (
                             <input
@@ -4111,28 +3963,6 @@ export default function BookingDetails() {
                           />
                         </td>
                         <td className="py-3 px-3">
-                          <MT.Typography
-                            variant="small"
-                            className="text-gray-500"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            {newGuestData.tourStartMonth || "Auto"}
-                          </MT.Typography>
-                        </td>
-                        <td className="py-3 px-3">
-                          <MT.Typography
-                            variant="small"
-                            className="text-gray-500"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            {newGuestData.tourEndMonth || "Auto"}
-                          </MT.Typography>
-                        </td>
-                        <td className="py-3 px-3">
                           <input
                             type="number"
                             value={newGuestData.toBeCollected}
@@ -4291,26 +4121,6 @@ export default function BookingDetails() {
                             onPointerLeaveCapture={undefined}
                           >
                             Departure
-                          </MT.Typography>
-                        </td>
-                        <td className="py-3 px-3 text-center">
-                          <MT.Typography
-                            className="text-sm text-gray-400 italic"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            Auto
-                          </MT.Typography>
-                        </td>
-                        <td className="py-3 px-3 text-center">
-                          <MT.Typography
-                            className="text-sm text-gray-400 italic"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            Auto
                           </MT.Typography>
                         </td>
                         <td className="py-3 px-3 text-center">
