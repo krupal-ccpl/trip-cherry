@@ -29,6 +29,7 @@ import AddBookingModal from "@/components/AddBookingModal";
 import PaymentModal from "@/components/PaymentModal";
 import HistoryPopover from "@/components/HistoryPopover";
 import AddDocumentModal from "@/components/AddDocumentModal";
+import { generateInvoicePdf } from "@/utils/invoiceGenerator";
 
 interface Booking {
   id: number;
@@ -1534,6 +1535,89 @@ export default function BookingDetails() {
     setIsEditBookingModalOpen(false);
   };
 
+  // Handle download invoice
+  const handleDownloadInvoice = async () => {
+    if (!booking) return;
+
+    const subTotal = totalToBePaid;
+    const cgstAmount = Math.round(subTotal * 0.09 * 100) / 100; // Round to 2 decimals
+    const sgstAmount = Math.round(subTotal * 0.09 * 100) / 100;
+    const totalBeforeRoundOff = subTotal + cgstAmount + sgstAmount;
+    const roundOff = Math.round(totalBeforeRoundOff) - totalBeforeRoundOff;
+    const total = Math.round(totalBeforeRoundOff);
+
+    // Function to convert number to words (simplified)
+    const numberToWords = (num: number): string => {
+      // Simple implementation - in real app, use a proper library
+      const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+      const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+      const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+      if (num === 0) return 'Zero';
+
+      let words = '';
+      const crores = Math.floor(num / 10000000);
+      const lakhs = Math.floor((num % 10000000) / 100000);
+      const thousands = Math.floor((num % 100000) / 1000);
+      const hundreds = Math.floor((num % 1000) / 100);
+      const remainder = num % 100;
+
+      if (crores > 0) words += units[crores] + ' Crore ';
+      if (lakhs > 0) words += units[lakhs] + ' Lakh ';
+      if (thousands > 0) words += units[thousands] + ' Thousand ';
+      if (hundreds > 0) words += units[hundreds] + ' Hundred ';
+      if (remainder > 0) {
+        if (remainder < 10) words += units[remainder];
+        else if (remainder < 20) words += teens[remainder - 10];
+        else words += tens[Math.floor(remainder / 10)] + (remainder % 10 > 0 ? ' ' + units[remainder % 10] : '');
+      }
+
+      return words.trim();
+    };
+
+    // Prepare invoice data
+    const invoiceData = {
+      invoiceNumber: `INV-${booking.id}-${Date.now().toString().slice(-6)}`,
+      invoiceDate: new Date().toLocaleDateString('en-GB'), // DD/MM/YYYY
+      terms: 'Due on Receipt',
+      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB'), // 30 days from now
+      placeOfSupply: booking.type === 'International' ? 'Outside India' : 'Gujarat (24)',
+      billTo: {
+        name: booking.customerName,
+        addressLines: [
+          'Customer Address Line 1',
+          'Customer Address Line 2',
+          'Customer City, State - PIN',
+          `Phone: ${booking.phone}`,
+          booking.type === 'International' ? 'GSTIN: N/A' : 'GSTIN: Customer GSTIN'
+        ]
+      },
+      items: services.slice(0, 4).map((service) => ({
+        descriptionLines: [
+          service.bookedProduct,
+          `Supplier: ${service.supplierReference}`,
+          `Type: ${service.productType}`
+        ],
+        hsnSac: '998599', // Generic HSN for travel services
+        pax: 1, // Assuming 1 pax per service, could be calculated differently
+        rate: service.toBePaid,
+        amount: service.toBePaid
+      })),
+      subTotal,
+      cgstRate: 9,
+      cgstAmount,
+      sgstRate: 9,
+      sgstAmount,
+      roundOff,
+      total,
+      totalInWords: `Rupees ${numberToWords(total)} Only`,
+      balanceDue: total
+    };
+
+    // Generate and download PDF
+    await generateInvoicePdf(invoiceData);
+  };
+
   // Document modal functions
   const openDocumentModal = (guestIndex: number, docIndex: number) => {
     setCurrentDocument({ guestIndex, docIndex });
@@ -1945,6 +2029,17 @@ export default function BookingDetails() {
             >
               Services
             </MT.Typography>
+            <MT.Button
+              color="white"
+              variant="outlined"
+              className="border-white text-white hover:bg-white hover:text-blue-600"
+              onClick={handleDownloadInvoice}
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              Download Invoice
+            </MT.Button>
           </div>
 
           <MT.CardBody
