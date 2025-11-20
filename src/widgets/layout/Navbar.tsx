@@ -24,7 +24,7 @@ export default function Navbar({ openSidenav, setOpenSidenav }: NavbarProps) {
   const getPageName = () => {
     const path = location.pathname;
     if (path.includes('bookings')) return 'Bookings';
-    if (path.includes('flights')) return 'Flights';
+    if (path.includes('packages')) return 'Packages';
     return 'Dashboard';
   };
 
