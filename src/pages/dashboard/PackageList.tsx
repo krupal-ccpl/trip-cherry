@@ -4,7 +4,7 @@ import * as MT from "@material-tailwind/react";
 import { PlusIcon, PencilIcon, CheckIcon, XMarkIcon, ClockIcon, MagnifyingGlassIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import bookingsListData from "@/data/bookings-list-data.js";
-import AddBookingModal from "@/components/AddBookingModal";
+import AddBookingModal from "@/components/AddPackageModal";
 import { useInlineAutocomplete } from "@/hooks/useInlineAutocomplete";
 import PaymentModal from "@/components/PaymentModal";
 import HistoryPopover from "@/components/HistoryPopover";
@@ -537,7 +537,7 @@ export default function BookingList() {
       {/* Header with Add Button */}
       <div className="mb-6 flex justify-between items-center">
         <MT.Typography variant="h4" color="blue-gray" className="dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-          Bookings Management
+          Packages Management
         </MT.Typography>
         <MT.Button 
           className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all"
@@ -547,7 +547,7 @@ export default function BookingList() {
           onPointerLeaveCapture={undefined}
         >
           <PlusIcon className="h-5 w-5" />
-          Add New Booking
+          Add New Package
         </MT.Button>
       </div>
 
@@ -608,11 +608,11 @@ export default function BookingList() {
         </div>
       </div>
 
-      {/* Bookings List Table */}
+      {/* Packages List Table */}
       <MT.Card className="shadow-lg border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl">
           <MT.Typography variant="h6" color="white" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-            All Bookings
+            All Packages
           </MT.Typography>
         </div>
         <MT.CardBody className="overflow-x-auto px-0 pt-0 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>

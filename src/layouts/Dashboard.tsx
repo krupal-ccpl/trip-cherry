@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from '../widgets/layout/Sidebar';
 import Navbar from '../widgets/layout/Navbar';
-import BookingList from '../pages/dashboard/BookingList';
-import BookingDetails from '../pages/dashboard/BookingDetails';
+import PackageList from '../pages/dashboard/PackageList';
+import PackageDetails from '../pages/dashboard/PackageDetails';
 import Flights from '../pages/dashboard/Flights';
 
 export default function Dashboard() {
@@ -17,10 +17,10 @@ export default function Dashboard() {
         <Navbar openSidenav={openSidenav} setOpenSidenav={setOpenSidenav} />
         <div className="mt-12">
           <Routes>
-            <Route path="/bookings" element={<BookingList />} />
-            <Route path="/bookings/:id" element={<BookingDetails />} />
+            <Route path="/packages" element={<PackageList />} />
+            <Route path="/packages/:id" element={<PackageDetails />} />
             <Route path="/flights" element={<Flights />} />
-            <Route path="*" element={<Navigate to="/dashboard/bookings" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard/packages" replace />} />
           </Routes>
         </div>
       </div>

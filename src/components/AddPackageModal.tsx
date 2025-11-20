@@ -368,7 +368,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{booking ? 'Edit Booking' : 'Add New Booking'}</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{booking ? 'Edit Package' : 'Add New Package'}</h2>
             <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
               <input
                 type="checkbox"
@@ -635,7 +635,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
           )}
           <div className="flex justify-end gap-2 mt-4">
             <button onClick={onClose} className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500">Cancel</button>
-            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{booking ? 'Update Booking' : 'Add Booking'}</button>
+            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{booking ? 'Update Package' : 'Add Package'}</button>
           </div>
         </div>
       </div>

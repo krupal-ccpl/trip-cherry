@@ -24,7 +24,7 @@ import bookingsListData from "@/data/bookings-list-data.js";
 import AddServiceModal from "@/components/AddServiceModal";
 import AddGuestModal from "@/components/AddGuestModal";
 import AddGroupModal from "@/components/AddGroupModal";
-import AddBookingModal from "@/components/AddBookingModal";
+import AddBookingModal from "@/components/AddPackageModal";
 import PaymentModal from "@/components/PaymentModal";
 import HistoryPopover from "@/components/HistoryPopover";
 import AddDocumentModal from "@/components/AddDocumentModal";
