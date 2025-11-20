@@ -3,10 +3,10 @@ import * as MT from "@material-tailwind/react";
 import { PlusIcon, PencilIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon, ArrowUpIcon, ArrowDownIcon, FunnelIcon } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import flightsData from "@/data/flights-data.js";
-import AddFlightModal from "@/components/AddFlightModal";
+import AddBookingModal from "@/components/AddBookingModal";
 import { useInlineAutocomplete } from "@/hooks/useInlineAutocomplete";
 
-interface Flight {
+interface Booking {
   srNo: number;
   bookingDate: string;
   portal: string;
@@ -176,7 +176,7 @@ export default function Flights() {
                           'seat', 'ancillary', 'grossFare', 'grossProfit', 'gpat', 'netFare', 'netProfit', 'npat', 'cumuProfit'];
     
     if (numericFields.includes(field)) {
-      updatedFlights[index][field as keyof Flight] = parseFloat(newValue) || 0;
+      updatedFlights[index][field as keyof Booking] = parseFloat(newValue) || 0;
     }
 
     setFlights(updatedFlights);
@@ -272,7 +272,7 @@ export default function Flights() {
       return;
     }
     
-    const maxSrNo = flights.reduce((max: number, flight: Flight) => Math.max(max, flight.srNo), 0);
+    const maxSrNo = flights.reduce((max: number, flight: Booking) => Math.max(max, flight.srNo), 0);
     
     const newFlight = {
       ...newRowData,
@@ -363,7 +363,7 @@ export default function Flights() {
   };
 
   const getFilteredAndSortedFlights = () => {
-    let filtered = flights.filter((flight: Flight) => {
+    let filtered = flights.filter((flight: Booking) => {
       // Search filter
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = !searchTerm || 
@@ -389,7 +389,7 @@ export default function Flights() {
 
     // Sort
     if (sortConfig) {
-      filtered.sort((a: Flight, b: Flight) => {
+      filtered.sort((a: Booking, b: Booking) => {
         let aValue: any = a[sortConfig.key as keyof typeof a];
         let bValue: any = b[sortConfig.key as keyof typeof b];
 
@@ -422,10 +422,10 @@ export default function Flights() {
   const filteredAndSortedFlights = getFilteredAndSortedFlights();
 
   // Calculate totals from filtered data
-  const totalCollected = filteredAndSortedFlights.reduce((sum: number, item: Flight) => sum + item.collectedTillDate, 0);
-  const totalGrossFare = filteredAndSortedFlights.reduce((sum: number, item: Flight) => sum + item.grossFare, 0);
-  const totalGrossProfit = filteredAndSortedFlights.reduce((sum: number, item: Flight) => sum + item.grossProfit, 0);
-  const totalNettProfit = filteredAndSortedFlights.reduce((sum: number, item: Flight) => sum + item.netProfit, 0);
+  const totalCollected = filteredAndSortedFlights.reduce((sum: number, item: Booking) => sum + item.collectedTillDate, 0);
+  const totalGrossFare = filteredAndSortedFlights.reduce((sum: number, item: Booking) => sum + item.grossFare, 0);
+  const totalGrossProfit = filteredAndSortedFlights.reduce((sum: number, item: Booking) => sum + item.grossProfit, 0);
+  const totalNettProfit = filteredAndSortedFlights.reduce((sum: number, item: Booking) => sum + item.netProfit, 0);
 
   return (
     <div className="mt-8">
@@ -569,7 +569,7 @@ export default function Flights() {
               </thead>
               <tbody>
                 {filteredAndSortedFlights.map(
-                (item: Flight, index: number) => {
+                (item: Booking, index: number) => {
                   const isLastRow = index === flights.length - 1;
                     const rowClass = `${!isLastRow ? "border-b border-gray-200" : ""}`;
 
@@ -1520,7 +1520,7 @@ export default function Flights() {
         </MT.Card>
       </div>
 
-      <AddFlightModal
+      <AddBookingModal
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         onAdd={(flight) => setFlights([...flights, flight])}
