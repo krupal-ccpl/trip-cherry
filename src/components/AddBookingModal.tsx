@@ -23,6 +23,7 @@ interface Booking {
   requiredDocuments: string[];
   isCorporate?: boolean;
   bookingPersonName?: string;
+  isTraveler?: boolean;
 }
 
 interface AddBookingModalProps {
@@ -113,6 +114,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
 
   const [isCorporateBooking, setIsCorporateBooking] = useState(false);
   const [bookingPersonName, setBookingPersonName] = useState('');
+  const [isTraveler, setIsTraveler] = useState(false);
 
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
@@ -156,6 +158,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
       setSelectedDocuments(booking.requiredDocuments || (booking.type === 'Domestic' ? domesticDocs : internationalDocs));
       setIsCorporateBooking(booking.isCorporate || false);
       setBookingPersonName(booking.bookingPersonName || '');
+      setIsTraveler(booking.isTraveler || false);
     } else {
       // Reset form for new booking
       setNewBooking({
@@ -175,6 +178,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
       setSelectedDocuments(domesticDocs);
       setIsCorporateBooking(false);
       setBookingPersonName('');
+      setIsTraveler(false);
     }
   }, [booking]);
 
@@ -308,6 +312,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         requiredDocuments: selectedDocuments,
         isCorporate: isCorporateBooking,
         bookingPersonName: bookingPersonName.trim(),
+        isTraveler,
       };
       onAdd(updatedBooking);
     } else {
@@ -332,6 +337,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         requiredDocuments: selectedDocuments,
         isCorporate: isCorporateBooking,
         bookingPersonName: bookingPersonName.trim(),
+        isTraveler,
       };
       onAdd(booking);
     }
@@ -354,6 +360,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
     setSelectedDocuments(domesticDocs);
     setIsCorporateBooking(false);
     setBookingPersonName('');
+    setIsTraveler(false);
   };
 
   return (
@@ -373,33 +380,61 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
             </label>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <Autocomplete
-                label="Customer Name"
-                value={newBooking.customerName}
-                onChange={handleCustomerSelect}
-                options={customerOptions}
-                placeholder="Type customer name..."
-                error={errors.customerName}
-                filterFunction={(option, searchValue) => {
-                  const searchLower = searchValue.toLowerCase();
-                  return (
-                    option.label.toLowerCase().includes(searchLower) ||
-                    (option.subtitle ? option.subtitle.includes(searchValue) : false)
-                  );
-                }}
-              />
+            <div className="col-span-2 flex gap-4">
+              <div className="flex-1">
+                <Autocomplete
+                  label="Customer Name"
+                  value={newBooking.customerName}
+                  onChange={handleCustomerSelect}
+                  options={customerOptions}
+                  placeholder="Type customer name..."
+                  error={errors.customerName}
+                  filterFunction={(option, searchValue) => {
+                    const searchLower = searchValue.toLowerCase();
+                    return (
+                      option.label.toLowerCase().includes(searchLower) ||
+                      (option.subtitle ? option.subtitle.includes(searchValue) : false)
+                    );
+                  }}
+                />
+              </div>
+              {!isCorporateBooking && (
+                <div className="flex items-end">
+                  <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={isTraveler}
+                      onChange={(e) => setIsTraveler(e.target.checked)}
+                      className="mr-2"
+                    />
+                    Traveler
+                  </label>
+                </div>
+              )}
             </div>
             {isCorporateBooking && (
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Booking Person Name</label>
-                <input
-                  type="text"
-                  value={bookingPersonName}
-                  onChange={(e) => setBookingPersonName(e.target.value)}
-                  placeholder="Enter booking person name"
-                  className="w-full px-3 py-2 border border-blue-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
+              <div className="col-span-2 flex gap-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Booking Person Name</label>
+                  <input
+                    type="text"
+                    value={bookingPersonName}
+                    onChange={(e) => setBookingPersonName(e.target.value)}
+                    placeholder="Enter booking person name"
+                    className="w-full px-3 py-2 border border-blue-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={isTraveler}
+                      onChange={(e) => setIsTraveler(e.target.checked)}
+                      className="mr-2"
+                    />
+                    Traveler
+                  </label>
+                </div>
               </div>
             )}
             <div className="col-span-2">
