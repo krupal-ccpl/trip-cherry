@@ -8,7 +8,6 @@ import {
   CheckIcon,
   XMarkIcon,
   ClockIcon,
-  MagnifyingGlassIcon,
   ArrowUpIcon,
   ArrowDownIcon,
   TrashIcon,
@@ -114,7 +113,7 @@ export default function BookingDetails() {
     maxAmount: number;
     currentCollected: number;
   } | null>(null);
-  const [currentHistoryGuest, setCurrentHistoryGuest] = useState<number | null>(
+  const [currentHistoryGuest] = useState<number | null>(
     null
   );
 
@@ -259,7 +258,7 @@ export default function BookingDetails() {
   });
 
   // Search, Sort, Filter state for Guests table
-  const [guestsSearchTerm, setGuestsSearchTerm] = useState("");
+  const [guestsSearchTerm] = useState("");
   const [guestsSortConfig, setGuestsSortConfig] = useState<{
     key: string;
     direction: "asc" | "desc";
@@ -445,11 +444,6 @@ export default function BookingDetails() {
     setServicesSortConfig({ key, direction });
   };
 
-  // Search, Sort, Filter handlers for Guests table
-  const handleGuestsSearch = (term: string) => {
-    setGuestsSearchTerm(term);
-  };
-
   const handleGuestsSort = (key: string) => {
     let direction: "asc" | "desc" = "asc";
     if (
@@ -627,16 +621,6 @@ export default function BookingDetails() {
   const filteredAndSortedServices = getFilteredAndSortedServices();
   const filteredAndSortedGuests = getFilteredAndSortedGuests();
 
-  // Payment functionality functions
-  const openGuestPaymentModal = (index: number) => {
-    const guest = guests[index];
-    const maxAmount = guest.toBeCollected;
-    const currentCollected = guest.collectedTillDate;
-
-    setCurrentGuestPayment({ index, maxAmount, currentCollected });
-    setIsGuestPaymentModalOpen(true);
-  };
-
   const handleGuestPaymentAdd = (payment: {
     amount: number;
     method: "cash" | "online";
@@ -669,11 +653,6 @@ export default function BookingDetails() {
 
     setIsGuestPaymentModalOpen(false);
     setCurrentGuestPayment(null);
-  };
-
-  const openHistoryPopover = (guestIndex: number) => {
-    setCurrentHistoryGuest(guestIndex);
-    setIsHistoryPopoverOpen(true);
   };
 
   const handleGuestPaymentEdit = (guestIndex: number, paymentIndex: number, updatedPayment: { amount: number; method: "cash" | "online" }) => {
@@ -1730,33 +1709,6 @@ export default function BookingDetails() {
     .filter(s => s.invRequired === "Yes")
     .reduce((sum, item) => sum + (parseFloat(item.paymentRemaining as any) || 0), 0);
 
-  // Calculate totals for guest tour table from filtered data
-  const totalToBeCollected = filteredAndSortedGuests.reduce(
-    (sum: number, item: GuestTour) =>
-      sum + (parseFloat(item.toBeCollected as any) || 0),
-    0
-  );
-  const totalCollectedTillDate = filteredAndSortedGuests.reduce(
-    (sum: number, item: GuestTour) =>
-      sum + (parseFloat(item.collectedTillDate as any) || 0),
-    0
-  );
-  const totalBalanceCollection = filteredAndSortedGuests.reduce(
-    (sum: number, item: GuestTour) =>
-      sum + (parseFloat(item.balanceCollection as any) || 0),
-    0
-  );
-  const totalProfit = filteredAndSortedGuests.reduce(
-    (sum: number, item: GuestTour) =>
-      sum + (parseFloat(item.profit as any) || 0),
-    0
-  );
-  const totalProfitBookedTillDate = filteredAndSortedGuests.reduce(
-    (sum: number, item: GuestTour) =>
-      sum + (parseFloat(item.profitBookedTillDate as any) || 0),
-    0
-  );
-
   if (!booking) {
     return (
       <div className="mt-8">
@@ -2112,7 +2064,7 @@ export default function BookingDetails() {
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             >
-              Download Invoice
+              View Invoice
             </MT.Button>
           </div>
 
@@ -3247,23 +3199,6 @@ export default function BookingDetails() {
             </MT.Typography>
           </div>
 
-          {/* Search, Sort, Filter Controls for Guests */}
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 dark:bg-gray-700 dark:border-gray-600">
-            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-              {/* Search */}
-              <div className="relative flex-1 max-w-md">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search guests..."
-                  value={guestsSearchTerm}
-                  onChange={(e) => handleGuestsSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-            </div>
-          </div>
-
           <MT.CardBody
             className="overflow-x-auto px-0 pt-0 pb-2"
             placeholder={undefined}
@@ -3274,22 +3209,10 @@ export default function BookingDetails() {
               <thead>
                 <tr className="bg-blue-50 dark:bg-blue-900/50">
                   {[
-                    { key: "guestName", label: "NAME OF GUEST", width: "w-[10%]" },
-                    { key: "isAdult", label: "ADULT", width: "w-[5%]" },
-                    { key: "group", label: "GROUP", width: "w-[8%]" },
-                    { key: "destination", label: "DESTINATION", width: "w-[8%]" },
-                    { key: "arrivalDate", label: "ARRIVAL DATE", width: "w-[8%]" },
-                    { key: "departureDate", label: "DEPARTURE DATE", width: "w-[8%]" },
-                    { key: "toBeCollected", label: "TO BE COLLECTED", width: "w-[8%]" },
-                    { key: "collectedTillDate", label: "COLLECTED TILL DATE", width: "w-[8%]" },
-                    { key: "balanceCollection", label: "OUTSTANDING", width: "w-[8%]" },
-                    { key: "profit", label: "PROFIT", width: "w-[7%]" },
-                    {
-                      key: "profitBookedTillDate",
-                      label: "PROFIT BOOKED TILL DATE",
-                      width: "w-[8%]"
-                    },
-                    { key: "documents", label: "DOCUMENTS", width: "w-[25%]" },
+                    { key: "guestName", label: "NAME OF GUEST", width: "w-[17%]" },
+                    { key: "isAdult", label: "ADULT", width: "w-[9%]" },
+                    { key: "group", label: "GROUP", width: "w-[14%]" },
+                    { key: "documents", label: "DOCUMENTS", width: "w-[46%]" },
                   ].map((header) => (
                     <th
                       key={header.key}
@@ -3327,7 +3250,7 @@ export default function BookingDetails() {
                       </div>
                     </th>
                   ))}
-                  <th className="border-b-2 border-blue-200 py-3 px-3 text-left w-[7%]">
+                  <th className="border-b-2 border-blue-200 py-3 px-3 text-left w-[14%]">
                     <MT.Typography
                       variant="small"
                       className="text-xs font-bold text-blue-gray-700 uppercase dark:text-blue-200"
@@ -3462,7 +3385,7 @@ export default function BookingDetails() {
                             </div>
                           )}
                         </td>
-                         <td className={`py-3 px-3 ${rowClass} relative group`}>
+                        <td className={`py-3 px-3 ${rowClass} relative group`}>
                           {editingGuestRow?.index === index ? (
                             <label className="inline-flex items-center cursor-pointer">
                               <input
@@ -3624,442 +3547,6 @@ export default function BookingDetails() {
                             </div>
                           )}
                         </td>
-                        <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuestRow?.index === index ? (
-                            <select
-                              value={editGuestRowValues.destination || ""}
-                              onChange={(e) =>
-                                setEditGuestRowValues({
-                                  ...editGuestRowValues,
-                                  destination: e.target.value,
-                                })
-                              }
-                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            >
-                              <option value="">Select Destination</option>
-                              {destinations.map((dest) => (
-                                <option key={dest} value={dest}>
-                                  {dest}
-                                </option>
-                              ))}
-                            </select>
-                          ) : editingGuest?.index === index &&
-                            editingGuest?.field === "destination" ? (
-                            <div className="flex items-center gap-2">
-                              <select
-                                value={
-                                  editValues.destination !== undefined
-                                    ? editValues.destination
-                                    : item.destination
-                                }
-                                onChange={(e) =>
-                                  setEditValues({
-                                    ...editValues,
-                                    destination: e.target.value,
-                                  })
-                                }
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                              >
-                                <option value="">Select Destination</option>
-                                {destinations.map((dest) => (
-                                  <option key={dest} value={dest}>
-                                    {dest}
-                                  </option>
-                                ))}
-                              </select>
-                              <CheckIcon
-                                className="h-4 w-4 text-green-600 cursor-pointer"
-                                onClick={saveGuestEdit}
-                              />
-                              <XMarkIcon
-                                className="h-4 w-4 text-red-600 cursor-pointer"
-                                onClick={cancelGuestEdit}
-                              />
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-between">
-                              <MT.Typography
-                                className="text-sm text-gray-700 dark:text-gray-300"
-                                placeholder={undefined}
-                                onPointerEnterCapture={undefined}
-                                onPointerLeaveCapture={undefined}
-                              >
-                                {item.destination}
-                              </MT.Typography>
-                              <PencilIcon
-                                className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={() =>
-                                  startEditingGuest(
-                                    index,
-                                    "destination",
-                                    item.destination
-                                  )
-                                }
-                              />
-                            </div>
-                          )}
-                        </td>
-                        <td className={`py-3 px-3 ${rowClass}`}>
-                          {editingGuestRow?.index === index ? (
-                            <input
-                              type="date"
-                              value={editGuestRowValues.arrivalDate || ""}
-                              onChange={(e) =>
-                                setEditGuestRowValues({
-                                  ...editGuestRowValues,
-                                  arrivalDate: e.target.value,
-                                })
-                              }
-                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          ) : editingGuest?.index === index &&
-                            editingGuest?.field === "arrivalDate" ? (
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="date"
-                                value={
-                                  editValues.arrivalDate !== undefined
-                                    ? editValues.arrivalDate
-                                    : item.arrivalDate
-                                }
-                                onChange={(e) =>
-                                  setEditValues({
-                                    ...editValues,
-                                    arrivalDate: e.target.value,
-                                  })
-                                }
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                              />
-                              <CheckIcon
-                                className="h-4 w-4 text-green-600 cursor-pointer"
-                                onClick={saveGuestEdit}
-                              />
-                              <XMarkIcon
-                                className="h-4 w-4 text-red-600 cursor-pointer"
-                                onClick={cancelGuestEdit}
-                              />
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-between">
-                              <MT.Typography
-                                className="text-sm text-gray-700 dark:text-gray-300"
-                                placeholder={undefined}
-                                onPointerEnterCapture={undefined}
-                                onPointerLeaveCapture={undefined}
-                              >
-                                {item.arrivalDate}
-                              </MT.Typography>
-                              <PencilIcon
-                                className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={() =>
-                                  startEditingGuest(
-                                    index,
-                                    "arrivalDate",
-                                    item.arrivalDate
-                                  )
-                                }
-                              />
-                            </div>
-                          )}
-                        </td>
-                        <td className={`py-3 px-3 ${rowClass}`}>
-                          {editingGuestRow?.index === index ? (
-                            <input
-                              type="date"
-                              value={editGuestRowValues.departureDate || ""}
-                              onChange={(e) =>
-                                setEditGuestRowValues({
-                                  ...editGuestRowValues,
-                                  departureDate: e.target.value,
-                                })
-                              }
-                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          ) : editingGuest?.index === index &&
-                            editingGuest?.field === "departureDate" ? (
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="date"
-                                value={
-                                  editValues.departureDate !== undefined
-                                    ? editValues.departureDate
-                                    : item.departureDate
-                                }
-                                onChange={(e) =>
-                                  setEditValues({
-                                    ...editValues,
-                                    departureDate: e.target.value,
-                                  })
-                                }
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                              />
-                              <CheckIcon
-                                className="h-4 w-4 text-green-600 cursor-pointer"
-                                onClick={saveGuestEdit}
-                              />
-                              <XMarkIcon
-                                className="h-4 w-4 text-red-600 cursor-pointer"
-                                onClick={cancelGuestEdit}
-                              />
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-between">
-                              <MT.Typography
-                                className="text-sm text-gray-700 dark:text-gray-300"
-                                placeholder={undefined}
-                                onPointerEnterCapture={undefined}
-                                onPointerLeaveCapture={undefined}
-                              >
-                                {item.departureDate}
-                              </MT.Typography>
-                              <PencilIcon
-                                className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={() =>
-                                  startEditingGuest(
-                                    index,
-                                    "departureDate",
-                                    item.departureDate
-                                  )
-                                }
-                              />
-                            </div>
-                          )}
-                        </td>
-                        <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuestRow?.index === index ? (
-                            <input
-                              type="number"
-                              value={editGuestRowValues.toBeCollected || ""}
-                              onChange={(e) =>
-                                setEditGuestRowValues({
-                                  ...editGuestRowValues,
-                                  toBeCollected: e.target.value,
-                                })
-                              }
-                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                              placeholder="0"
-                            />
-                          ) : editingGuest?.index === index &&
-                            editingGuest?.field === "toBeCollected" ? (
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="number"
-                                value={
-                                  editValues.toBeCollected !== undefined
-                                    ? editValues.toBeCollected
-                                    : item.toBeCollected
-                                }
-                                onChange={(e) =>
-                                  setEditValues({
-                                    ...editValues,
-                                    toBeCollected: e.target.value,
-                                  })
-                                }
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                                placeholder="0"
-                              />
-                              <CheckIcon
-                                className="h-4 w-4 text-green-600 cursor-pointer"
-                                onClick={saveGuestEdit}
-                              />
-                              <XMarkIcon
-                                className="h-4 w-4 text-red-600 cursor-pointer"
-                                onClick={cancelGuestEdit}
-                              />
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-between">
-                              <MT.Typography
-                                className="text-sm font-medium text-gray-900 dark:text-white"
-                                placeholder={undefined}
-                                onPointerEnterCapture={undefined}
-                                onPointerLeaveCapture={undefined}
-                              >
-                                ₹{item.toBeCollected.toLocaleString()}
-                              </MT.Typography>
-                              <PencilIcon
-                                className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={() =>
-                                  startEditingGuest(
-                                    index,
-                                    "toBeCollected",
-                                    item.toBeCollected
-                                  )
-                                }
-                              />
-                            </div>
-                          )}
-                        </td>
-                        <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          <div className="flex items-center justify-between">
-                            <MT.Typography
-                              className="text-sm font-medium text-gray-900 dark:text-white"
-                              placeholder={undefined}
-                              onPointerEnterCapture={undefined}
-                              onPointerLeaveCapture={undefined}
-                            >
-                              ₹{item.collectedTillDate.toLocaleString()}
-                            </MT.Typography>
-                            <div className="flex items-center gap-1">
-                              <PlusIcon
-                                className="h-6 w-6 text-green-600 cursor-pointer hover:bg-green-100 rounded p-1 transition-colors"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openGuestPaymentModal(index);
-                                }}
-                                title="Add Payment"
-                              />
-                              <ClockIcon
-                                className="h-6 w-6 text-blue-600 cursor-pointer hover:bg-blue-100 rounded p-1 transition-colors"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openHistoryPopover(index);
-                                }}
-                                title="View Payment History"
-                              />
-                            </div>
-                          </div>
-                        </td>
-                        <td className={`py-3 px-3 ${rowClass}`}>
-                          <MT.Typography
-                            className="text-sm font-medium text-gray-900 dark:text-white"
-                            placeholder={undefined}
-                            onPointerEnterCapture={undefined}
-                            onPointerLeaveCapture={undefined}
-                          >
-                            ₹{item.balanceCollection.toLocaleString()}
-                          </MT.Typography>
-                        </td>
-                        <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuestRow?.index === index ? (
-                            <input
-                              type="number"
-                              value={editGuestRowValues.profit || ""}
-                              onChange={(e) =>
-                                setEditGuestRowValues({
-                                  ...editGuestRowValues,
-                                  profit: e.target.value,
-                                })
-                              }
-                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                              placeholder="0"
-                            />
-                          ) : editingGuest?.index === index &&
-                            editingGuest?.field === "profit" ? (
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="number"
-                                value={
-                                  editValues.profit !== undefined
-                                    ? editValues.profit
-                                    : item.profit
-                                }
-                                onChange={(e) =>
-                                  setEditValues({
-                                    ...editValues,
-                                    profit: e.target.value,
-                                  })
-                                }
-                                onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                              />
-                              <CheckIcon
-                                className="h-4 w-4 text-green-600 cursor-pointer"
-                                onClick={saveGuestEdit}
-                              />
-                              <XMarkIcon
-                                className="h-4 w-4 text-red-600 cursor-pointer"
-                                onClick={cancelGuestEdit}
-                              />
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-between">
-                              <MT.Typography
-                                className="text-sm font-bold text-gray-900 dark:text-white"
-                                placeholder={undefined}
-                                onPointerEnterCapture={undefined}
-                                onPointerLeaveCapture={undefined}
-                              >
-                                ₹{item.profit.toLocaleString()}
-                              </MT.Typography>
-                              <PencilIcon
-                                className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={() =>
-                                  startEditingGuest(
-                                    index,
-                                    "profit",
-                                    item.profit
-                                  )
-                                }
-                              />
-                            </div>
-                          )}
-                        </td>
-                        <td className={`py-3 px-3 ${rowClass} relative group`}>
-                          {editingGuestRow?.index === index ? (
-                            <input
-                              type="number"
-                              value={editGuestRowValues.profitBookedTillDate || ""}
-                              onChange={(e) =>
-                                setEditGuestRowValues({
-                                  ...editGuestRowValues,
-                                  profitBookedTillDate: e.target.value,
-                                })
-                              }
-                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                              placeholder="0"
-                            />
-                          ) : editingGuest?.index === index &&
-                            editingGuest?.field === "profitBookedTillDate" ? (
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="number"
-                                value={
-                                  editValues.profitBookedTillDate !== undefined
-                                    ? editValues.profitBookedTillDate
-                                    : item.profitBookedTillDate
-                                }
-                                onChange={(e) =>
-                                  setEditValues({
-                                    ...editValues,
-                                    profitBookedTillDate: e.target.value,
-                                  })
-                                }
-                                onKeyDown={handleNumberInput}
-                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                              />
-                              <CheckIcon
-                                className="h-4 w-4 text-green-600 cursor-pointer"
-                                onClick={saveGuestEdit}
-                              />
-                              <XMarkIcon
-                                className="h-4 w-4 text-red-600 cursor-pointer"
-                                onClick={cancelGuestEdit}
-                              />
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-between">
-                              <MT.Typography
-                                className="text-sm font-bold text-gray-900 dark:text-white"
-                                placeholder={undefined}
-                                onPointerEnterCapture={undefined}
-                                onPointerLeaveCapture={undefined}
-                              >
-                                ₹{item.profitBookedTillDate.toLocaleString()}
-                              </MT.Typography>
-                              <PencilIcon
-                                className="h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={() =>
-                                  startEditingGuest(
-                                    index,
-                                    "profitBookedTillDate",
-                                    item.profitBookedTillDate
-                                  )
-                                }
-                              />
-                            </div>
-                          )}
-                        </td>
                         <td className={`py-3 px-3 ${rowClass}`}>
                           <div className="flex flex-wrap gap-2">
                             {item.documents.map((doc, docIndex) => (
@@ -4082,7 +3569,6 @@ export default function BookingDetails() {
                                       title={`Download ${doc.name}`}
                                     >
                                       <ArrowDownTrayIcon className="h-3 w-3" />
-                                      Download
                                     </button>
                                     <button
                                       onClick={() => openDocumentModal(index, docIndex)}
@@ -4090,7 +3576,6 @@ export default function BookingDetails() {
                                       title={`Update ${doc.name}`}
                                     >
                                       <PencilIcon className="h-3 w-3" />
-                                      Update
                                     </button>
                                   </>
                                 ) : (
@@ -4100,7 +3585,6 @@ export default function BookingDetails() {
                                     title={`Upload ${doc.name}`}
                                   >
                                     <ArrowUpTrayIcon className="h-3 w-3" />
-                                    Upload
                                   </button>
                                 )}
                               </div>
@@ -4505,7 +3989,7 @@ export default function BookingDetails() {
 
                 {/* Total Row */}
                 <tr className="bg-blue-100 font-bold border-t-2 border-blue-300 dark:bg-blue-900/50 dark:border-blue-700">
-                  <td colSpan={7} className="py-3 px-3 text-left">
+                  <td colSpan={5} className="py-3 px-3 text-left">
                     <MT.Typography
                       className="text-sm font-bold text-blue-gray-900 dark:text-white"
                       placeholder={undefined}
@@ -4514,69 +3998,6 @@ export default function BookingDetails() {
                     >
                       Total
                     </MT.Typography>
-                  </td>
-                  <td className="py-3 px-3">
-                    <MT.Typography
-                      className="text-sm font-bold text-blue-gray-900 dark:text-white"
-                      placeholder={undefined}
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                    >
-                      ₹{totalToBeCollected.toLocaleString()}
-                    </MT.Typography>
-                  </td>
-                  <td className="py-3 px-3">
-                    <MT.Typography
-                      className="text-sm font-bold text-blue-gray-900 dark:text-white"
-                      placeholder={undefined}
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                    >
-                      ₹{totalCollectedTillDate.toLocaleString()}
-                    </MT.Typography>
-                  </td>
-                  <td className="py-3 px-3">
-                    <MT.Typography
-                      className="text-sm font-bold text-blue-gray-900 dark:text-white"
-                      placeholder={undefined}
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                    >
-                      ₹{totalBalanceCollection.toLocaleString()}
-                    </MT.Typography>
-                  </td>
-                  <td className="py-3 px-3">
-                    <MT.Typography
-                      className="text-sm font-bold text-blue-gray-900 dark:text-white"
-                      placeholder={undefined}
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                    >
-                      ₹{totalProfit.toLocaleString()}
-                    </MT.Typography>
-                  </td>
-                  <td className="py-3 px-3">
-                    <MT.Typography
-                      className="text-sm font-bold text-blue-gray-900 dark:text-white"
-                      placeholder={undefined}
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                    >
-                      ₹{totalProfitBookedTillDate.toLocaleString()}
-                    </MT.Typography>
-                  </td>
-                  <td className="py-3 px-3">
-                    <MT.Typography
-                      className="text-sm font-bold text-blue-gray-900 dark:text-white"
-                      placeholder={undefined}
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                    >
-                      {/* Documents total - could show count or status */}
-                    </MT.Typography>
-                  </td>
-                  <td className="py-3 px-3">
-                    {/* Empty for actions */}
                   </td>
                 </tr>
               </tbody>
