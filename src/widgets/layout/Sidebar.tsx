@@ -17,13 +17,13 @@ import {
 const routes = [
   {
     icon: CalendarDaysIcon,
-    name: "Bookings",
-    path: "/dashboard/bookings",
+    name: "Packages",
+    path: "/dashboard/packages",
   },
   {
     icon: PaperAirplaneIcon,
-    name: "Flights",
-    path: "/dashboard/flights",
+    name: "Bookings",
+    path: "/dashboard/bookings",
   },
 ];
 
@@ -70,7 +70,7 @@ export default function Sidebar({ open, setOpen, collapsed, setCollapsed }: Side
         }`}
       >
         <div className="relative border-b border-blue-gray-50 dark:border-gray-700">
-          <Link to="/dashboard/bookings" className={`flex items-center gap-4 py-6 ${collapsed ? 'px-2' : 'px-8'}`} onClick={handleMenuClick}>
+          <Link to="/dashboard/packages" className={`flex items-center gap-4 py-6 ${collapsed ? 'px-2' : 'px-8'}`} onClick={handleMenuClick}>
             <Typography variant="h6" color="blue-gray" className="dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
               {!collapsed && "Trip Cherry"}
             </Typography>

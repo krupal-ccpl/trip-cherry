@@ -432,7 +432,7 @@ export default function Flights() {
       {/* Header with Add Button */}
       <div className="mb-6 flex justify-between items-center">
         <MT.Typography variant="h4" color="blue-gray" className="dark:text-white" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-          Flights Management
+          Booking Management
         </MT.Typography>
         <MT.Button 
           className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all"
@@ -442,7 +442,7 @@ export default function Flights() {
           onPointerLeaveCapture={undefined}
         >
           <PlusIcon className="h-5 w-5" />
-          Add New Flight
+          Add New Booking
         </MT.Button>
       </div>
 
@@ -453,7 +453,7 @@ export default function Flights() {
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search flights..."
+            placeholder="Search bookings..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-lg shadow-gray-900/5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -509,7 +509,7 @@ export default function Flights() {
         <MT.Card className="shadow-lg border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl">
             <MT.Typography variant="h6" color="white" className="font-semibold" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-              Flight Bookings
+              Bookings
             </MT.Typography>
           </div>
           <MT.CardBody className="overflow-x-auto px-0 pt-0 pb-2" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>

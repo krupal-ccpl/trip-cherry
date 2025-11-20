@@ -4,7 +4,7 @@ import Sidebar from '../widgets/layout/Sidebar';
 import Navbar from '../widgets/layout/Navbar';
 import PackageList from '../pages/dashboard/PackageList';
 import PackageDetails from '../pages/dashboard/PackageDetails';
-import Flights from '../pages/dashboard/Flights';
+import Bookings from '../pages/dashboard/Bookings';
 
 export default function Dashboard() {
   const [openSidenav, setOpenSidenav] = useState(false);
@@ -19,7 +19,7 @@ export default function Dashboard() {
           <Routes>
             <Route path="/packages" element={<PackageList />} />
             <Route path="/packages/:id" element={<PackageDetails />} />
-            <Route path="/flights" element={<Flights />} />
+            <Route path="/bookings" element={<Bookings />} />
             <Route path="*" element={<Navigate to="/dashboard/packages" replace />} />
           </Routes>
         </div>
