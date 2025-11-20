@@ -21,6 +21,8 @@ interface Booking {
   profitBookedTillDate: number;
   collectionRemaining: number;
   requiredDocuments: string[];
+  isCorporate?: boolean;
+  bookingPersonName?: string;
 }
 
 interface AddBookingModalProps {
@@ -109,6 +111,9 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
     profitBookedTillDate: '0',
   });
 
+  const [isCorporateBooking, setIsCorporateBooking] = useState(false);
+  const [bookingPersonName, setBookingPersonName] = useState('');
+
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
   const destinations = newBooking.type === 'International' ? internationalDestinations : domesticDestinations;
@@ -149,6 +154,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         profitBookedTillDate: booking.profitBookedTillDate.toString(),
       });
       setSelectedDocuments(booking.requiredDocuments || (booking.type === 'Domestic' ? domesticDocs : internationalDocs));
+      setIsCorporateBooking(booking.isCorporate || false);
+      setBookingPersonName(booking.bookingPersonName || '');
     } else {
       // Reset form for new booking
       setNewBooking({
@@ -166,6 +173,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         profitBookedTillDate: '0',
       });
       setSelectedDocuments(domesticDocs);
+      setIsCorporateBooking(false);
+      setBookingPersonName('');
     }
   }, [booking]);
 
@@ -297,6 +306,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         profitBookedTillDate,
         collectionRemaining,
         requiredDocuments: selectedDocuments,
+        isCorporate: isCorporateBooking,
+        bookingPersonName: bookingPersonName.trim(),
       };
       onAdd(updatedBooking);
     } else {
@@ -319,6 +330,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         profitBookedTillDate,
         collectionRemaining,
         requiredDocuments: selectedDocuments,
+        isCorporate: isCorporateBooking,
+        bookingPersonName: bookingPersonName.trim(),
       };
       onAdd(booking);
     }
@@ -339,13 +352,26 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
       profitBookedTillDate: '0',
     });
     setSelectedDocuments(domesticDocs);
+    setIsCorporateBooking(false);
+    setBookingPersonName('');
   };
 
   return (
     isOpen && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-          <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{booking ? 'Edit Booking' : 'Add New Booking'}</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{booking ? 'Edit Booking' : 'Add New Booking'}</h2>
+            <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+              <input
+                type="checkbox"
+                checked={isCorporateBooking}
+                onChange={(e) => setIsCorporateBooking(e.target.checked)}
+                className="mr-2"
+              />
+              Corporate Booking
+            </label>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <Autocomplete
@@ -364,6 +390,18 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                 }}
               />
             </div>
+            {isCorporateBooking && (
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Booking Person Name</label>
+                <input
+                  type="text"
+                  value={bookingPersonName}
+                  onChange={(e) => setBookingPersonName(e.target.value)}
+                  placeholder="Enter booking person name"
+                  className="w-full px-3 py-2 border border-blue-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                />
+              </div>
+            )}
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
               <input
