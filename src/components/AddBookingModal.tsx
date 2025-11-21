@@ -2,6 +2,12 @@ import { useState } from "react";
 import * as MT from "@material-tailwind/react";
 import Autocomplete, { type AutocompleteOption } from "./Autocomplete";
 
+interface Traveller {
+  name: string;
+  age: string;
+  gender: 'Male' | 'Female' | 'Other' | '';
+}
+
 interface Booking {
   srNo: number;
   bookingType: 'flight' | 'train';
@@ -9,6 +15,7 @@ interface Booking {
   portal: string;
   guestName: string;
   numberOfTravellers: number;
+  travellers?: Traveller[];
   
   // Flight specific fields
   airline?: string;
@@ -153,6 +160,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     status: 'confirmed' as 'confirmed' | 'pending' | 'cancelled',
   });
 
+  const [travellers, setTravellers] = useState<Traveller[]>([
+    { name: '', age: '', gender: '' }
+  ]);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Transform guest names to autocomplete options
@@ -166,6 +177,52 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
 
   const handleGuestSelect = (value: string) => {
     setNewBooking({ ...newBooking, guestName: value });
+  };
+
+  const handleNumberOfTravellersChange = (value: string) => {
+    const count = parseInt(value) || 1;
+    const validCount = Math.max(1, Math.min(count, 20)); // Limit between 1 and 20
+    
+    setNewBooking({ ...newBooking, numberOfTravellers: validCount.toString() });
+    
+    // Update travellers array
+    setTravellers(prev => {
+      const current = [...prev];
+      if (validCount > current.length) {
+        // Add new travellers
+        const newTravellers = Array(validCount - current.length).fill(null).map(() => ({
+          name: '',
+          age: '',
+          gender: '' as ''
+        }));
+        return [...current, ...newTravellers];
+      } else if (validCount < current.length) {
+        // Remove travellers from the end
+        return current.slice(0, validCount);
+      }
+      return current;
+    });
+  };
+
+  const updateTraveller = (index: number, field: keyof Traveller, value: string) => {
+    setTravellers(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const deleteTraveller = (index: number) => {
+    setTravellers(prev => {
+      const updated = prev.filter((_, i) => i !== index);
+      // Update number of travellers
+      const newCount = updated.length;
+      setNewBooking(prevBooking => ({ 
+        ...prevBooking, 
+        numberOfTravellers: newCount.toString() 
+      }));
+      return updated;
+    });
   };
 
   const formatDateToDisplay = (isoDate: string) => {
@@ -217,6 +274,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
       portal: newBooking.portal.trim(),
       guestName: newBooking.guestName.trim(),
       numberOfTravellers: parseInt(newBooking.numberOfTravellers) || 1,
+      travellers: travellers,
       collectedTillDate: parseFloat(newBooking.collectedTillDate) || 0,
       processingFees: parseFloat(newBooking.processingFees) || 0,
       actualFare: parseFloat(newBooking.actualFare) || 0,
@@ -292,8 +350,85 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
       netProfit: '0',
       status: 'confirmed',
     });
+    setTravellers([{ name: '', age: '', gender: '' }]);
     setErrors({});
   };
+
+  // Reusable Traveller Details Table Component
+  const TravellerDetailsSection = () => (
+    <div className="mb-6">
+      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Traveller Details</h3>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-100 dark:bg-gray-700">
+              <th className="px-3 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 w-12">#</th>
+              <th className="px-3 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600">Name</th>
+              <th className="px-3 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 w-28">Age</th>
+              <th className="px-3 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 w-36">Gender</th>
+              <th className="px-3 py-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 w-16">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {travellers.map((traveller, index) => (
+              <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                <td className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 text-center">
+                  {index + 1}
+                </td>
+                <td className="px-3 py-2 border border-gray-300 dark:border-gray-600">
+                  <input
+                    type="text"
+                    value={traveller.name}
+                    onChange={(e) => updateTraveller(index, 'name', e.target.value)}
+                    placeholder="Enter name"
+                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  />
+                </td>
+                <td className="px-3 py-2 border border-gray-300 dark:border-gray-600">
+                  <input
+                    type="number"
+                    value={traveller.age}
+                    onChange={(e) => updateTraveller(index, 'age', e.target.value)}
+                    onKeyDown={handleNumberInput}
+                    min="0"
+                    max="120"
+                    placeholder="Age"
+                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  />
+                </td>
+                <td className="px-3 py-2 border border-gray-300 dark:border-gray-600">
+                  <select
+                    value={traveller.gender}
+                    onChange={(e) => updateTraveller(index, 'gender', e.target.value)}
+                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  >
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </td>
+                <td className="px-3 py-2 border border-gray-300 dark:border-gray-600 text-center">
+                  {travellers.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => deleteTraveller(index)}
+                      className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      title="Delete traveller"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                      </svg>
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 
   if (!isOpen) return null;
 
@@ -377,9 +512,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
               <MT.Input
                 type="number"
                 value={newBooking.numberOfTravellers}
-                onChange={(e) => setNewBooking({ ...newBooking, numberOfTravellers: e.target.value })}
+                onChange={(e) => handleNumberOfTravellersChange(e.target.value)}
                 onKeyDown={handleNumberInput}
                 min="1"
+                max="20"
                 placeholder="1"
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
@@ -540,6 +676,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
               </div>
             </div>
             
+            <TravellerDetailsSection />
+
             {/* Flight Additional Charges */}
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Additional Charges</h3>
@@ -764,6 +902,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                 </div>
               </div>
             </div>
+            
+            <TravellerDetailsSection />
           </>
         )}
 
