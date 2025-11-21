@@ -1,6 +1,7 @@
 import { useState } from "react";
 import * as MT from "@material-tailwind/react";
 import Autocomplete, { type AutocompleteOption } from "./Autocomplete";
+import AirportAutocomplete from "./AirportAutocomplete";
 
 interface Traveller {
   name: string;
@@ -20,9 +21,10 @@ interface Booking {
   // Flight specific fields
   airline?: string;
   ticketType?: string;
-  sector?: string;
-  from?: string;
-  to?: string;
+  sectors?: string[]; // Array of airport codes for sectors
+  sector?: string; // Formatted sector string for display
+  from?: string; // Deprecated - kept for backward compatibility
+  to?: string; // Deprecated - kept for backward compatibility
   departureDate?: string;
   arrivalDate?: string;
   pnr?: string;
@@ -130,9 +132,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     // Flight fields
     airline: '',
     ticketType: 'One Way',
-    sector: '',
-    flightFrom: '',
-    flightTo: '',
+    sector1: '', // Origin for one-way/outbound
+    sector2: '', // Destination for one-way/outbound
+    sector3: '', // Origin for return (round trip only)
+    sector4: '', // Destination for return (round trip only)
     departureDate: '',
     arrivalDate: '',
     pnr: '',
@@ -302,9 +305,24 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     if (newBooking.bookingType === 'flight') {
       booking.airline = newBooking.airline.trim();
       booking.ticketType = newBooking.ticketType;
-      booking.from = newBooking.flightFrom.trim();
-      booking.to = newBooking.flightTo.trim();
-      booking.sector = `${newBooking.flightFrom.trim()} ${newBooking.flightTo.trim()}`;
+      
+      // Build sectors array based on ticket type
+      // One Way: 2 sectors, Round Trip: 3 sectors, Multi City: 4 sectors
+      const sectorsArray = [newBooking.sector1, newBooking.sector2];
+      if (newBooking.ticketType === 'Round Trip') {
+        sectorsArray.push(newBooking.sector3);
+      } else if (newBooking.ticketType === 'Multi City') {
+        sectorsArray.push(newBooking.sector3, newBooking.sector4);
+      }
+      booking.sectors = sectorsArray.filter(s => s); // Remove empty sectors
+      
+      // Create formatted sector string for display
+      booking.sector = booking.sectors.join(' - ');
+      
+      // For backward compatibility
+      booking.from = newBooking.sector1;
+      booking.to = newBooking.sector2;
+      
       booking.departureDate = formatDateToDisplay(newBooking.departureDate);
       booking.arrivalDate = newBooking.arrivalDate ? formatDateToDisplay(newBooking.arrivalDate) : '';
       booking.pnr = newBooking.pnr.trim().toUpperCase();
@@ -341,9 +359,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
       numberOfTravellers: '1',
       airline: '',
       ticketType: 'One Way',
-      sector: '',
-      flightFrom: '',
-      flightTo: '',
+      sector1: '',
+      sector2: '',
+      sector3: '',
+      sector4: '',
       departureDate: '',
       arrivalDate: '',
       pnr: '',
@@ -784,33 +803,57 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   {errors.pnr && <p className="text-red-500 text-sm mt-1">{errors.pnr}</p>}
                 </div>
               </div>
-              <div className="grid grid-cols-4 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From (City/Airport)</label>
-                  <MT.Input
-                    type="text"
-                    value={newBooking.flightFrom}
-                    onChange={(e) => setNewBooking({ ...newBooking, flightFrom: e.target.value.toUpperCase() })}
-                    placeholder="e.g., BOM, MUMBAI"
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    crossOrigin={undefined}
+              
+              {/* Sectors Section - All in one row */}
+              <div className="mb-4">
+                <h4 className="text-md font-semibold mb-3 text-gray-900 dark:text-white">Flight Sectors</h4>
+                
+                {/* Dynamic grid based on ticket type: One Way=2, Round Trip=3, Multi City=4 */}
+                <div className={`grid gap-3 ${
+                  newBooking.ticketType === 'One Way' ? 'grid-cols-2' :
+                  newBooking.ticketType === 'Round Trip' ? 'grid-cols-3' :
+                  'grid-cols-4'
+                }`}>
+                  <AirportAutocomplete
+                    label="Sector 1"
+                    value={newBooking.sector1}
+                    onChange={(code) => setNewBooking({ ...newBooking, sector1: code })}
+                    placeholder="Origin..."
+                    error={errors.sector1}
                   />
-                  {errors.flightFrom && <p className="text-red-500 text-sm mt-1">{errors.flightFrom}</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To (City/Airport)</label>
-                  <MT.Input
-                    type="text"
-                    value={newBooking.flightTo}
-                    onChange={(e) => setNewBooking({ ...newBooking, flightTo: e.target.value.toUpperCase() })}
-                    placeholder="e.g., DEL, DELHI"
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    crossOrigin={undefined}
+                  <AirportAutocomplete
+                    label="Sector 2"
+                    value={newBooking.sector2}
+                    onChange={(code) => setNewBooking({ ...newBooking, sector2: code })}
+                    placeholder="Destination..."
+                    error={errors.sector2}
                   />
-                  {errors.flightTo && <p className="text-red-500 text-sm mt-1">{errors.flightTo}</p>}
+                  
+                  {/* Sector 3 - Show for Round Trip and Multi City */}
+                  {(newBooking.ticketType === 'Round Trip' || newBooking.ticketType === 'Multi City') && (
+                    <AirportAutocomplete
+                      label="Sector 3"
+                      value={newBooking.sector3}
+                      onChange={(code) => setNewBooking({ ...newBooking, sector3: code })}
+                      placeholder={newBooking.ticketType === 'Round Trip' ? 'Return...' : 'Next...'}
+                      error={errors.sector3}
+                    />
+                  )}
+                  
+                  {/* Sector 4 - Show only for Multi City */}
+                  {newBooking.ticketType === 'Multi City' && (
+                    <AirportAutocomplete
+                      label="Sector 4"
+                      value={newBooking.sector4}
+                      onChange={(code) => setNewBooking({ ...newBooking, sector4: code })}
+                      placeholder="Final..."
+                      error={errors.sector4}
+                    />
+                  )}
                 </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Departure Date</label>
                   <MT.Input
