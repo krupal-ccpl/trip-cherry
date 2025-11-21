@@ -407,7 +407,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                       onChange={(e) => setIsTraveler(e.target.checked)}
                       className="mr-2"
                     />
-                    Traveler
+                    Add as a traveler
                   </label>
                 </div>
               )}
@@ -432,7 +432,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                       onChange={(e) => setIsTraveler(e.target.checked)}
                       className="mr-2"
                     />
-                    Traveler
+                    Add as a traveler
                   </label>
                 </div>
               </div>
