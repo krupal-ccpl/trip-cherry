@@ -546,17 +546,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Arrival Date</label>
-              <MT.Input
-                type="date"
-                value={newBooking.arrivalDate}
-                onChange={(e) => setNewBooking({ ...newBooking, arrivalDate: e.target.value })}
-                min={today}
-                placeholder={undefined}
-              />
-              {errors.arrivalDate && <p className="text-red-500 text-sm">{errors.arrivalDate}</p>}
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Departure Date</label>
               <MT.Input
                 type="date"
@@ -566,6 +555,17 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                 placeholder={undefined}
               />
               {errors.departureDate && <p className="text-red-500 text-sm">{errors.departureDate}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Arrival Date</label>
+              <MT.Input
+                type="date"
+                value={newBooking.arrivalDate}
+                onChange={(e) => setNewBooking({ ...newBooking, arrivalDate: e.target.value })}
+                min={today}
+                placeholder={undefined}
+              />
+              {errors.arrivalDate && <p className="text-red-500 text-sm">{errors.arrivalDate}</p>}
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4 mt-4">
