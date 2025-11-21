@@ -39,7 +39,7 @@ interface Booking {
   
   // Common financial fields
   collectedTillDate: number;
-  quotedFare: number;
+  processingFees: number;
   actualFare: number;
   grossProfit: number;
   netProfit: number;
@@ -147,7 +147,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     
     // Financial fields
     collectedTillDate: '0',
-    quotedFare: '0',
+    processingFees: '0',
     actualFare: '0',
     grossProfit: '0',
     netProfit: '0',
@@ -235,7 +235,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     }
 
     // Validate numeric fields
-    const numericFields = ['quotedFare', 'actualFare', 'seatCharges', 'luggageCharges', 'mealCharges', 'otherCharges'];
+    const numericFields = ['processingFees', 'actualFare', 'seatCharges', 'luggageCharges', 'mealCharges', 'otherCharges'];
     numericFields.forEach(field => {
       const value = parseFloat(newBooking[field as keyof typeof newBooking] as string);
       if (newBooking[field as keyof typeof newBooking] && (isNaN(value) || value < 0)) {
@@ -260,7 +260,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
       guestName: newBooking.guestName.trim(),
       numberOfTravellers: parseInt(newBooking.numberOfTravellers) || 1,
       collectedTillDate: parseFloat(newBooking.collectedTillDate) || 0,
-      quotedFare: parseFloat(newBooking.quotedFare) || 0,
+      processingFees: parseFloat(newBooking.processingFees) || 0,
       actualFare: parseFloat(newBooking.actualFare) || 0,
       grossProfit: parseFloat(newBooking.grossProfit) || 0,
       netProfit: parseFloat(newBooking.netProfit) || 0,
@@ -329,7 +329,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
       trainTo: '',
       journeyDate: '',
       collectedTillDate: '0',
-      quotedFare: '0',
+      processingFees: '0',
       actualFare: '0',
       grossProfit: '0',
       netProfit: '0',
@@ -520,7 +520,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   {errors.flightTo && <p className="text-red-500 text-sm mt-1">{errors.flightTo}</p>}
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Departure Date *</label>
                   <MT.Input
@@ -549,6 +549,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   />
                   {errors.arrivalDate && <p className="text-red-500 text-sm mt-1">{errors.arrivalDate}</p>}
                 </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fare</label>
                   <MT.Input
@@ -563,6 +565,33 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     crossOrigin={undefined}
                   />
                   {errors.actualFare && <p className="text-red-500 text-sm mt-1">{errors.actualFare}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Processing Fees</label>
+                  <MT.Input
+                    type="number"
+                    value={newBooking.processingFees}
+                    onChange={(e) => setNewBooking({ ...newBooking, processingFees: e.target.value })}
+                    onKeyDown={handleNumberInput}
+                    min="0"
+                    placeholder="0"
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                    crossOrigin={undefined}
+                  />
+                  {errors.processingFees && <p className="text-red-500 text-sm mt-1">{errors.processingFees}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                  <select
+                    value={newBooking.status}
+                    onChange={(e) => setNewBooking({ ...newBooking, status: e.target.value as 'confirmed' | 'pending' | 'cancelled' })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="confirmed">Confirmed</option>
+                    <option value="pending">Pending</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -706,7 +735,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-3 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Station *</label>
                   <MT.Input
@@ -747,6 +776,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   />
                   {errors.journeyDate && <p className="text-red-500 text-sm mt-1">{errors.journeyDate}</p>}
                 </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fare</label>
                   <MT.Input
@@ -762,44 +793,37 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   />
                   {errors.actualFare && <p className="text-red-500 text-sm mt-1">{errors.actualFare}</p>}
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Processing Fees</label>
+                  <MT.Input
+                    type="number"
+                    value={newBooking.processingFees}
+                    onChange={(e) => setNewBooking({ ...newBooking, processingFees: e.target.value })}
+                    onKeyDown={handleNumberInput}
+                    min="0"
+                    placeholder="0"
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                    crossOrigin={undefined}
+                  />
+                  {errors.processingFees && <p className="text-red-500 text-sm mt-1">{errors.processingFees}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                  <select
+                    value={newBooking.status}
+                    onChange={(e) => setNewBooking({ ...newBooking, status: e.target.value as 'confirmed' | 'pending' | 'cancelled' })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="confirmed">Confirmed</option>
+                    <option value="pending">Pending</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
               </div>
             </div>
           </>
         )}
-
-        {/* Financial Details - Common for both */}
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Financial Details</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quoted Fare</label>
-              <MT.Input
-                type="number"
-                value={newBooking.quotedFare}
-                onChange={(e) => setNewBooking({ ...newBooking, quotedFare: e.target.value })}
-                onKeyDown={handleNumberInput}
-                min="0"
-                placeholder="0"
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-                crossOrigin={undefined}
-              />
-              {errors.quotedFare && <p className="text-red-500 text-sm mt-1">{errors.quotedFare}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-              <select
-                value={newBooking.status}
-                onChange={(e) => setNewBooking({ ...newBooking, status: e.target.value as 'confirmed' | 'pending' | 'cancelled' })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                <option value="confirmed">Confirmed</option>
-                <option value="pending">Pending</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
-          </div>
-        </div>
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">

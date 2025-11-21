@@ -41,7 +41,7 @@ interface Booking {
   
   // Common financial fields
   collectedTillDate: number;
-  quotedFare: number;
+  processingFees: number;
   actualFare: number;
   grossProfit: number;
   netProfit: number;
@@ -116,7 +116,7 @@ export default function Bookings() {
         let aValue: any = a[sortConfig.key as keyof typeof a];
         let bValue: any = b[sortConfig.key as keyof typeof b];
 
-        if (['collectedTillDate', 'quotedFare', 'actualFare', 'grossProfit', 'netProfit', 'ancillary'].includes(sortConfig.key)) {
+        if (['collectedTillDate', 'processingFees', 'actualFare', 'grossProfit', 'netProfit', 'ancillary'].includes(sortConfig.key)) {
           aValue = parseFloat(aValue) || 0;
           bValue = parseFloat(bValue) || 0;
         }
@@ -257,7 +257,7 @@ export default function Bookings() {
                     { key: "pnr", label: "PNR" },
                     { key: "ancillary", label: "Ancillary" },
                     { key: "collectedTillDate", label: "Collected" },
-                    { key: "quotedFare", label: "Quoted Fare" },
+                    { key: "processingFees", label: "Processing Fees" },
                     { key: "actualFare", label: "Actual Fare" },
                     { key: "grossProfit", label: "Gross Profit" },
                     { key: "netProfit", label: "Net Profit" },
@@ -365,7 +365,7 @@ export default function Bookings() {
                       </td>
                       <td className={`py-3 px-3 ${rowClass}`}>
                         <MT.Typography className="text-sm text-gray-700 dark:text-gray-300" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                          ₹{item.quotedFare.toLocaleString()}
+                          ₹{item.processingFees.toLocaleString()}
                         </MT.Typography>
                       </td>
                       <td className={`py-3 px-3 ${rowClass}`}>

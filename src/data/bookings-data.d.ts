@@ -35,7 +35,7 @@ export interface Booking {
   
   // Common financial fields
   collectedTillDate: number;
-  quotedFare: number;
+  processingFees: number;
   actualFare: number;
   grossProfit: number;
   netProfit: number;
