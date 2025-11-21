@@ -106,10 +106,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
     noOfTravellers: '1',
     arrivalDate: '',
     departureDate: '',
-    bookingAmount: '0',
-    advancePayment: '0',
-    profit: '0',
-    profitBookedTillDate: '0',
+    bookingAmount: '',
+    advancePayment: '',
+    profit: '',
+    profitBookedTillDate: '',
   });
 
   const [isCorporateBooking, setIsCorporateBooking] = useState(false);
@@ -170,10 +170,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
         noOfTravellers: '1',
         arrivalDate: '',
         departureDate: '',
-        bookingAmount: '0',
-        advancePayment: '0',
-        profit: '0',
-        profitBookedTillDate: '0',
+        bookingAmount: '',
+        advancePayment: '',
+        profit: '',
+        profitBookedTillDate: '',
       });
       setSelectedDocuments(domesticDocs);
       setIsCorporateBooking(false);
@@ -352,10 +352,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
       noOfTravellers: '1',
       arrivalDate: '',
       departureDate: '',
-      bookingAmount: '0',
-      advancePayment: '0',
-      profit: '0',
-      profitBookedTillDate: '0',
+      bookingAmount: '',
+      advancePayment: '',
+      profit: '',
+      profitBookedTillDate: '',
     });
     setSelectedDocuments(domesticDocs);
     setIsCorporateBooking(false);
@@ -571,13 +571,19 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
           <div className="grid grid-cols-3 gap-4 mt-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No of Travellers</label>
-              <MT.Input
+              <input
                 type="number"
                 value={newBooking.noOfTravellers}
                 onChange={(e) => setNewBooking({ ...newBooking, noOfTravellers: e.target.value })}
+                onBlur={(e) => {
+                  if (!e.target.value || parseInt(e.target.value) < 1) {
+                    setNewBooking({ ...newBooking, noOfTravellers: '1' });
+                  }
+                }}
                 onKeyDown={handleNumberInput}
                 min="1"
-                placeholder={undefined}
+                placeholder="1"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
             <div>
@@ -588,7 +594,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                 onChange={(e) => setNewBooking({ ...newBooking, bookingAmount: e.target.value })}
                 onKeyDown={handleNumberInput}
                 min="0"
-                placeholder={undefined}
+                placeholder=""
               />
               {errors.bookingAmount && <p className="text-red-500 text-sm">{errors.bookingAmount}</p>}
             </div>
@@ -600,7 +606,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                 onChange={(e) => setNewBooking({ ...newBooking, advancePayment: e.target.value })}
                 onKeyDown={handleNumberInput}
                 min="0"
-                placeholder={undefined}
+                placeholder=""
               />
               {errors.advancePayment && <p className="text-red-500 text-sm">{errors.advancePayment}</p>}
             </div>
@@ -615,7 +621,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                   onChange={(e) => setNewBooking({ ...newBooking, profit: e.target.value })}
                   onKeyDown={handleNumberInput}
                   min="0"
-                  placeholder={undefined}
+                  placeholder=""
                 />
                 {errors.profit && <p className="text-red-500 text-sm">{errors.profit}</p>}
               </div>
@@ -627,7 +633,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd, booking }: Add
                   onChange={(e) => setNewBooking({ ...newBooking, profitBookedTillDate: e.target.value })}
                   onKeyDown={handleNumberInput}
                   min="0"
-                  placeholder={undefined}
+                  placeholder=""
                 />
                 {errors.profitBookedTillDate && <p className="text-red-500 text-sm">{errors.profitBookedTillDate}</p>}
               </div>

@@ -136,10 +136,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     departureDate: '',
     arrivalDate: '',
     pnr: '',
-    seatCharges: '0',
-    luggageCharges: '0',
-    mealCharges: '0',
-    otherCharges: '0',
+    seatCharges: '',
+    luggageCharges: '',
+    mealCharges: '',
+    otherCharges: '',
     otherChargesRemarks: '',
     
     // Train fields
@@ -152,11 +152,11 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     journeyDate: '',
     
     // Financial fields
-    collectedTillDate: '0',
-    processingFees: '0',
-    actualFare: '0',
-    grossProfit: '0',
-    netProfit: '0',
+    collectedTillDate: '',
+    processingFees: '',
+    actualFare: '',
+    grossProfit: '',
+    netProfit: '',
     status: 'confirmed' as 'confirmed' | 'pending' | 'cancelled',
   });
 
@@ -180,8 +180,19 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
   };
 
   const handleNumberOfTravellersChange = (value: string) => {
-    const count = parseInt(value) || 1;
-    const validCount = Math.max(1, Math.min(count, 20)); // Limit between 1 and 20
+    // Allow empty string so user can clear the input
+    if (value === '') {
+      setNewBooking({ ...newBooking, numberOfTravellers: '' });
+      return;
+    }
+    
+    const count = parseInt(value);
+    if (isNaN(count) || count < 1) {
+      setNewBooking({ ...newBooking, numberOfTravellers: value });
+      return;
+    }
+    
+    const validCount = Math.min(count, 20); // Limit maximum to 20
     
     setNewBooking({ ...newBooking, numberOfTravellers: validCount.toString() });
     
@@ -267,13 +278,16 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
       return;
     }
 
+    // Ensure numberOfTravellers is at least 1
+    const travellersCount = parseInt(newBooking.numberOfTravellers) || 1;
+
     const booking: Booking = {
       srNo: Date.now(),
       bookingType: newBooking.bookingType,
       bookingDate: formatDateToDisplay(new Date().toISOString().split('T')[0]),
       portal: newBooking.portal.trim(),
       guestName: newBooking.guestName.trim(),
-      numberOfTravellers: parseInt(newBooking.numberOfTravellers) || 1,
+      numberOfTravellers: travellersCount,
       travellers: travellers,
       collectedTillDate: parseFloat(newBooking.collectedTillDate) || 0,
       processingFees: parseFloat(newBooking.processingFees) || 0,
@@ -331,10 +345,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
       departureDate: '',
       arrivalDate: '',
       pnr: '',
-      seatCharges: '0',
-      luggageCharges: '0',
-      mealCharges: '0',
-      otherCharges: '0',
+      seatCharges: '',
+      luggageCharges: '',
+      mealCharges: '',
+      otherCharges: '',
       otherChargesRemarks: '',
       trainName: '',
       trainNumber: '',
@@ -343,11 +357,11 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
       trainFrom: '',
       trainTo: '',
       journeyDate: '',
-      collectedTillDate: '0',
-      processingFees: '0',
-      actualFare: '0',
-      grossProfit: '0',
-      netProfit: '0',
+      collectedTillDate: '',
+      processingFees: '',
+      actualFare: '',
+      grossProfit: '',
+      netProfit: '',
       status: 'confirmed',
     });
     setTravellers([{ name: '', age: '', gender: '' }]);
@@ -523,17 +537,21 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Number of Travellers</label>
-              <MT.Input
+              <input
                 type="number"
                 value={newBooking.numberOfTravellers}
                 onChange={(e) => handleNumberOfTravellersChange(e.target.value)}
+                onBlur={(e) => {
+                  // Set to 1 if empty or invalid on blur
+                  if (!e.target.value || parseInt(e.target.value) < 1) {
+                    handleNumberOfTravellersChange('1');
+                  }
+                }}
                 onKeyDown={handleNumberInput}
                 min="1"
                 max="20"
                 placeholder="1"
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-                crossOrigin={undefined}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
           </div>
@@ -651,7 +669,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     onChange={(e) => setNewBooking({ ...newBooking, actualFare: e.target.value })}
                     onKeyDown={handleNumberInput}
                     min="0"
-                    placeholder="0"
+                    placeholder=""
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                     crossOrigin={undefined}
@@ -666,7 +684,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     onChange={(e) => setNewBooking({ ...newBooking, processingFees: e.target.value })}
                     onKeyDown={handleNumberInput}
                     min="0"
-                    placeholder="0"
+                    placeholder=""
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                     crossOrigin={undefined}
@@ -702,7 +720,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     onChange={(e) => setNewBooking({ ...newBooking, seatCharges: e.target.value })}
                     onKeyDown={handleNumberInput}
                     min="0"
-                    placeholder="0"
+                    placeholder=""
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                     crossOrigin={undefined}
@@ -717,7 +735,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     onChange={(e) => setNewBooking({ ...newBooking, luggageCharges: e.target.value })}
                     onKeyDown={handleNumberInput}
                     min="0"
-                    placeholder="0"
+                    placeholder=""
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                     crossOrigin={undefined}
@@ -732,7 +750,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     onChange={(e) => setNewBooking({ ...newBooking, mealCharges: e.target.value })}
                     onKeyDown={handleNumberInput}
                     min="0"
-                    placeholder="0"
+                    placeholder=""
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                     crossOrigin={undefined}
@@ -747,7 +765,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     onChange={(e) => setNewBooking({ ...newBooking, otherCharges: e.target.value })}
                     onKeyDown={handleNumberInput}
                     min="0"
-                    placeholder="0"
+                    placeholder=""
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                     crossOrigin={undefined}
@@ -876,7 +894,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     onChange={(e) => setNewBooking({ ...newBooking, actualFare: e.target.value })}
                     onKeyDown={handleNumberInput}
                     min="0"
-                    placeholder="0"
+                    placeholder=""
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                     crossOrigin={undefined}
@@ -891,7 +909,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     onChange={(e) => setNewBooking({ ...newBooking, processingFees: e.target.value })}
                     onKeyDown={handleNumberInput}
                     min="0"
-                    placeholder="0"
+                    placeholder=""
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                     crossOrigin={undefined}

@@ -147,7 +147,7 @@ export default function BookingList() {
   });
 
   const handleRowClick = (bookingId: number) => {
-    navigate(`/dashboard/bookings/${bookingId}`);
+    navigate(`/dashboard/packages/${bookingId}`);
   };
 
   // Payment functionality functions
