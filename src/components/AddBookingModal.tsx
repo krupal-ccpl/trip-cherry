@@ -165,6 +165,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
   ]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [showPreview, setShowPreview] = useState(false);
 
   // Transform guest names to autocomplete options
   const guestOptions: AutocompleteOption[] = guestNames.map(guest => ({
@@ -366,6 +368,31 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     });
     setTravellers([{ name: '', age: '', gender: '' }]);
     setErrors({});
+    setUploadedFiles([]);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const fileArray = Array.from(files);
+      setUploadedFiles(prev => [...prev, ...fileArray]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const getFilePreviewUrl = (file: File): string => {
+    return URL.createObjectURL(file);
+  };
+
+  const isImageFile = (file: File): boolean => {
+    return file.type.startsWith('image/');
+  };
+
+  const isPdfFile = (file: File): boolean => {
+    return file.type === 'application/pdf';
   };
 
   // Reusable Traveller Details Table Component
@@ -444,15 +471,118 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     </div>
   );
 
+  // Preview Modal Component - Shows Uploaded Files
+  const PreviewModal = () => {
+    if (!showPreview) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[60] p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-between items-center flex-shrink-0">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Ticket Preview ({uploadedFiles.length} {uploadedFiles.length === 1 ? 'file' : 'files'})
+            </h2>
+            <button
+              onClick={() => setShowPreview(false)}
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="p-4 overflow-y-auto flex-1">
+            {uploadedFiles.length === 0 ? (
+              <div className="text-center py-12">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 mx-auto text-gray-400 mb-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+                <p className="text-gray-500 dark:text-gray-400 text-lg">No files uploaded yet</p>
+                <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">Upload ticket files to preview them here</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {uploadedFiles.map((file, index) => (
+                  <div key={index} className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
+                    <div className="px-3 py-2 bg-gray-50 dark:bg-gray-600 border-b border-gray-200 dark:border-gray-600">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-200 flex-shrink-0">
+                            {index + 1}.
+                          </span>
+                          <span className="text-xs font-medium text-gray-900 dark:text-white truncate">
+                            {file.name}
+                          </span>
+                        </div>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                          {(file.size / 1024).toFixed(0)} KB
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="p-2">
+                      {isImageFile(file) ? (
+                        <img 
+                          src={getFilePreviewUrl(file)} 
+                          alt={file.name}
+                          className="w-full h-auto max-h-64 object-contain rounded"
+                        />
+                      ) : isPdfFile(file) ? (
+                        <div className="bg-gray-50 dark:bg-gray-600 rounded p-6 text-center h-64 flex flex-col items-center justify-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto text-red-500 mb-2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                          </svg>
+                          <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">PDF Document</p>
+                          <a 
+                            href={getFilePreviewUrl(file)} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-block mt-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded transition-colors"
+                          >
+                            Open PDF
+                          </a>
+                        </div>
+                      ) : (
+                        <div className="bg-gray-50 dark:bg-gray-600 rounded p-6 text-center h-64 flex flex-col items-center justify-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto text-gray-400 mb-2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                          </svg>
+                          <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">Not supported</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Close Button */}
+          <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-3 flex-shrink-0">
+            <button
+              onClick={() => setShowPreview(false)}
+              className="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
+            >
+              Close Preview
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <PreviewModal />
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Add New Booking</h2>
           <div className="flex gap-2">
             <MT.Button
+              onClick={() => setShowPreview(true)}
               className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-sm py-2 px-4"
               placeholder={undefined}
               onPointerEnterCapture={undefined}
@@ -464,19 +594,69 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
               </svg>
               Preview Tickets
             </MT.Button>
-            <MT.Button
-              className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-sm py-2 px-4"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-              </svg>
-              Upload Tickets
-            </MT.Button>
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                multiple
+                accept="image/*,.pdf"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <span className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white text-sm py-2 px-4 rounded-lg font-medium transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+                Upload Tickets
+              </span>
+            </label>
           </div>
         </div>
+        
+        {/* Uploaded Files Display */}
+        {uploadedFiles.length > 0 && (
+          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+              Uploaded Files ({uploadedFiles.length})
+            </h3>
+            <div className="space-y-2">
+              {uploadedFiles.map((file, index) => (
+                <div key={index} className="flex items-center justify-between bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    {isImageFile(file) ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                      </svg>
+                    ) : isPdfFile(file) ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                      </svg>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{file.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {(file.size / 1024).toFixed(2)} KB
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeFile(index)}
+                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex-shrink-0"
+                    title="Remove file"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         
         {/* Booking Type Selection */}
         <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
