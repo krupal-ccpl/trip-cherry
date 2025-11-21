@@ -572,7 +572,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   {errors.pnr && <p className="text-red-500 text-sm mt-1">{errors.pnr}</p>}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-4 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From (City/Airport)</label>
                   <MT.Input
@@ -599,8 +599,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   />
                   {errors.flightTo && <p className="text-red-500 text-sm mt-1">{errors.flightTo}</p>}
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Departure Date</label>
                   <MT.Input
@@ -681,7 +679,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
             {/* Flight Additional Charges */}
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Additional Charges</h3>
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-4 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seat Charges</label>
                   <MT.Input
@@ -712,8 +710,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   />
                   {errors.luggageCharges && <p className="text-red-500 text-sm mt-1">{errors.luggageCharges}</p>}
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meal Charges</label>
                   <MT.Input
