@@ -116,7 +116,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
 
   const [newBooking, setNewBooking] = useState({
     bookingType: 'flight' as 'flight' | 'train',
-    bookingDate: new Date().toISOString().split('T')[0],
     portal: '',
     guestName: '',
     numberOfTravellers: '1',
@@ -187,51 +186,10 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    // Common validations
-    if (!newBooking.guestName.trim()) {
-      newErrors.guestName = 'Guest name is required';
-    }
-    if (!newBooking.portal.trim()) {
-      newErrors.portal = 'Portal is required';
-    }
-
-    // Booking type specific validations
-    if (newBooking.bookingType === 'flight') {
-      if (!newBooking.airline.trim()) {
-        newErrors.airline = 'Airline is required';
-      }
-      if (!newBooking.flightFrom.trim()) {
-        newErrors.flightFrom = 'From city/airport is required';
-      }
-      if (!newBooking.flightTo.trim()) {
-        newErrors.flightTo = 'To city/airport is required';
-      }
-      if (!newBooking.departureDate) {
-        newErrors.departureDate = 'Departure date is required';
-      }
-      if (!newBooking.pnr.trim()) {
-        newErrors.pnr = 'PNR is required';
-      }
-      if (newBooking.departureDate && newBooking.arrivalDate && 
-          new Date(newBooking.arrivalDate) < new Date(newBooking.departureDate)) {
-        newErrors.arrivalDate = 'Arrival date cannot be before departure date';
-      }
-    } else if (newBooking.bookingType === 'train') {
-      if (!newBooking.trainName.trim()) {
-        newErrors.trainName = 'Train name is required';
-      }
-      if (!newBooking.trainNumber.trim()) {
-        newErrors.trainNumber = 'Train number is required';
-      }
-      if (!newBooking.trainFrom.trim()) {
-        newErrors.trainFrom = 'From station is required';
-      }
-      if (!newBooking.trainTo.trim()) {
-        newErrors.trainTo = 'To station is required';
-      }
-      if (!newBooking.journeyDate) {
-        newErrors.journeyDate = 'Journey date is required';
-      }
+    // Validate arrival date if both dates are present
+    if (newBooking.bookingType === 'flight' && newBooking.departureDate && newBooking.arrivalDate && 
+        new Date(newBooking.arrivalDate) < new Date(newBooking.departureDate)) {
+      newErrors.arrivalDate = 'Arrival date cannot be before departure date';
     }
 
     // Validate numeric fields
@@ -255,7 +213,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     const booking: Booking = {
       srNo: Date.now(),
       bookingType: newBooking.bookingType,
-      bookingDate: formatDateToDisplay(newBooking.bookingDate),
+      bookingDate: formatDateToDisplay(new Date().toISOString().split('T')[0]),
       portal: newBooking.portal.trim(),
       guestName: newBooking.guestName.trim(),
       numberOfTravellers: parseInt(newBooking.numberOfTravellers) || 1,
@@ -304,7 +262,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
   const resetForm = () => {
     setNewBooking({
       bookingType: 'flight',
-      bookingDate: new Date().toISOString().split('T')[0],
       portal: '',
       guestName: '',
       numberOfTravellers: '1',
@@ -390,22 +347,19 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
         {/* Basic Information */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Basic Information</h3>
-          <div className="grid grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Booking Date</label>
-              <MT.Input
-                type="date"
-                value={newBooking.bookingDate}
-                onChange={(e) => setNewBooking({ ...newBooking, bookingDate: e.target.value })}
-                max={today}
-                placeholder={undefined}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-                crossOrigin={undefined}
+              <Autocomplete
+                label="Customer"
+                value={newBooking.guestName}
+                onChange={handleGuestSelect}
+                options={guestOptions}
+                placeholder="Type customer name..."
+                error={errors.guestName}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Portal *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Portal</label>
               <select
                 value={newBooking.portal}
                 onChange={(e) => setNewBooking({ ...newBooking, portal: e.target.value })}
@@ -417,16 +371,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                 ))}
               </select>
               {errors.portal && <p className="text-red-500 text-sm mt-1">{errors.portal}</p>}
-            </div>
-            <div>
-              <Autocomplete
-                label="Guest Name *"
-                value={newBooking.guestName}
-                onChange={handleGuestSelect}
-                options={guestOptions}
-                placeholder="Type guest name..."
-                error={errors.guestName}
-              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Number of Travellers</label>
@@ -453,7 +397,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Flight Details</h3>
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Airline *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Airline</label>
                   <select
                     value={newBooking.airline}
                     onChange={(e) => setNewBooking({ ...newBooking, airline: e.target.value })}
@@ -479,7 +423,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PNR *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PNR</label>
                   <MT.Input
                     type="text"
                     value={newBooking.pnr}
@@ -494,7 +438,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
               </div>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From (City/Airport) *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From (City/Airport)</label>
                   <MT.Input
                     type="text"
                     value={newBooking.flightFrom}
@@ -507,7 +451,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   {errors.flightFrom && <p className="text-red-500 text-sm mt-1">{errors.flightFrom}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To (City/Airport) *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To (City/Airport)</label>
                   <MT.Input
                     type="text"
                     value={newBooking.flightTo}
@@ -522,7 +466,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
               </div>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Departure Date *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Departure Date</label>
                   <MT.Input
                     type="date"
                     value={newBooking.departureDate}
@@ -552,7 +496,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fare</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price</label>
                   <MT.Input
                     type="number"
                     value={newBooking.actualFare}
@@ -663,20 +607,18 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   {errors.otherCharges && <p className="text-red-500 text-sm mt-1">{errors.otherCharges}</p>}
                 </div>
               </div>
-              {(parseFloat(newBooking.otherCharges) > 0 || newBooking.otherChargesRemarks) && (
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Other Charges Remarks</label>
-                  <MT.Input
-                    type="text"
-                    value={newBooking.otherChargesRemarks}
-                    onChange={(e) => setNewBooking({ ...newBooking, otherChargesRemarks: e.target.value })}
-                    placeholder="Specify other charges..."
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    crossOrigin={undefined}
-                  />
-                </div>
-              )}
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Note (Other Charges)</label>
+                <MT.Input
+                  type="text"
+                  value={newBooking.otherChargesRemarks}
+                  onChange={(e) => setNewBooking({ ...newBooking, otherChargesRemarks: e.target.value })}
+                  placeholder="Specify other charges..."
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                  crossOrigin={undefined}
+                />
+              </div>
             </div>
           </>
         ) : (
@@ -686,7 +628,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Train Details</h3>
               <div className="grid grid-cols-4 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Train Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Train Name</label>
                   <MT.Input
                     type="text"
                     value={newBooking.trainName}
@@ -699,7 +641,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   {errors.trainName && <p className="text-red-500 text-sm mt-1">{errors.trainName}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Train Number *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Train Number</label>
                   <MT.Input
                     type="text"
                     value={newBooking.trainNumber}
@@ -737,7 +679,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
               </div>
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Station *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Station</label>
                   <MT.Input
                     type="text"
                     value={newBooking.trainFrom}
@@ -750,7 +692,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   {errors.trainFrom && <p className="text-red-500 text-sm mt-1">{errors.trainFrom}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Station *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Station</label>
                   <MT.Input
                     type="text"
                     value={newBooking.trainTo}
@@ -763,7 +705,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   {errors.trainTo && <p className="text-red-500 text-sm mt-1">{errors.trainTo}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Journey Date *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Journey Date</label>
                   <MT.Input
                     type="date"
                     value={newBooking.journeyDate}
@@ -779,7 +721,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fare</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price</label>
                   <MT.Input
                     type="number"
                     value={newBooking.actualFare}
