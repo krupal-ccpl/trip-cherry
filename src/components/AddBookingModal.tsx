@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as MT from "@material-tailwind/react";
 import Autocomplete, { type AutocompleteOption } from "./Autocomplete";
 import AirportAutocomplete from "./AirportAutocomplete";
@@ -152,6 +152,8 @@ export default function AddBookingModal({
     netFare: "",
     grossFare: "",
     quotedFare: "",
+    grossFareField: "",
+    quotedFareField: "",
 
     // Train fields
     trainName: "",
@@ -181,6 +183,8 @@ export default function AddBookingModal({
   const [showDetailedCharges, setShowDetailedCharges] = useState(false);
   const [showQuotedDetailedCharges, setShowQuotedDetailedCharges] =
     useState(false);
+  
+  const prevNetFareRef = useRef<string>("");
 
   // Transform guest names to autocomplete options
   const guestOptions: AutocompleteOption[] = guestNames.map((guest) => ({
@@ -272,6 +276,151 @@ export default function AddBookingModal({
       e.preventDefault();
     }
   };
+
+  // Calculate total of detailed charges for Gross Fare
+  const calculateGrossDetailedChargesTotal = () => {
+    const fare = parseFloat(newBooking.grossFareField) || 0;
+    const seat = parseFloat(newBooking.seatCharges) || 0;
+    const meal = parseFloat(newBooking.mealCharges) || 0;
+    const luggage = parseFloat(newBooking.luggageCharges) || 0;
+    const other = parseFloat(newBooking.otherCharges) || 0;
+    return fare + seat + meal + luggage + other;
+  };
+
+  // Calculate total of detailed charges for Quoted Fare
+  const calculateQuotedDetailedChargesTotal = () => {
+    const fare = parseFloat(newBooking.quotedFareField) || 0;
+    const seat = parseFloat(newBooking.seatCharges) || 0;
+    const meal = parseFloat(newBooking.mealCharges) || 0;
+    const luggage = parseFloat(newBooking.luggageCharges) || 0;
+    const other = parseFloat(newBooking.otherCharges) || 0;
+    return fare + seat + meal + luggage + other;
+  };
+
+  // Check if Gross Fare has mismatch
+  const getGrossFareWarning = () => {
+    const grossFare = parseFloat(newBooking.grossFare) || 0;
+    const netFare = parseFloat(newBooking.netFare) || 0;
+    const detailedTotal = calculateGrossDetailedChargesTotal();
+
+    // Check if gross fare is less than net fare
+    if (grossFare > 0 && netFare > 0 && grossFare < netFare) {
+      return {
+        type: 'error',
+        message: `Gross Fare (${grossFare}) is less than Net Fare (${netFare})`
+      };
+    }
+
+    // Check if detailed charges don't match gross fare
+    if (detailedTotal > 0 && grossFare !== detailedTotal) {
+      return {
+        type: 'warning',
+        message: `Total of detailed charges (${detailedTotal}) does not match Gross Fare (${grossFare})`
+      };
+    }
+
+    return null;
+  };
+
+  // Check if Quoted Fare has mismatch
+  const getQuotedFareWarning = () => {
+    const quotedFare = parseFloat(newBooking.quotedFare) || 0;
+    const netFare = parseFloat(newBooking.netFare) || 0;
+    const detailedTotal = calculateQuotedDetailedChargesTotal();
+
+    // Check if quoted fare is less than net fare
+    if (quotedFare > 0 && netFare > 0 && quotedFare < netFare) {
+      return {
+        type: 'error',
+        message: `Quoted Fare (${quotedFare}) is less than Net Fare (${netFare})`
+      };
+    }
+
+    // Check if detailed charges don't match quoted fare
+    if (detailedTotal > 0 && quotedFare !== detailedTotal) {
+      return {
+        type: 'warning',
+        message: `Total of detailed charges (${detailedTotal}) does not match Quoted Fare (${quotedFare})`
+      };
+    }
+
+    return null;
+  };
+
+  // Auto-fill fare fields when detailed sections open
+  useEffect(() => {
+    if (showDetailedCharges && newBooking.netFare && !newBooking.grossFareField) {
+      setNewBooking(prev => ({ ...prev, grossFareField: prev.netFare }));
+    }
+  }, [showDetailedCharges]);
+
+  useEffect(() => {
+    if (showQuotedDetailedCharges && newBooking.netFare && !newBooking.quotedFareField) {
+      setNewBooking(prev => ({ ...prev, quotedFareField: prev.netFare }));
+    }
+  }, [showQuotedDetailedCharges]);
+
+  // Auto-calculate Gross Fare when detailed charges change
+  useEffect(() => {
+    if (showDetailedCharges) {
+      const total = calculateGrossDetailedChargesTotal();
+      if (total > 0) {
+        setNewBooking(prev => ({ ...prev, grossFare: total.toString() }));
+      }
+    }
+  }, [
+    showDetailedCharges,
+    newBooking.grossFareField,
+    newBooking.seatCharges,
+    newBooking.mealCharges,
+    newBooking.luggageCharges,
+    newBooking.otherCharges
+  ]);
+
+  // Auto-calculate Quoted Fare when detailed charges change
+  useEffect(() => {
+    if (showQuotedDetailedCharges) {
+      const total = calculateQuotedDetailedChargesTotal();
+      if (total > 0) {
+        setNewBooking(prev => ({ ...prev, quotedFare: total.toString() }));
+      }
+    }
+  }, [
+    showQuotedDetailedCharges,
+    newBooking.quotedFareField,
+    newBooking.seatCharges,
+    newBooking.mealCharges,
+    newBooking.luggageCharges,
+    newBooking.otherCharges
+  ]);
+
+  // Update fare fields when Net Fare changes
+  useEffect(() => {
+    const prevNetFare = prevNetFareRef.current;
+    const currentNetFare = newBooking.netFare;
+    
+    if (currentNetFare && prevNetFare !== currentNetFare) {
+      setNewBooking(prev => {
+        const updates: any = {};
+        
+        // Update grossFareField if it's empty or matches the previous netFare
+        if (!prev.grossFareField || prev.grossFareField === prevNetFare) {
+          updates.grossFareField = currentNetFare;
+        }
+        
+        // Update quotedFareField if it's empty or matches the previous netFare
+        if (!prev.quotedFareField || prev.quotedFareField === prevNetFare) {
+          updates.quotedFareField = currentNetFare;
+        }
+        
+        return Object.keys(updates).length > 0 ? { ...prev, ...updates } : prev;
+      });
+      
+      prevNetFareRef.current = currentNetFare;
+    } else if (!currentNetFare && prevNetFare) {
+      prevNetFareRef.current = "";
+    }
+  }, [newBooking.netFare]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -412,6 +561,8 @@ export default function AddBookingModal({
       netFare: "",
       grossFare: "",
       quotedFare: "",
+      grossFareField: "",
+      quotedFareField: "",
       trainName: "",
       trainNumber: "",
       trainTicketType: "One Way",
@@ -1283,9 +1434,36 @@ export default function AddBookingModal({
               {/* Gross Fare - Full Width with + button */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Gross Fare
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Gross Fare
+                    </label>
+                    {getGrossFareWarning() && (
+                      <div className="relative group">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={2}
+                          stroke="currentColor"
+                          className={`w-4 h-4 cursor-help ${
+                            getGrossFareWarning()?.type === 'error'
+                              ? 'text-red-500'
+                              : 'text-orange-500'
+                          }`}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                          />
+                        </svg>
+                        <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-900 text-white text-xs rounded shadow-lg z-10">
+                          {getGrossFareWarning()?.message}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   <button
                     type="button"
                     onClick={() => setShowDetailedCharges(!showDetailedCharges)}
@@ -1307,7 +1485,7 @@ export default function AddBookingModal({
                             d="M19.5 12h-15"
                           />
                         </svg>
-                        Hide Details
+                        Hide Extra
                       </>
                     ) : (
                       <>
@@ -1325,24 +1503,31 @@ export default function AddBookingModal({
                             d="M12 4.5v15m7.5-7.5h-15"
                           />
                         </svg>
-                        Add Details
+                        Add Extra
                       </>
                     )}
                   </button>
                 </div>
-                <MT.Input
-                  type="number"
-                  value={newBooking.grossFare}
-                  onChange={(e) =>
-                    setNewBooking({ ...newBooking, grossFare: e.target.value })
-                  }
-                  onKeyDown={handleNumberInput}
-                  min="0"
-                  placeholder=""
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                  crossOrigin={undefined}
-                />
+                <div className="relative">
+                  <MT.Input
+                    type="number"
+                    value={newBooking.grossFare}
+                    onChange={(e) =>
+                      setNewBooking({ ...newBooking, grossFare: e.target.value })
+                    }
+                    onKeyDown={handleNumberInput}
+                    min="0"
+                    placeholder=""
+                    className={getGrossFareWarning() ? (
+                      getGrossFareWarning()?.type === 'error'
+                        ? '!border-red-500 !border-2'
+                        : '!border-orange-500 !border-2'
+                    ) : ''}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                    crossOrigin={undefined}
+                  />
+                </div>
                 {errors.grossFare && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.grossFare}
@@ -1357,19 +1542,19 @@ export default function AddBookingModal({
                     Charge Breakdown
                   </h4>
 
-                  {/* Row 1: Meal and Seat */}
+                  {/* Row 1: Fare and Seat */}
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Meal
+                        Fare
                       </label>
                       <MT.Input
                         type="number"
-                        value={newBooking.mealCharges}
+                        value={newBooking.grossFareField}
                         onChange={(e) =>
                           setNewBooking({
                             ...newBooking,
-                            mealCharges: e.target.value,
+                            grossFareField: e.target.value,
                           })
                         }
                         onKeyDown={handleNumberInput}
@@ -1379,11 +1564,6 @@ export default function AddBookingModal({
                         onPointerLeaveCapture={undefined}
                         crossOrigin={undefined}
                       />
-                      {errors.mealCharges && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.mealCharges}
-                        </p>
-                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -1413,8 +1593,34 @@ export default function AddBookingModal({
                     </div>
                   </div>
 
-                  {/* Row 2: Luggage and Other */}
+                  {/* Row 2: Meal and Luggage */}
                   <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Meal
+                      </label>
+                      <MT.Input
+                        type="number"
+                        value={newBooking.mealCharges}
+                        onChange={(e) =>
+                          setNewBooking({
+                            ...newBooking,
+                            mealCharges: e.target.value,
+                          })
+                        }
+                        onKeyDown={handleNumberInput}
+                        min="0"
+                        placeholder=""
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                        crossOrigin={undefined}
+                      />
+                      {errors.mealCharges && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.mealCharges}
+                        </p>
+                      )}
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Luggage
@@ -1441,6 +1647,10 @@ export default function AddBookingModal({
                         </p>
                       )}
                     </div>
+                  </div>
+
+                  {/* Row 3: Other and Note */}
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Other
@@ -1467,27 +1677,25 @@ export default function AddBookingModal({
                         </p>
                       )}
                     </div>
-                  </div>
-
-                  {/* Row 3: Note - Full Width */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Note
-                    </label>
-                    <MT.Input
-                      type="text"
-                      value={newBooking.otherChargesRemarks}
-                      onChange={(e) =>
-                        setNewBooking({
-                          ...newBooking,
-                          otherChargesRemarks: e.target.value,
-                        })
-                      }
-                      placeholder="Specify other charges..."
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                      crossOrigin={undefined}
-                    />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Note
+                      </label>
+                      <MT.Input
+                        type="text"
+                        value={newBooking.otherChargesRemarks}
+                        onChange={(e) =>
+                          setNewBooking({
+                            ...newBooking,
+                            otherChargesRemarks: e.target.value,
+                          })
+                        }
+                        placeholder="Specify other charges..."
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                        crossOrigin={undefined}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -1495,9 +1703,36 @@ export default function AddBookingModal({
               {/* Quoted Fare - Full Width with + button */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Quoted Fare
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Quoted Fare
+                    </label>
+                    {getQuotedFareWarning() && (
+                      <div className="relative group">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={2}
+                          stroke="currentColor"
+                          className={`w-4 h-4 cursor-help ${
+                            getQuotedFareWarning()?.type === 'error'
+                              ? 'text-red-500'
+                              : 'text-orange-500'
+                          }`}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                          />
+                        </svg>
+                        <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-900 text-white text-xs rounded shadow-lg z-10">
+                          {getQuotedFareWarning()?.message}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   <button
                     type="button"
                     onClick={() =>
@@ -1521,7 +1756,7 @@ export default function AddBookingModal({
                             d="M19.5 12h-15"
                           />
                         </svg>
-                        Hide Details
+                        Hide Extra
                       </>
                     ) : (
                       <>
@@ -1539,24 +1774,31 @@ export default function AddBookingModal({
                             d="M12 4.5v15m7.5-7.5h-15"
                           />
                         </svg>
-                        Add Details
+                        Add Extra
                       </>
                     )}
                   </button>
                 </div>
-                <MT.Input
-                  type="number"
-                  value={newBooking.quotedFare}
-                  onChange={(e) =>
-                    setNewBooking({ ...newBooking, quotedFare: e.target.value })
-                  }
-                  onKeyDown={handleNumberInput}
-                  min="0"
-                  placeholder=""
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                  crossOrigin={undefined}
-                />
+                <div className="relative">
+                  <MT.Input
+                    type="number"
+                    value={newBooking.quotedFare}
+                    onChange={(e) =>
+                      setNewBooking({ ...newBooking, quotedFare: e.target.value })
+                    }
+                    onKeyDown={handleNumberInput}
+                    min="0"
+                    placeholder=""
+                    className={getQuotedFareWarning() ? (
+                      getQuotedFareWarning()?.type === 'error'
+                        ? '!border-red-500 !border-2'
+                        : '!border-orange-500 !border-2'
+                    ) : ''}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                    crossOrigin={undefined}
+                  />
+                </div>
                 {errors.quotedFare && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.quotedFare}
@@ -1571,19 +1813,19 @@ export default function AddBookingModal({
                     Quoted Charge Breakdown
                   </h4>
 
-                  {/* Row 1: Meal and Seat */}
+                  {/* Row 1: Fare and Seat */}
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Meal
+                        Fare
                       </label>
                       <MT.Input
                         type="number"
-                        value={newBooking.mealCharges}
+                        value={newBooking.quotedFareField}
                         onChange={(e) =>
                           setNewBooking({
                             ...newBooking,
-                            mealCharges: e.target.value,
+                            quotedFareField: e.target.value,
                           })
                         }
                         onKeyDown={handleNumberInput}
@@ -1593,11 +1835,6 @@ export default function AddBookingModal({
                         onPointerLeaveCapture={undefined}
                         crossOrigin={undefined}
                       />
-                      {errors.mealCharges && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.mealCharges}
-                        </p>
-                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -1627,8 +1864,34 @@ export default function AddBookingModal({
                     </div>
                   </div>
 
-                  {/* Row 2: Luggage and Other */}
+                  {/* Row 2: Meal and Luggage */}
                   <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Meal
+                      </label>
+                      <MT.Input
+                        type="number"
+                        value={newBooking.mealCharges}
+                        onChange={(e) =>
+                          setNewBooking({
+                            ...newBooking,
+                            mealCharges: e.target.value,
+                          })
+                        }
+                        onKeyDown={handleNumberInput}
+                        min="0"
+                        placeholder=""
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                        crossOrigin={undefined}
+                      />
+                      {errors.mealCharges && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.mealCharges}
+                        </p>
+                      )}
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Luggage
@@ -1655,6 +1918,10 @@ export default function AddBookingModal({
                         </p>
                       )}
                     </div>
+                  </div>
+
+                  {/* Row 3: Other and Note */}
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Other
@@ -1681,27 +1948,25 @@ export default function AddBookingModal({
                         </p>
                       )}
                     </div>
-                  </div>
-
-                  {/* Row 3: Note - Full Width */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Note
-                    </label>
-                    <MT.Input
-                      type="text"
-                      value={newBooking.otherChargesRemarks}
-                      onChange={(e) =>
-                        setNewBooking({
-                          ...newBooking,
-                          otherChargesRemarks: e.target.value,
-                        })
-                      }
-                      placeholder="Specify other charges..."
-                      onPointerEnterCapture={undefined}
-                      onPointerLeaveCapture={undefined}
-                      crossOrigin={undefined}
-                    />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Note
+                      </label>
+                      <MT.Input
+                        type="text"
+                        value={newBooking.otherChargesRemarks}
+                        onChange={(e) =>
+                          setNewBooking({
+                            ...newBooking,
+                            otherChargesRemarks: e.target.value,
+                          })
+                        }
+                        placeholder="Specify other charges..."
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                        crossOrigin={undefined}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
