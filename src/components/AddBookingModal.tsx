@@ -128,6 +128,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
     portal: '',
     guestName: '',
     numberOfTravellers: '1',
+    hasGST: false,
+    gstNumber: '',
     
     // Flight fields
     airline: '',
@@ -357,6 +359,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
       portal: '',
       guestName: '',
       numberOfTravellers: '1',
+      hasGST: false,
+      gstNumber: '',
       airline: '',
       ticketType: 'One Way',
       sector1: '',
@@ -694,22 +698,33 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
             </button>
             <button
               type="button"
-              onClick={() => setNewBooking({ ...newBooking, bookingType: 'train' })}
-              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+              disabled
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all opacity-50 cursor-not-allowed ${
                 newBooking.bookingType === 'train'
                   ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-gray-600 hover:border-purple-500'
+                  : 'bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500 border-2 border-gray-300 dark:border-gray-600'
               }`}
             >
-              Train Booking
+              Train Booking (Coming Soon)
             </button>
           </div>
         </div>
 
         {/* Basic Information */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Basic Information</h3>
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Basic Information</h3>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={newBooking.hasGST}
+                onChange={(e) => setNewBooking({ ...newBooking, hasGST: e.target.checked, gstNumber: e.target.checked ? newBooking.gstNumber : '' })}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Add GST</span>
+            </label>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <Autocomplete
                 label="Customer"
@@ -734,6 +749,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
               </select>
               {errors.portal && <p className="text-red-500 text-sm mt-1">{errors.portal}</p>}
             </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Number of Travellers</label>
               <input
@@ -753,7 +770,35 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+              <select
+                value={newBooking.status}
+                onChange={(e) => setNewBooking({ ...newBooking, status: e.target.value as 'confirmed' | 'pending' | 'cancelled' })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                <option value="confirmed">Confirmed</option>
+                <option value="pending">Pending</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
           </div>
+          {newBooking.hasGST && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GST Number</label>
+                <input
+                  type="text"
+                  value={newBooking.gstNumber}
+                  onChange={(e) => setNewBooking({ ...newBooking, gstNumber: e.target.value.toUpperCase() })}
+                  placeholder="Enter GST Number"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+                {errors.gstNumber && <p className="text-red-500 text-sm mt-1">{errors.gstNumber}</p>}
+              </div>
+              <div></div>
+            </div>
+          )}
         </div>
 
         {/* Conditional Fields based on Booking Type */}
@@ -762,7 +807,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
             {/* Flight Specific Fields */}
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Flight Details</h3>
-              <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Airline</label>
                   <select
@@ -789,6 +834,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     ))}
                   </select>
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PNR</label>
                   <MT.Input
@@ -802,18 +849,15 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   />
                   {errors.pnr && <p className="text-red-500 text-sm mt-1">{errors.pnr}</p>}
                 </div>
+                <div></div>
               </div>
               
-              {/* Sectors Section - All in one row */}
+              {/* Sectors Section */}
               <div className="mb-4">
                 <h4 className="text-md font-semibold mb-3 text-gray-900 dark:text-white">Flight Sectors</h4>
                 
-                {/* Dynamic grid based on ticket type: One Way=2, Round Trip=3, Multi City=4 */}
-                <div className={`grid gap-3 ${
-                  newBooking.ticketType === 'One Way' ? 'grid-cols-2' :
-                  newBooking.ticketType === 'Round Trip' ? 'grid-cols-3' :
-                  'grid-cols-4'
-                }`}>
+                {/* First row - Always 2 columns */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
                   <AirportAutocomplete
                     label="Sector 1"
                     value={newBooking.sector1}
@@ -828,9 +872,11 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     placeholder="Destination..."
                     error={errors.sector2}
                   />
+                </div>
                   
-                  {/* Sector 3 - Show for Round Trip and Multi City */}
-                  {(newBooking.ticketType === 'Round Trip' || newBooking.ticketType === 'Multi City') && (
+                {/* Second row - Show for Round Trip and Multi City - Always 2 columns */}
+                {(newBooking.ticketType === 'Round Trip' || newBooking.ticketType === 'Multi City') && (
+                  <div className="grid grid-cols-2 gap-4">
                     <AirportAutocomplete
                       label="Sector 3"
                       value={newBooking.sector3}
@@ -838,19 +884,21 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                       placeholder={newBooking.ticketType === 'Round Trip' ? 'Return...' : 'Next...'}
                       error={errors.sector3}
                     />
-                  )}
-                  
-                  {/* Sector 4 - Show only for Multi City */}
-                  {newBooking.ticketType === 'Multi City' && (
-                    <AirportAutocomplete
-                      label="Sector 4"
-                      value={newBooking.sector4}
-                      onChange={(code) => setNewBooking({ ...newBooking, sector4: code })}
-                      placeholder="Final..."
-                      error={errors.sector4}
-                    />
-                  )}
-                </div>
+                    
+                    {/* Sector 4 - Show only for Multi City */}
+                    {newBooking.ticketType === 'Multi City' ? (
+                      <AirportAutocomplete
+                        label="Sector 4"
+                        value={newBooking.sector4}
+                        onChange={(code) => setNewBooking({ ...newBooking, sector4: code })}
+                        placeholder="Final..."
+                        error={errors.sector4}
+                      />
+                    ) : (
+                      <div></div>
+                    )}
+                  </div>
+                )}
               </div>
               
               <div className="grid grid-cols-2 gap-4 mb-4">
@@ -883,7 +931,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   {errors.arrivalDate && <p className="text-red-500 text-sm mt-1">{errors.arrivalDate}</p>}
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price</label>
                   <MT.Input
@@ -914,18 +962,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   />
                   {errors.processingFees && <p className="text-red-500 text-sm mt-1">{errors.processingFees}</p>}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                  <select
-                    value={newBooking.status}
-                    onChange={(e) => setNewBooking({ ...newBooking, status: e.target.value as 'confirmed' | 'pending' | 'cancelled' })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  >
-                    <option value="confirmed">Confirmed</option>
-                    <option value="pending">Pending</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
-                </div>
               </div>
             </div>
             
@@ -934,7 +970,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
             {/* Flight Additional Charges */}
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Additional Charges</h3>
-              <div className="grid grid-cols-4 gap-4 mb-4">
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seat Charges</label>
                   <MT.Input
@@ -965,6 +1001,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   />
                   {errors.luggageCharges && <p className="text-red-500 text-sm mt-1">{errors.luggageCharges}</p>}
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meal Charges</label>
                   <MT.Input
@@ -996,17 +1034,19 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   {errors.otherCharges && <p className="text-red-500 text-sm mt-1">{errors.otherCharges}</p>}
                 </div>
               </div>
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Note (Other Charges)</label>
-                <MT.Input
-                  type="text"
-                  value={newBooking.otherChargesRemarks}
-                  onChange={(e) => setNewBooking({ ...newBooking, otherChargesRemarks: e.target.value })}
-                  placeholder="Specify other charges..."
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                  crossOrigin={undefined}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Note (Other Charges)</label>
+                  <MT.Input
+                    type="text"
+                    value={newBooking.otherChargesRemarks}
+                    onChange={(e) => setNewBooking({ ...newBooking, otherChargesRemarks: e.target.value })}
+                    placeholder="Specify other charges..."
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                    crossOrigin={undefined}
+                  />
+                </div>
               </div>
             </div>
           </>
@@ -1015,7 +1055,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
             {/* Train Specific Fields */}
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Train Details</h3>
-              <div className="grid grid-cols-4 gap-4 mb-4">
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Train Name</label>
                   <MT.Input
@@ -1042,6 +1082,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   />
                   {errors.trainNumber && <p className="text-red-500 text-sm mt-1">{errors.trainNumber}</p>}
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ticket Type</label>
                   <select
@@ -1066,7 +1108,7 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Station</label>
                   <MT.Input
@@ -1093,6 +1135,8 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   />
                   {errors.trainTo && <p className="text-red-500 text-sm mt-1">{errors.trainTo}</p>}
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Journey Date</label>
                   <MT.Input
@@ -1107,8 +1151,9 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   />
                   {errors.journeyDate && <p className="text-red-500 text-sm mt-1">{errors.journeyDate}</p>}
                 </div>
+                <div></div>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price</label>
                   <MT.Input
@@ -1138,18 +1183,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                     crossOrigin={undefined}
                   />
                   {errors.processingFees && <p className="text-red-500 text-sm mt-1">{errors.processingFees}</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                  <select
-                    value={newBooking.status}
-                    onChange={(e) => setNewBooking({ ...newBooking, status: e.target.value as 'confirmed' | 'pending' | 'cancelled' })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  >
-                    <option value="confirmed">Confirmed</option>
-                    <option value="pending">Pending</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
                 </div>
               </div>
             </div>
