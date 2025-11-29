@@ -931,38 +931,6 @@ export default function AddBookingModal({ isOpen, onClose, onAdd }: AddBookingMo
                   {errors.arrivalDate && <p className="text-red-500 text-sm mt-1">{errors.arrivalDate}</p>}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price</label>
-                  <MT.Input
-                    type="number"
-                    value={newBooking.actualFare}
-                    onChange={(e) => setNewBooking({ ...newBooking, actualFare: e.target.value })}
-                    onKeyDown={handleNumberInput}
-                    min="0"
-                    placeholder=""
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    crossOrigin={undefined}
-                  />
-                  {errors.actualFare && <p className="text-red-500 text-sm mt-1">{errors.actualFare}</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Processing Fees</label>
-                  <MT.Input
-                    type="number"
-                    value={newBooking.processingFees}
-                    onChange={(e) => setNewBooking({ ...newBooking, processingFees: e.target.value })}
-                    onKeyDown={handleNumberInput}
-                    min="0"
-                    placeholder=""
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    crossOrigin={undefined}
-                  />
-                  {errors.processingFees && <p className="text-red-500 text-sm mt-1">{errors.processingFees}</p>}
-                </div>
-              </div>
             </div>
             
             <TravellerDetailsSection />
