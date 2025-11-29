@@ -14,6 +14,7 @@ import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   CloudArrowUpIcon,
+  FolderIcon,
 } from "@heroicons/react/24/outline";
 // @ts-expect-error: JS module has no types
 import bookingPaymentsData from "@/data/booking-payments-data.js";
@@ -1554,6 +1555,51 @@ export default function BookingDetails() {
   // Find the booking by ID
   const booking = bookingsListData.find((b: Booking) => b.id === Number(id));
 
+  // Document folders configuration based on booking type
+  const documentFolders = booking?.type === "International" ? [
+    { name: "Arrival Card", key: "arrivalCard" },
+    { name: "Invoice", key: "invoice" },
+    { name: "Itinerary", key: "itinerary" },
+    { name: "Passport", key: "passport" },
+    { name: "Photos", key: "photos" },
+    { name: "Quote", key: "quote" },
+    { name: "Tickets", key: "tickets" },
+    { name: "Visa", key: "visa" },
+    { name: "Vouchers", key: "vouchers" },
+  ] : [
+    { name: "IDs", key: "ids" },
+    { name: "Invoice", key: "invoice" },
+    { name: "Itinerary", key: "itinerary" },
+    { name: "Tickets", key: "tickets" },
+    { name: "Vouchers", key: "vouchers" },
+  ];
+
+  // Calculate document progress for each folder
+  const calculateFolderProgress = (folderKey: string) => {
+    // Count documents based on folder type
+    let uploadedCount = 0;
+    let totalCount = guests.length;
+
+    // For simplicity, checking if guests have relevant documents
+    guests.forEach((guest: GuestTour) => {
+      const hasDocument = guest.documents?.some(
+        (doc: any) => doc.name.toLowerCase().includes(folderKey.toLowerCase()) && doc.uploaded
+      );
+      if (hasDocument) uploadedCount++;
+    });
+
+    const percentage = totalCount > 0 ? (uploadedCount / totalCount) * 100 : 0;
+    return { uploadedCount, totalCount, percentage };
+  };
+
+  // Get folder color based on progress
+  const getFolderColor = (percentage: number) => {
+    if (percentage === 0) return { bg: "bg-red-100", text: "text-red-700", progress: "bg-red-500", border: "border-red-300" };
+    if (percentage < 50) return { bg: "bg-red-100", text: "text-red-700", progress: "bg-red-500", border: "border-red-300" };
+    if (percentage < 100) return { bg: "bg-orange-100", text: "text-orange-700", progress: "bg-orange-500", border: "border-orange-300" };
+    return { bg: "bg-green-100", text: "text-green-700", progress: "bg-green-500", border: "border-green-300" };
+  };
+
   // Handle booking update
   const handleBookingUpdate = (updatedBooking: Booking) => {
     // Update the booking in the data (this would typically be an API call)
@@ -1733,7 +1779,7 @@ export default function BookingDetails() {
           <div>
             <div
               className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => navigate("/dashboard/bookings")}
+              onClick={() => navigate("/dashboard/packages")}
             >
               <ArrowLeftIcon className="h-5 w-5 text-blue-gray-700 dark:text-gray-200" />
               <MT.Typography
@@ -2031,6 +2077,92 @@ export default function BookingDetails() {
                   </div>
                 </div>
               </div>
+            </div>
+          </MT.CardBody>
+        </MT.Card>
+
+        {/* Document Folders Section */}
+        <MT.Card
+          className="shadow-lg border border-gray-100 mt-6 bg-white dark:bg-gray-800 dark:border-gray-700"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
+          <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4 rounded-t-xl">
+            <div className="flex justify-between items-center">
+              <MT.Typography
+                variant="h6"
+                color="white"
+                className="font-semibold"
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                Document Folders - {booking.type}
+              </MT.Typography>
+              <MT.Chip
+                size="sm"
+                value={`${guests.length} Travelers`}
+                className="bg-white/20 text-white"
+              />
+            </div>
+          </div>
+
+          <MT.CardBody
+            className="px-6 py-6"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {documentFolders.map((folder) => {
+                const progress = calculateFolderProgress(folder.key);
+                const colors = getFolderColor(progress.percentage);
+
+                return (
+                  <div
+                    key={folder.key}
+                    className={`relative p-4 rounded-lg border-2 ${colors.border} ${colors.bg} hover:shadow-md transition-all duration-200 cursor-pointer group`}
+                  >
+                    <div className="flex flex-col items-center">
+                      <FolderIcon className={`h-12 w-12 ${colors.text} mb-2`} />
+                      <MT.Typography
+                        variant="small"
+                        className={`font-semibold text-center ${colors.text} mb-2`}
+                        placeholder={undefined}
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                      >
+                        {folder.name}
+                      </MT.Typography>
+
+                      {/* Progress Bar */}
+                      <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                        <div
+                          className={`${colors.progress} h-2 rounded-full transition-all duration-300`}
+                          style={{ width: `${progress.percentage}%` }}
+                        ></div>
+                      </div>
+
+                      {/* Progress Text */}
+                      <MT.Typography
+                        variant="small"
+                        className={`text-xs ${colors.text} font-medium`}
+                        placeholder={undefined}
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                      >
+                        {progress.uploadedCount}/{progress.totalCount} ({Math.round(progress.percentage)}%)
+                      </MT.Typography>
+                    </div>
+
+                    {/* Tooltip on hover */}
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                      {progress.uploadedCount} of {progress.totalCount} documents uploaded
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </MT.CardBody>
         </MT.Card>

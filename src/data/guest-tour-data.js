@@ -33,11 +33,16 @@ export const guestTourData = [
     profitBookedTillDate: 2000,
     group: "A's Family",
     isAdult: true,
-    documents: domesticDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Aadhaar Card", uploaded: true, path: "/fake/docs/aadhaar_card.pdf" },
+      { name: "PAN Card", uploaded: false },
+      { name: "Voter ID", uploaded: true, path: "/fake/docs/voter_id.pdf" },
+      { name: "Driving License", uploaded: false },
+      { name: "Invoice", uploaded: true, path: "/fake/docs/invoice.pdf" },
+      { name: "Itinerary", uploaded: false },
+      { name: "Tickets", uploaded: true, path: "/fake/docs/tickets.pdf" },
+      { name: "Vouchers", uploaded: false }
+    ]
   },
   {
     guestName: "Priya Sharma",
@@ -53,11 +58,16 @@ export const guestTourData = [
     profitBookedTillDate: 6400,
     group: "B's Friends",
     isAdult: true,
-    documents: domesticDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Aadhaar Card", uploaded: false },
+      { name: "PAN Card", uploaded: true, path: "/fake/docs/pan_card.pdf" },
+      { name: "Voter ID", uploaded: false },
+      { name: "Driving License", uploaded: true, path: "/fake/docs/driving_license.pdf" },
+      { name: "Invoice", uploaded: true, path: "/fake/docs/invoice.pdf" },
+      { name: "Itinerary", uploaded: true, path: "/fake/docs/itinerary.pdf" },
+      { name: "Tickets", uploaded: false },
+      { name: "Vouchers", uploaded: true, path: "/fake/docs/vouchers.pdf" }
+    ]
   },
   {
     guestName: "Amit Patel",
@@ -73,11 +83,16 @@ export const guestTourData = [
     profitBookedTillDate: 3600,
     group: "Corporate tour by company ABC",
     isAdult: true,
-    documents: domesticDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Aadhaar Card", uploaded: true, path: "/fake/docs/aadhaar_card.pdf" },
+      { name: "PAN Card", uploaded: true, path: "/fake/docs/pan_card.pdf" },
+      { name: "Voter ID", uploaded: true, path: "/fake/docs/voter_id.pdf" },
+      { name: "Driving License", uploaded: false },
+      { name: "Invoice", uploaded: true, path: "/fake/docs/invoice.pdf" },
+      { name: "Itinerary", uploaded: false },
+      { name: "Tickets", uploaded: false },
+      { name: "Vouchers", uploaded: false }
+    ]
   },
   {
     guestName: "Neha Gupta",
@@ -93,11 +108,16 @@ export const guestTourData = [
     profitBookedTillDate: 4000,
     group: "School Trip Group",
     isAdult: false,
-    documents: domesticDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Aadhaar Card", uploaded: false },
+      { name: "PAN Card", uploaded: false },
+      { name: "Voter ID", uploaded: false },
+      { name: "Driving License", uploaded: true, path: "/fake/docs/driving_license.pdf" },
+      { name: "Invoice", uploaded: true, path: "/fake/docs/invoice.pdf" },
+      { name: "Itinerary", uploaded: true, path: "/fake/docs/itinerary.pdf" },
+      { name: "Tickets", uploaded: true, path: "/fake/docs/tickets.pdf" },
+      { name: "Vouchers", uploaded: false }
+    ]
   },
   {
     guestName: "Rahul Singh",
@@ -113,11 +133,16 @@ export const guestTourData = [
     profitBookedTillDate: 4000,
     group: "Wedding Party",
     isAdult: true,
-    documents: domesticDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Aadhaar Card", uploaded: true, path: "/fake/docs/aadhaar_card.pdf" },
+      { name: "PAN Card", uploaded: false },
+      { name: "Voter ID", uploaded: false },
+      { name: "Driving License", uploaded: false },
+      { name: "Invoice", uploaded: true, path: "/fake/docs/invoice.pdf" },
+      { name: "Itinerary", uploaded: false },
+      { name: "Tickets", uploaded: true, path: "/fake/docs/tickets.pdf" },
+      { name: "Vouchers", uploaded: true, path: "/fake/docs/vouchers.pdf" }
+    ]
   },
   {
     guestName: "Anjali Desai",
@@ -133,11 +158,16 @@ export const guestTourData = [
     profitBookedTillDate: 5000,
     group: "Adventure Seekers",
     isAdult: true,
-    documents: domesticDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Aadhaar Card", uploaded: true, path: "/fake/docs/aadhaar_card.pdf" },
+      { name: "PAN Card", uploaded: true, path: "/fake/docs/pan_card.pdf" },
+      { name: "Voter ID", uploaded: false },
+      { name: "Driving License", uploaded: true, path: "/fake/docs/driving_license.pdf" },
+      { name: "Invoice", uploaded: true, path: "/fake/docs/invoice.pdf" },
+      { name: "Itinerary", uploaded: true, path: "/fake/docs/itinerary.pdf" },
+      { name: "Tickets", uploaded: false },
+      { name: "Vouchers", uploaded: false }
+    ]
   },
   {
     guestName: "Vikram Reddy",
@@ -153,11 +183,16 @@ export const guestTourData = [
     profitBookedTillDate: 3000,
     group: "Business Conference",
     isAdult: true,
-    documents: domesticDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Aadhaar Card", uploaded: false },
+      { name: "PAN Card", uploaded: true, path: "/fake/docs/pan_card.pdf" },
+      { name: "Voter ID", uploaded: true, path: "/fake/docs/voter_id.pdf" },
+      { name: "Driving License", uploaded: false },
+      { name: "Invoice", uploaded: true, path: "/fake/docs/invoice.pdf" },
+      { name: "Itinerary", uploaded: false },
+      { name: "Tickets", uploaded: true, path: "/fake/docs/tickets.pdf" },
+      { name: "Vouchers", uploaded: true, path: "/fake/docs/vouchers.pdf" }
+    ]
   },
   {
     guestName: "Sneha Iyer",
@@ -173,11 +208,16 @@ export const guestTourData = [
     profitBookedTillDate: 4000,
     group: "Family Reunion",
     isAdult: false,
-    documents: domesticDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Aadhaar Card", uploaded: false },
+      { name: "PAN Card", uploaded: false },
+      { name: "Voter ID", uploaded: true, path: "/fake/docs/voter_id.pdf" },
+      { name: "Driving License", uploaded: false },
+      { name: "Invoice", uploaded: true, path: "/fake/docs/invoice.pdf" },
+      { name: "Itinerary", uploaded: true, path: "/fake/docs/itinerary.pdf" },
+      { name: "Tickets", uploaded: false },
+      { name: "Vouchers", uploaded: false }
+    ]
   },
   {
     guestName: "Karan Malhotra",
@@ -193,11 +233,16 @@ export const guestTourData = [
     profitBookedTillDate: 4600,
     group: "College Friends",
     isAdult: true,
-    documents: domesticDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Aadhaar Card", uploaded: true, path: "/fake/docs/aadhaar_card.pdf" },
+      { name: "PAN Card", uploaded: true, path: "/fake/docs/pan_card.pdf" },
+      { name: "Voter ID", uploaded: false },
+      { name: "Driving License", uploaded: false },
+      { name: "Invoice", uploaded: true, path: "/fake/docs/invoice.pdf" },
+      { name: "Itinerary", uploaded: false },
+      { name: "Tickets", uploaded: true, path: "/fake/docs/tickets.pdf" },
+      { name: "Vouchers", uploaded: false }
+    ]
   },
   {
     guestName: "Pooja Nair",
@@ -213,11 +258,16 @@ export const guestTourData = [
     profitBookedTillDate: 6000,
     group: "Retirement Celebration",
     isAdult: true,
-    documents: domesticDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Aadhaar Card", uploaded: false },
+      { name: "PAN Card", uploaded: true, path: "/fake/docs/pan_card.pdf" },
+      { name: "Voter ID", uploaded: false },
+      { name: "Driving License", uploaded: true, path: "/fake/docs/driving_license.pdf" },
+      { name: "Invoice", uploaded: true, path: "/fake/docs/invoice.pdf" },
+      { name: "Itinerary", uploaded: true, path: "/fake/docs/itinerary.pdf" },
+      { name: "Tickets", uploaded: true, path: "/fake/docs/tickets.pdf" },
+      { name: "Vouchers", uploaded: true, path: "/fake/docs/vouchers.pdf" }
+    ]
   },
   {
     guestName: "Arjun Rao",
@@ -233,11 +283,18 @@ export const guestTourData = [
     profitBookedTillDate: 6000,
     group: "",
     isAdult: true,
-    documents: internationalDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Passport", uploaded: true, path: "/fake/docs/passport.pdf" },
+      { name: "Visa", uploaded: false },
+      { name: "Flight Tickets", uploaded: true, path: "/fake/docs/flight_tickets.pdf" },
+      { name: "Hotel Bookings", uploaded: true, path: "/fake/docs/hotel_bookings.pdf" },
+      { name: "Arrival Card", uploaded: false },
+      { name: "Invoice", uploaded: true, path: "/fake/docs/invoice.pdf" },
+      { name: "Itinerary", uploaded: false },
+      { name: "Photos", uploaded: false },
+      { name: "Quote", uploaded: true, path: "/fake/docs/quote.pdf" },
+      { name: "Vouchers", uploaded: false }
+    ]
   },
   {
     guestName: "Kavita Joshi",
@@ -253,11 +310,18 @@ export const guestTourData = [
     profitBookedTillDate: 5000,
     group: "",
     isAdult: false,
-    documents: internationalDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Passport", uploaded: false },
+      { name: "Visa", uploaded: true, path: "/fake/docs/visa.pdf" },
+      { name: "Flight Tickets", uploaded: true, path: "/fake/docs/flight_tickets.pdf" },
+      { name: "Hotel Bookings", uploaded: false },
+      { name: "Arrival Card", uploaded: true, path: "/fake/docs/arrival_card.pdf" },
+      { name: "Invoice", uploaded: false },
+      { name: "Itinerary", uploaded: true, path: "/fake/docs/itinerary.pdf" },
+      { name: "Photos", uploaded: false },
+      { name: "Quote", uploaded: false },
+      { name: "Vouchers", uploaded: true, path: "/fake/docs/vouchers.pdf" }
+    ]
   },
   {
     guestName: "Rohan Verma",
@@ -273,11 +337,18 @@ export const guestTourData = [
     profitBookedTillDate: 5000,
     group: "",
     isAdult: true,
-    documents: internationalDocs.map(doc => ({
-      name: doc,
-      uploaded: Math.random() > 0.5,
-      path: Math.random() > 0.5 ? `/fake/docs/${doc.replace(/\s+/g, '_').toLowerCase()}.pdf` : undefined
-    }))
+    documents: [
+      { name: "Passport", uploaded: true, path: "/fake/docs/passport.pdf" },
+      { name: "Visa", uploaded: true, path: "/fake/docs/visa.pdf" },
+      { name: "Flight Tickets", uploaded: true, path: "/fake/docs/flight_tickets.pdf" },
+      { name: "Hotel Bookings", uploaded: false },
+      { name: "Arrival Card", uploaded: false },
+      { name: "Invoice", uploaded: false },
+      { name: "Itinerary", uploaded: true, path: "/fake/docs/itinerary.pdf" },
+      { name: "Photos", uploaded: true, path: "/fake/docs/photos.pdf" },
+      { name: "Quote", uploaded: false },
+      { name: "Vouchers", uploaded: false }
+    ]
   },
 ];
 export default guestTourData;
