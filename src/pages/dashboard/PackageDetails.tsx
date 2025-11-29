@@ -29,6 +29,7 @@ import AddBookingModal from "@/components/AddPackageModal";
 import PaymentModal from "@/components/PaymentModal";
 import HistoryPopover from "@/components/HistoryPopover";
 import AddDocumentModal from "@/components/AddDocumentModal";
+import FolderDocumentsModal from "@/components/FolderDocumentsModal";
 import { generateInvoicePdf } from "@/utils/invoiceGenerator";
 
 interface Booking {
@@ -246,6 +247,13 @@ export default function BookingDetails() {
   // Upload documents modal state
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
+  // Folder documents modal state
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+  const [currentFolder, setCurrentFolder] = useState<{
+    name: string;
+    key: string;
+  } | null>(null);
 
   // Search, Sort, Filter state for Services table
   const [servicesSearchTerm] = useState("");
@@ -1716,6 +1724,17 @@ export default function BookingDetails() {
     setCurrentDocument(null);
   };
 
+  // Handle folder click to open folder documents modal
+  const handleFolderClick = (folderName: string, folderKey: string) => {
+    setCurrentFolder({ name: folderName, key: folderKey });
+    setIsFolderModalOpen(true);
+  };
+
+  // Handle guests update from folder modal
+  const handleGuestsUpdate = (updatedGuests: any[]) => {
+    setGuests(updatedGuests);
+  };
+
   // Calculate totals for payment table from filtered data
   const totalToBePaid = filteredAndSortedServices.reduce(
     (sum: number, item: BookingPayment) =>
@@ -2122,6 +2141,7 @@ export default function BookingDetails() {
                 return (
                   <div
                     key={folder.key}
+                    onClick={() => handleFolderClick(folder.name, folder.key)}
                     className={`relative p-4 rounded-lg border-2 ${colors.border} ${colors.bg} hover:shadow-md transition-all duration-200 cursor-pointer group`}
                   >
                     <div className="flex flex-col items-center">
@@ -4377,6 +4397,16 @@ export default function BookingDetails() {
               ? guests[currentDocument.guestIndex]?.documents[currentDocument.docIndex]?.name || ""
               : ""
           }
+        />
+
+        <FolderDocumentsModal
+          isOpen={isFolderModalOpen}
+          onClose={() => setIsFolderModalOpen(false)}
+          folderName={currentFolder?.name || ""}
+          folderKey={currentFolder?.key || ""}
+          guests={guests}
+          onUpdateGuests={handleGuestsUpdate}
+          bookingType={booking?.type || ""}
         />
 
         {/* Upload Documents Modal */}
